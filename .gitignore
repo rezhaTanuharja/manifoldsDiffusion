@@ -3,7 +3,7 @@
 
 # Ignore environment directories
 .venv/
-conda_env/
+.conda_env/
 
 # Ignore editor configurations
 pyrightconfig.json
