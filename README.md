@@ -19,7 +19,7 @@
   <h2>How to Use</h2>
 
   <p>
-    To use the project, you first need to clone the repository using <a href="https://git-scm.com">Git</a>:
+    To use the project, you first need to clone the repository using <a href="https://git-scm.com" target="_blank">Git</a>:
   </p>
 
   <pre><code class="language-bash"><!--
@@ -31,7 +31,7 @@
   </p>
 
   <ol>
-    <li>Download datasets from <a href="https://amass.is.tue.mpg.de">AMASS</a> (<b>A</b>rchive of <b>M</b>otion Capture <b>A</b>s <b>S</b>urface <b>S</b>hapes)</li>
+    <li>Download datasets from <a href="https://amass.is.tue.mpg.de" target="_blank">AMASS</a> (<b>A</b>rchive of <b>M</b>otion Capture <b>A</b>s <b>S</b>urface <b>S</b>hapes)</li>
     <li>Preprocess datasets: unpack compressed files and store the data as tensors</li>
     <li>Do some Deep Learnings and save the world!</li>
   </ol>
