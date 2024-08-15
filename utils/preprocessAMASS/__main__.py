@@ -12,9 +12,16 @@ Usage (from project root dir): python utils/preprocessAMASS
 
 
 import subprocess
-from storeDatasetsAsTensors import *
+from preprocessDatasets import storeDatasetsAsTensors
 
-def main():
+def main() -> None:
+
+
+    # -- Specify directories
+    
+    compressedFilesDirectory = "./downloads"
+    extractedFilesDirectory = "./extractedData"
+    saveFile = "./preprocessedData/axisAngleTensors.pt"
 
 
     # -- Extract compressed datasets downloaded from AMASS
@@ -22,7 +29,11 @@ def main():
     try:
 
         _ = subprocess.run(
-            ["./utils/preprocessAMASS/extractCompressedDatasets.sh"],
+            [
+                "./utils/preprocessAMASS/extractCompressedDatasets.sh",
+                "-i", compressedFilesDirectory,
+                "-o", extractedFilesDirectory
+            ],
             capture_output=True,    # do not output to terminal, store in stdout and stderr
             text=True,              # ensure output is captured as text
             check=True              # raise exception if fails to run
@@ -41,9 +52,12 @@ def main():
         return
 
 
-    # -- Convert extracted datasets into PyTorch tensors and save as .pt files
+    # -- Convert all extracted datasets into a (PyTorch)tensors and save in a .pt file
 
-    #TODO
+    storeDatasetsAsTensors(
+        inputDirectory = compressedFilesDirectory,
+        outputFile = saveFile
+    )
 
 
 if __name__ == "__main__":
