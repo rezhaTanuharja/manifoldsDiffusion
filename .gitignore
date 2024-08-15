@@ -9,5 +9,6 @@
 pyrightconfig.json
 
 # Ignore locally stored data
-data/
 downloads/
+extractedData/
+preprocessedData/
