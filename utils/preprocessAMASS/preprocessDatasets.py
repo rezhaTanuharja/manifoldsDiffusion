@@ -31,7 +31,7 @@ def storeDatasetsAsTensors(
     """
 
 
-    # -- Count the number of samples (the number of '.npz' files)
+    # -- Count the number of samples (total from all '.npz' files)
 
     sampleCount = 0
 

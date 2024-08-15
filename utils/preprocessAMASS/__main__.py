@@ -60,5 +60,10 @@ def main() -> None:
     )
 
 
+    # -- Remove extracted datasets from extractedFilesDirectory
+
+    _ = subprocess.run(f"rm -r {extractedFilesDirectory}/*", shell=True)
+
+
 if __name__ == "__main__":
     main()
