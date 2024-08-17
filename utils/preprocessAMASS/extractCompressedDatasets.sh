@@ -1,15 +1,14 @@
 #!/bin/bash
 
 ##
-# @file utils/preprocessAMASS/extractCompressedDatasets.sh
+# This script extracts AMASS datasets from .tar.bz2 files in inputDirectory and
+# store them inside outputDirectory.
 #
-# @brief
-# This script extracts .tar.bz2 files from inputDirectory and store in outputDirectory
+# Author          : Rezha Adrian Tanuharja
+# Mail            : tanuharja@ias.uni-stuttgart.de
+# Date created    : 2024.08.14
 #
-# @author Rezha Adrian Tanuharja
-# @date 2024.08.14
-#
-# Intended usage:
+# Usage:
 #
 #   executed by utils/preprocessAMASS/__main__.py
 #
@@ -24,26 +23,20 @@
 
 
 # -- These are the default input and output directories
-
-inputDirectory="./downloads"
-outputDirectory="./extractedData"
-
+input_directory="./downloads"
+output_directory="./extractedData"
 
 # -- Parse flags (-i or --input) and (-o or --output)
-
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    -i|--input) inputDirectory="$2"; shift ;;
-    -o|--output) outputDirectory="$2"; shift ;;
+    -i|--input) input_directory="$2"; shift ;;
+    -o|--output) output_directory="$2"; shift ;;
     *) echo "Unknown parameter passed: $1"; exit 1 ;;
   esac
   shift
 done
 
-
 # -- Extract all files with .tar.bz2 extension
-
-for file in "$inputDirectory"/*.tar.bz2; do
-
-  tar -xjf "$file" -C "$outputDirectory"
+for file in "$input_directory"/*.tar.bz2; do
+  tar -xjf "$file" -C "$output_directory"
 done
