@@ -9,9 +9,9 @@ Date created    : 2024.08.14
 Usage (executed from project root dir):
 
     1. Modify the following variables accordingly:
-        - `compressedFilesDirectory`: where you store .tar.bz2 files
-        - `extractedFilesDirectory`: where to put unpacked files
-        - `saveFile` : a file with extension `.pt` to store the tensor
+        - `compressed_files_directory`: where you store .tar.bz2 files
+        - `extracted_files_directory`: where to put unpacked files
+        - `save_file` : a file with extension `.pt` to store the tensor
 
     2. execute from project root dir `python utils/preprocessAMASS`
 
@@ -19,7 +19,7 @@ Usage (executed from project root dir):
 
 
 import subprocess
-from preprocessDatasets import store_datasets_as_tensors
+from save_as_tensor import store_datasets_as_tensors
 
 def main() -> None:
 
@@ -34,7 +34,7 @@ def main() -> None:
 
         _ = subprocess.run(
             [
-                "./utils/preprocessAMASS/extractCompressedDatasets.sh",
+                "./utilities/preprocess_AMASS/extract_datasets.sh",
                 "-i", compressed_files_directory,
                 "-o", extracted_files_directory
             ],
@@ -44,7 +44,7 @@ def main() -> None:
         )
 
     except FileNotFoundError:
-        print("The script './utils/preprocessAMASS/extractCompressedDatasets.sh' is not found")
+        print("The script './utilities/preprocess_AMASS/extract_datasets.sh' is not found")
         return
 
     except subprocess.CalledProcessError as e:

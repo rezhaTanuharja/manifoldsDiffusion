@@ -8,7 +8,7 @@ Date created    : 2024.08.14
 
 Usage:
 
-    executed by utils/preprocessAMASS/__main__.py
+    executed by utilities/preprocess_AMASS/__main__.py
 
 """
 
