@@ -21,11 +21,11 @@ class corrected_negative(reversed_SDE):
     """
     This class reverse the processes described by differential_equations in the form of
 
-        dX = drif(X, t) dt + diffusion(X, t) dW
+        dX = drift(X, t) dt + diffusion(X, t) dW
 
     by reversing the drift and applying a correction:
 
-        dX = [-drif(X, t) + correction] dt + diffusion(X, t) dW
+        dX = [-drift(X, t) + correction] dt + diffusion(X, t) dW
 
     The correction is proportional to the square of diffusion
 

@@ -8,6 +8,7 @@ Modules
 -------
 base_class      : Defines the abstract class for differential_equations
 simple_class    : Implements various simple differential equations
+reversed_class  : Implements various reversal of stochastic differential equations
 """
 
 

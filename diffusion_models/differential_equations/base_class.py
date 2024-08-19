@@ -8,6 +8,9 @@ Classes
 -------
 stochastic_differential_equation
     Represents SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
+
+reversed_SDE
+    Represents the reversal of SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
 """
 
 
@@ -77,7 +80,7 @@ class stochastic_differential_equation(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
 
-class reversed_SDE(ABC):
+class reversed_SDE(stochastic_differential_equation):
     """
     An abstract class of a reversal of stochastic differential equations in the form of
 
@@ -99,6 +102,7 @@ class reversed_SDE(ABC):
 
 
     def __init__(self, sde: stochastic_differential_equation) -> None:
+        super().__init__()
         self.sde = sde
 
 
