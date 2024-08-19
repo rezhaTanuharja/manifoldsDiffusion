@@ -33,6 +33,7 @@ class standard_OU(stochastic_differential_equation):
     """
 
     def __init__(self, speed: float, volatility: float) -> None:
+        super().__init__()
         self.speed = speed
         self.volatility = volatility
 

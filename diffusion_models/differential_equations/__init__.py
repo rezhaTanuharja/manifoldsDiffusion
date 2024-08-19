@@ -11,11 +11,16 @@ simple_class    : Implements various simple differential equations
 """
 
 
-from .base_class import stochastic_differential_equation
+from .base_class import stochastic_differential_equation, reversed_SDE
 from .simple_class import standard_OU
+from .reversed_class import corrected_negative
 
 
 __all__ = [
     'stochastic_differential_equation',
-    'standard_OU'
+    'reversed_SDE',
+
+    'standard_OU',
+
+    'corrected_negative'
 ]
