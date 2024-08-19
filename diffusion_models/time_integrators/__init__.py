@@ -11,11 +11,12 @@ simple_class    : Implements various simple time integrators
 """
 
 
-from .base_class import explicit
-from .simple_class import Euler_Maruyama
+from .base_class import first_order
+from .simple_class import Euler_Maruyama, Heun
 
 
 __all__ = [
-    'explicit',
-    'Euler_Maruyama'
+    'first_order',
+    'Euler_Maruyama',
+    'Heun'
 ]

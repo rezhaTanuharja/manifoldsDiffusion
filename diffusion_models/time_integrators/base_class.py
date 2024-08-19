@@ -6,8 +6,8 @@ This module defines the abstract base classes for time_integrators
 
 Classes
 -------
-explicit
-    Represents an explicit time integration
+first_order
+    Time integration method that only requires values at a single timestamp
 """
 
 
@@ -17,15 +17,14 @@ from ..differential_equations import stochastic_differential_equation
 import torch
 
 
-class explicit(ABC):
+class first_order(ABC):
     """
-    An abstract class of explicit time integrations in the form of
-        X(t + dt) = X(t) + dX(X(t), t)
+    An abstract class of first-order time integrations.
 
     Methods
     -------
     step_forward(differential_equation, X, t, dt)
-        Returns X(t) + dX(X(t), t)
+        Returns X(t + dt)
     """
 
 
@@ -51,7 +50,7 @@ class explicit(ABC):
             dX = drift(X, t) dt + diffusion(X, t) dW
 
         X : torch.Tensor
-            The current value, i.e., X(t)
+            The value of X but not necessarily the present value
 
         t : float
             The current time

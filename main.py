@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import torch
 
 from diffusion_models.differential_equations import standard_OU
-from diffusion_models.time_integrators import Euler_Maruyama
+from diffusion_models.time_integrators import Euler_Maruyama, Heun
 
 
 mySDE = standard_OU(speed=0.5, volatility=0.005)
-myIntegrator = Euler_Maruyama()
+myIntegrator = Heun(Euler_Maruyama())
 
 
 N = 5000
