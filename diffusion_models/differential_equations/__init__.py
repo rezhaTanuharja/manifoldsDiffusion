@@ -6,7 +6,8 @@ This module provides functionalities to define differential equations.
 
 Modules
 -------
-base_class  : Defines the abstract class for differential_equations
+base_class      : Defines the abstract class for differential_equations
+simple_class    : Implements various simple differential equations
 """
 
 

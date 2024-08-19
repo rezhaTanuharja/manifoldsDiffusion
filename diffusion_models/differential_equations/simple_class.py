@@ -6,6 +6,8 @@ This module defines the simple classes for differential_equations.
 
 Classes
 -------
+standard_OU
+    An implementation of the standard Ornstein-Uhlenbeck process
 """
 
 import torch

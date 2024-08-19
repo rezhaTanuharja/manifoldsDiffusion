@@ -58,5 +58,10 @@ class explicit(ABC):
 
         dt: float
             The time increment or the temporal step
+
+        Returns
+        -------
+        torch.Tensor
+            the predicted value of X(t + dt)
         """
         raise NotImplementedError("Subclasses must implement this method")
