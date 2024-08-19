@@ -6,8 +6,11 @@ This module defines the abstract base classes for score_functions
 
 Classes
 -------
-explicit
-    Represents an explicit time integration
+direction_calculator
+    An abstract class that computes a direction using the current position
+
+relative_direction_calculator
+    An abstract class that computes a direction using the current position and a reference positions
 """
 
 
@@ -17,7 +20,7 @@ import torch
 
 class direction_calculator(ABC):
     """
-    A generalization of the Stein score function, which calculate the direction to maximize the increase in log-probability. This abstract class compute a direction that achieves certain criterias specified by the child classes.
+    An abstract class that computes a direction using the current position
 
     Methods
     -------
@@ -43,10 +46,53 @@ class direction_calculator(ABC):
         Parameters
         ----------
         X : torch.Tensor
-            The spatial location to evaluate
+            The current spatial location, i.e., X(t)
 
         t : float
-            The temporal location to evaluate
+            The current time
+
+        Returns
+        -------
+        torch.Tensor
+            The direction of update, dX
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+class relative_direction_calculator(direction_calculator):
+    """
+    An abstract class that computes a direction using the current position and a reference position
+
+    Methods
+    -------
+    get_direction(X, X_ref, t, t_ref)
+        Compute the direction to update X(t)
+    """
+
+
+    def __init__(self, X_ref, t_ref):
+        super().__init__()
+        self.X_ref = X_ref
+        self.t_ref = t_ref
+
+
+
+    @abstractmethod
+    def get_direction(
+        self,
+        X: torch.Tensor,
+        t: float,
+    ) -> torch.Tensor:
+        """
+        Compute the direction, dX, to update X(t)
+
+        Parameters
+        ----------
+        X : torch.Tensor
+            The current spatial location, i.e., X(t)
+
+        t : float
+            The current time
 
         Returns
         -------
