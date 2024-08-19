@@ -40,4 +40,4 @@ class direct_to_reference(relative_direction_calculator):
         torch.Tensor
             The direction of update, dX
         """
-        return (self.t_ref - t) * (self.X_ref - X)
+        return (self.X_ref - X) / (self.t_ref - t)

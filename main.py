@@ -14,9 +14,8 @@ X_series = torch.zeros(N)
 
 X_series[0] = 10.0
 
-forward_SDE = standard_OU(speed = 0.5, volatility = 0.05)
-# time_integrator = Heun(Euler_Maruyama())
-time_integrator = Euler_Maruyama()
+forward_SDE = standard_OU(speed = 0.5, volatility = 2.0)
+time_integrator = Heun(Euler_Maruyama())
 
 for i in range(N-1):
 
@@ -36,5 +35,5 @@ for i in range(N-1):
 
 
 plt.plot(t_series, X_series)
-plt.plot(t_series, Y_series)
+plt.plot(t_series, Y_series.flip(dims=[0]))
 plt.show()
