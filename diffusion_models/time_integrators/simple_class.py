@@ -29,7 +29,7 @@ class Euler_Maruyama(first_order):
     """
 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     def step_forward(
         self,
@@ -81,6 +81,7 @@ class Heun(first_order):
     """
 
     def __init__(self, predictor: first_order) -> None:
+        super().__init__()
         self.predictor = predictor
 
     def step_forward(
