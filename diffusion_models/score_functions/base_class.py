@@ -1,6 +1,6 @@
 """
-score_functions.base_class
-==========================
+diffusion_models.score_functions.base_class
+===========================================
 
 This module defines the abstract base classes for score_functions
 
@@ -70,7 +70,11 @@ class relative_direction_calculator(direction_calculator):
     """
 
 
-    def __init__(self, X_ref, t_ref):
+    def __init__(
+        self,
+        X_ref: torch.Tensor,
+        t_ref: torch.Tensor
+    ):
         super().__init__()
         self.X_ref = X_ref
         self.t_ref = t_ref
