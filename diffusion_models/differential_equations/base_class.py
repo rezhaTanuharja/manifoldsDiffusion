@@ -1,6 +1,6 @@
 """
-differential_equations.base_class
-=================================
+diffusion_models.differential_equations.base_class
+==================================================
 
 This module defines the abstract base classes for differential_equations.
 

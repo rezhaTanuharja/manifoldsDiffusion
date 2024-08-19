@@ -1,25 +1,25 @@
 """
-diffusion_models.time_integrators.base_class
-============================================
+diffusion_models.time_integrators.simple_class
+==============================================
 
-This module defines the abstract base classes for time_integrators
+This module defines the simple classes for time_integrators
 
 Classes
 -------
-explicit
-    Represents an explicit time integration
+Euler_Maruyama
+    An implementation of an explicit time integrator
 """
 
 
-from abc import ABC, abstractmethod
-from ..differential_equations import stochastic_differential_equation
-
 import torch
 
+from ..differential_equations import stochastic_differential_equation
+from .base_class import explicit
 
-class explicit(ABC):
+
+class Euler_Maruyama(explicit):
     """
-    An abstract class of explicit time integrations in the form of
+    An explicit time integrator in the form of
         X(t + dt) = X(t) + dX(X(t), t)
 
     Methods
@@ -28,15 +28,12 @@ class explicit(ABC):
         Returns X(t) + dX(X(t), t)
     """
 
-
-    def __init__(self) -> None:
+    def __init__(self):
         pass
 
-
-    @abstractmethod
     def step_forward(
         self,
-        differential_equation: stochastic_differential_equation,
+        sde: stochastic_differential_equation,
         X: torch.Tensor,
         t: float,
         dt: float
@@ -58,5 +55,11 @@ class explicit(ABC):
 
         dt: float
             The time increment or the temporal step
+
+        Returns
+        -------
+        torch.Tensor
+            the predicted value of X(t + dt)
         """
-        raise NotImplementedError("Subclasses must implement this method")
+
+        return X + dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt)) * sde.diffusion(X, t)
