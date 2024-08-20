@@ -65,7 +65,7 @@ class EulerMaruyama(FirstOrder):
             the predicted value of X(t + dt)
         """
 
-        return X + dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt)) * sde.diffusion(X, t)
+        return X + dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
 
 
 class Heun(FirstOrder):
@@ -129,5 +129,5 @@ class Heun(FirstOrder):
         return (
             X + 0.5 * dt * (
                 sde.drift(X, t) + sde.drift(X_pred, t + dt)
-            ) + torch.sqrt(torch.tensor(dt)) * sde.diffusion(X, t)
+            ) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
         )

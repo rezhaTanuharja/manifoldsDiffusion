@@ -83,7 +83,7 @@ class CorrectedNegative(ReversedSDE):
         X : torch.Tensor
             The current spatial location, i.e., X(t)
 
-        t : float
+        t: float
             The current time
 
         Returns

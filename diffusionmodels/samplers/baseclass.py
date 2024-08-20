@@ -67,7 +67,7 @@ class DataRecorder(ABC):
         N : int
             The number of data chunks to store in record
         """
-        self.record = torch.zeros(N, *(X.shape))
+        self.record = torch.zeros(N, *(X.shape), device = X.device)
         self.index = 0
 
 

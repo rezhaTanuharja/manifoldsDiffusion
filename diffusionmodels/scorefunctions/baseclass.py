@@ -65,7 +65,7 @@ class RelativeDirectionCalculator(DirectionCalculator):
 
     Methods
     -------
-    get_direction(X, X_ref, t, t_ref)
+    get_direction(X, X_ref, time, t_ref)
         Compute the direction to update X(t)
     """
 

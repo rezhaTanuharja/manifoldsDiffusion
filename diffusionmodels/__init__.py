@@ -17,9 +17,13 @@ timeintegrators         : Provides methods to perform time integration
 
 from . import differentialequations
 from . import timeintegrators
+from . import samplers
+from . import scorefunctions
 
 
 __all__ = [
     'differentialequations',
-    'timeintegrators'
+    'timeintegrators',
+    'samplers',
+    'scorefunctions'
 ]

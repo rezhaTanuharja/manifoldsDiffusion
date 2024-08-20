@@ -84,5 +84,5 @@ class StandardOU(StochasticDifferentialEquation):
         unused_variables(X, t)
 
         return self.volatility * torch.normal(
-            mean = torch.zeros(X.shape), std = 1.0
+            mean = torch.zeros(X.shape, device = X.device), std = 1.0
         )

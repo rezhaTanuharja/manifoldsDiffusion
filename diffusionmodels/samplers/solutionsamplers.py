@@ -45,7 +45,7 @@ class SimpleSampler(SolutionSampler):
         self,
         sde: StochasticDifferentialEquation,
         initial_condition: torch.Tensor,
-        num_sample: int,
+        num_samples: int,
         dt: float
     ) -> torch.Tensor:
         """
@@ -59,7 +59,7 @@ class SimpleSampler(SolutionSampler):
         initial_condition : torch.Tensor
             The initial condition for the sde
 
-        num_sample : int
+        num_samples : int
             The number of solutions to compute
 
         dt : float
@@ -73,9 +73,9 @@ class SimpleSampler(SolutionSampler):
 
         X = initial_condition
 
-        self.data_recorder.reset(X, num_sample)
+        self.data_recorder.reset(X, num_samples)
 
-        for i in range(num_sample):
+        for i in range(num_samples):
             X = self.time_integrator.step_forward(sde, X, i * dt, dt)
             self.data_recorder.store(X)
 
