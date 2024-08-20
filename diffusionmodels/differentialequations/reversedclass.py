@@ -19,13 +19,13 @@ from ..scorefunctions import DirectionCalculator
 
 class CorrectedNegative(ReversedSDE):
     """
-    This class reverse the processes described by differential_equations in the form of
+    This class reverses the processes described by differential_equations in the form of
 
         dX = drift(X, t) dt + diffusion(X, t) dW
 
-    by reversing the drift and applying a correction:
+    by inverting the drift direction and applying a correction:
 
-        dX = [-drift(X, t) + correction] dt + diffusion(X, t) dW
+        dX = [-drift(X, t) + correction(X, t)] dt + diffusion(X, t) dW
 
     The correction is proportional to the square of diffusion
 
