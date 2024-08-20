@@ -1,23 +1,23 @@
 """
-diffusion_models.differential_equations.simple_class
-====================================================
+diffusionmodels.differentialequations.simpleclass
+=================================================
 
 This module defines the simple classes for differential_equations.
 
 Classes
 -------
-standard_OU
+StandardOU
     An implementation of the standard Ornstein-Uhlenbeck process
 """
 
 import torch
 
 from ..utilities import unused_variables
-from .base_class import stochastic_differential_equation
+from .baseclass import StochasticDifferentialEquation
 
 
 
-class standard_OU(stochastic_differential_equation):
+class StandardOU(StochasticDifferentialEquation):
     """
     A class of stochastic differential equations with the following:
         - drift(X, t) = -speed * X

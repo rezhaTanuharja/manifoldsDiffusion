@@ -1,15 +1,15 @@
 """
-diffusion_models.score_functions.base_class
+diffusionmodels.scorefunctions.baseclass
 ===========================================
 
-This module defines the abstract base classes for score_functions
+This module defines the abstract base classes for scorefunctions
 
 Classes
 -------
-direction_calculator
+DirectionCalculator
     An abstract class that computes a direction using the current position
 
-relative_direction_calculator
+RelativeDirectionCalculator
     An abstract class that computes a direction using the current position and a reference positions
 """
 
@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 import torch
 
 
-class direction_calculator(ABC):
+class DirectionCalculator(ABC):
     """
     An abstract class that computes a direction using the current position
 
@@ -59,7 +59,7 @@ class direction_calculator(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
 
-class relative_direction_calculator(direction_calculator):
+class RelativeDirectionCalculator(DirectionCalculator):
     """
     An abstract class that computes a direction using the current position and a reference position
 

@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import torch
 
-from diffusion_models.differential_equations import standard_OU, corrected_negative
-from diffusion_models.time_integrators import Euler_Maruyama, Heun
-from diffusion_models.score_functions import direct_to_reference
+from diffusionmodels.differentialequations import StandardOU, CorrectedNegative
+from diffusionmodels.timeintegrators import EulerMaruyama, Heun
+from diffusionmodels.scorefunctions import DirectToReference
 
 
 N = 5000
@@ -14,8 +14,8 @@ X_series = torch.zeros(N)
 
 X_series[0] = 10.0
 
-forward_SDE = standard_OU(speed = 0.5, volatility = 2.0)
-time_integrator = Heun(Euler_Maruyama())
+forward_SDE = StandardOU(speed = 0.5, volatility = 2.0)
+time_integrator = Heun(EulerMaruyama())
 
 for i in range(N-1):
 
@@ -26,8 +26,8 @@ Y_series = torch.zeros(N)
 Y_series[0] = X_series[-1]
 Y_ref = X_series[0]
 
-drift_corrector = direct_to_reference(Y_ref, t_series[-1])
-reverse_SDE = corrected_negative(forward_SDE, drift_corrector)
+drift_corrector = DirectToReference(Y_ref, t_series[-1])
+reverse_SDE = CorrectedNegative(forward_SDE, drift_corrector)
 
 for i in range(N-1):
 

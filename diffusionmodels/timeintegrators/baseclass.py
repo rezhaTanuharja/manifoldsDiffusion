@@ -1,23 +1,23 @@
 """
-diffusion_models.time_integrators.base_class
-============================================
+diffusionmodels.timeintegrators.baseclass
+=========================================
 
-This module defines the abstract base classes for time_integrators
+This module defines the abstract base classes for timeintegrators
 
 Classes
 -------
-first_order
+FirstOrder
     Time integration method that only requires values at a single timestamp
 """
 
 
 from abc import ABC, abstractmethod
-from ..differential_equations import stochastic_differential_equation
+from ..differentialequations import StochasticDifferentialEquation
 
 import torch
 
 
-class first_order(ABC):
+class FirstOrder(ABC):
     """
     An abstract class of first-order time integrations.
 
@@ -35,7 +35,7 @@ class first_order(ABC):
     @abstractmethod
     def step_forward(
         self,
-        differential_equation: stochastic_differential_equation,
+        sde: StochasticDifferentialEquation,
         X: torch.Tensor,
         t: float,
         dt: float
@@ -45,7 +45,7 @@ class first_order(ABC):
 
         Parameters
         ----------
-        differential_equation: stochastic_differential_equation
+        sde: StochasticDifferentialEquation
             A differential equation in the form of
             dX = drift(X, t) dt + diffusion(X, t) dW
 

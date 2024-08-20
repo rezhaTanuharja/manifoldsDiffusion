@@ -1,15 +1,15 @@
 """
-diffusion_models.differential_equations.base_class
-==================================================
+diffusionmodels.differentialequations.baseclass
+===============================================
 
-This module defines the abstract base classes for differential_equations.
+This module defines the abstract base classes for differentialequations.
 
 Classes
 -------
-stochastic_differential_equation
+StochasticDifferentialEquation
     Represents SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
 
-reversed_SDE
+ReversedSDE
     Represents the reversal of SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
 """
 
@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 import torch
 
 
-class stochastic_differential_equation(ABC):
+class StochasticDifferentialEquation(ABC):
     """
     An abstract class of stochastic differential equations in the form of
 
@@ -80,7 +80,7 @@ class stochastic_differential_equation(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
 
-class reversed_SDE(stochastic_differential_equation):
+class ReversedSDE(StochasticDifferentialEquation):
     """
     An abstract class of a reversal of stochastic differential equations in the form of
 
@@ -88,8 +88,8 @@ class reversed_SDE(stochastic_differential_equation):
 
     Parameters
     ----------
-    sde : stochastic_differential_equation
-        The stochastic differential_equations to be reversed
+    sde : StochasticDifferentialEquation
+        The stochastic differential equations to be reversed
 
     Methods
     -------
@@ -101,7 +101,7 @@ class reversed_SDE(stochastic_differential_equation):
     """
 
 
-    def __init__(self, sde: stochastic_differential_equation) -> None:
+    def __init__(self, sde: StochasticDifferentialEquation) -> None:
         super().__init__()
         self.sde = sde
 

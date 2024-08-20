@@ -1,23 +1,26 @@
 """
-diffusion_models.time_integrators.simple_class
-==============================================
+diffusionmodels.timeintegrators.simpleclass
+===========================================
 
-This module defines the simple classes for time_integrators
+This module defines the simple classes for timeintegrators
 
 Classes
 -------
-Euler_Maruyama
+EulerMaruyama
     An implementation of an explicit time integrator
+
+Heun
+    An implementation of a predictor-corrector time integrator with a trapezoidal rule
 """
 
 
 import torch
 
-from ..differential_equations import stochastic_differential_equation
-from .base_class import first_order
+from ..differentialequations import StochasticDifferentialEquation
+from .baseclass import FirstOrder
 
 
-class Euler_Maruyama(first_order):
+class EulerMaruyama(FirstOrder):
     """
     An explicit time integrator in the form of
         X(t + dt) = X(t) + dX(X(t), t)
@@ -33,7 +36,7 @@ class Euler_Maruyama(first_order):
 
     def step_forward(
         self,
-        sde: stochastic_differential_equation,
+        sde: StochasticDifferentialEquation,
         X: torch.Tensor,
         t: float,
         dt: float
@@ -43,7 +46,7 @@ class Euler_Maruyama(first_order):
 
         Parameters
         ----------
-        differential_equation: stochastic_differential_equation
+        sde: StochasticDifferentialEquation
             A differential equation in the form of
             dX = drift(X, t) dt + diffusion(X, t) dW
 
@@ -65,7 +68,7 @@ class Euler_Maruyama(first_order):
         return X + dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt)) * sde.diffusion(X, t)
 
 
-class Heun(first_order):
+class Heun(FirstOrder):
     """
     A predictor-corrector time integrator using the trapezoidal rule.
 
@@ -80,13 +83,13 @@ class Heun(first_order):
         Returns X(t + dt)
     """
 
-    def __init__(self, predictor: first_order) -> None:
+    def __init__(self, predictor: FirstOrder) -> None:
         super().__init__()
         self.predictor = predictor
 
     def step_forward(
         self,
-        sde: stochastic_differential_equation,
+        sde: StochasticDifferentialEquation,
         X: torch.Tensor,
         t: float,
         dt: float
@@ -100,7 +103,7 @@ class Heun(first_order):
 
         Parameters
         ----------
-        differential_equation: stochastic_differential_equation
+        sde: StochasticDifferentialEquation
             A differential equation in the form of
             dX = drift(X, t) dt + diffusion(X, t) dW
 

@@ -1,6 +1,6 @@
 """
-diffusion_models.utilities.warning_suppresors
-=============================================
+diffusionmodels.utilities.warningsuppressors
+============================================
 
 This module provides functionalities to suppress various warnings in IDEs.
 """

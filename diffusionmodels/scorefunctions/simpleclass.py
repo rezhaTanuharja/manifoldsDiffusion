@@ -1,8 +1,8 @@
 """
-diffusion_models.score_functions.base_class
-===========================================
+diffusionmodels.scorefunctions.baseclass
+========================================
 
-This module implements simple classes of score_functions
+This module implements simple classes of scorefunctions
 
 Classes
 -------
@@ -10,10 +10,10 @@ Classes
 
 
 import torch
-from .base_class import relative_direction_calculator
+from .baseclass import RelativeDirectionCalculator
 
 
-class direct_to_reference(relative_direction_calculator):
+class DirectToReference(RelativeDirectionCalculator):
 
     def __init__(self, X_ref, t_ref):
         super().__init__(X_ref, t_ref)

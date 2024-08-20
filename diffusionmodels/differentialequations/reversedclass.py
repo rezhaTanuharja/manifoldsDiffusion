@@ -1,23 +1,23 @@
 """
-diffusion_models.differential_equations.reversed_class
-======================================================
+diffusionmodels.differentialequations.reversedclass
+===================================================
 
-This module implements classes of reversed differential_equations
+This module implements classes of reversed differentialequations
 
 Classes
 -------
-corrected_negative
+CorrectedNegative
     Represent reversal by multiplying the drift with -1 and applying correction
 """
 
 
 import torch
 
-from .base_class import stochastic_differential_equation, reversed_SDE
-from ..score_functions import direction_calculator
+from .baseclass import StochasticDifferentialEquation, ReversedSDE
+from ..scorefunctions import DirectionCalculator
 
 
-class corrected_negative(reversed_SDE):
+class CorrectedNegative(ReversedSDE):
     """
     This class reverse the processes described by differential_equations in the form of
 
@@ -31,18 +31,18 @@ class corrected_negative(reversed_SDE):
 
     Parameters
     ----------
-    sde : stochastic_differential_equation
+    sde : StochasticDifferentialEquation
         The stochastic differential_equations to be reversed
 
-    drift_corrector : direction_calculator
+    drift_corrector : DirectionCalculator
         A function that takes X as input and output the drift correction
     """
 
 
     def __init__(
         self,
-        sde: stochastic_differential_equation,
-        drift_corrector: direction_calculator
+        sde: StochasticDifferentialEquation,
+        drift_corrector: DirectionCalculator
     ):
         super().__init__(sde)
         self.drift_corrector = drift_corrector
