@@ -2,7 +2,7 @@
 diffusionmodels.timeintegrators
 ===============================
 
-This module provides functionalities to integrate SDEs over time.
+Provides functionalities to integrate SDEs with respect to time.
 
 Modules
 -------

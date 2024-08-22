@@ -2,7 +2,7 @@
 diffusionmodels.timeintegrators.baseclass
 =========================================
 
-This module defines the abstract base classes for timeintegrators
+Defines the abstract base classes for time integrators
 
 Classes
 -------
@@ -26,10 +26,6 @@ class FirstOrder(ABC):
     step_forward(differential_equation, X, t, dt)
         Returns X(t + dt)
     """
-
-
-    def __init__(self) -> None:
-        pass
 
 
     @abstractmethod

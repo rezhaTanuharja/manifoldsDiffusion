@@ -2,7 +2,7 @@
 diffusionmodels.samplers
 ========================
 
-This module provides functionalities to sample SDE solutions over time
+Provides functionalities to sample SDE solutions at discrete points.
 
 Modules
 -------

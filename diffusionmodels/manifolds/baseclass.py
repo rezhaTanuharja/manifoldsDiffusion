@@ -2,7 +2,12 @@
 diffusionmodels.manifolds.baseclass
 ===================================
 
-A module that defines abstract classes of manifolds
+Defines abstract classes of manifolds.
+
+Classes
+-------
+Manifold
+    A base class of all manifolds in this package
 """
 
 
@@ -12,7 +17,7 @@ from abc import ABC, abstractmethod
 
 class Manifold(ABC):
     """
-    An abstract class that provides manifold structures
+    The base class of all manifolds in this package.
 
     Methods
     -------
@@ -23,14 +28,11 @@ class Manifold(ABC):
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
 
-    def __init__(self):
-        pass
-
 
     @abstractmethod
     def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
         """
-        Increment a point X with a tangent vector dX
+        Increment a point X with a tangent vector dX.
 
         Parameters
         ----------

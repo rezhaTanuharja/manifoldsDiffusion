@@ -19,7 +19,7 @@ from ..scorefunctions import DirectionCalculator
 
 class CorrectedNegative(ReversedSDE):
     """
-    This class reverses the processes described by differential_equations in the form of
+    This class reverses the processes described by differential_equations
 
         dX = drift(X, t) dt + diffusion(X, t) dW
 
@@ -29,7 +29,7 @@ class CorrectedNegative(ReversedSDE):
 
     The correction is proportional to the square of diffusion
 
-    Parameters
+    Attributes
     ----------
     sde : StochasticDifferentialEquation
         The stochastic differential_equations to be reversed

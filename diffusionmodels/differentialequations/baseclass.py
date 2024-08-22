@@ -2,7 +2,7 @@
 diffusionmodels.differentialequations.baseclass
 ===============================================
 
-This module defines the abstract base classes for differentialequations.
+Defines the abstract base classes of stochastic differential equations.
 
 Classes
 -------
@@ -10,7 +10,7 @@ StochasticDifferentialEquation
     Represents SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
 
 ReversedSDE
-    Represents the reversal of SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
+    Represents the reversal of SDEs in the above form
 """
 
 
@@ -29,7 +29,7 @@ class StochasticDifferentialEquation(ABC):
     Attributes
     ----------
     manifold : Manifold
-        Provides the manifold structures where the SDE lives
+        Provides the manifold structures in which the SDE lives
 
     Methods
     -------
@@ -89,7 +89,7 @@ class StochasticDifferentialEquation(ABC):
 
 class ReversedSDE(StochasticDifferentialEquation):
     """
-    An abstract class of a reversal of stochastic differential equations in the form of
+    An abstract class of a reversal of stochastic differential equations
 
         dX = drift(X, t) dt + diffusion(X, t) dW
 

@@ -6,8 +6,8 @@ A module that implement matrix groups
 
 Classes
 -------
-SO3
-    The 3D rotational matrix group
+SpecialOrthogonal3
+    The 3-dimension rotation matrix group
 """
 
 
@@ -16,14 +16,14 @@ import torch
 from .baseclass import Manifold
 
 
-class SO3(Manifold):
+class SpecialOrthogonal3(Manifold):
     """
-    The 3D rotational group
+    The 3-dimension rotation matrix group.
 
     Attributes
     ----------
-    E : torch.Tensor
-        A basis of the tangent space at the identity element
+    bases : torch.Tensor
+        A bases of the tangent space at the identity element
 
     Methods
     -------
@@ -34,8 +34,11 @@ class SO3(Manifold):
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
 
-    def __init__(self):
-        self.E = torch.Tensor([
+    def __init__(self) -> None:
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.bases = torch.Tensor([
             [
                 [ 0,  0,  0],
                 [ 0,  0, -1],
@@ -51,7 +54,7 @@ class SO3(Manifold):
                 [ 1,  0,  0],
                 [ 0,  0,  0]
             ]
-        ])
+        ], device = device)
 
 
     def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
@@ -64,7 +67,8 @@ class SO3(Manifold):
             A point in the manifold
 
         dX : torch.Tensor
-            A tangent vector in a tangent space on the manifold
+            A tangent vector in a tangent space AT THE IDENTITY ELEMENT.
+            The tangent vector is in the axis-angle representation.
 
         Returns
         -------
@@ -73,10 +77,10 @@ class SO3(Manifold):
         """
 
         # -- Compute skew symmetric matrix from axis angle representation
-        A = torch.einsum('...ij, jkl -> ...ikl', dX, self.E)
+        skew_matrix = torch.einsum('...ij, jkl -> ...ikl', dX, self.bases)
 
-        # -- Parallel transport the curve
-        return torch.matmul(X, torch.linalg.matrix_exp(A))
+        # -- Parallel transport the curve and increment X
+        return torch.matmul(X, torch.linalg.matrix_exp(skew_matrix))
 
 
     def log(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
@@ -94,26 +98,27 @@ class SO3(Manifold):
         Returns
         -------
         torch.Tensor
-            A tangent vector on the manifold in the form of axis angle representation
+            A tangent vector in the tangent space at the identity element.
+            The tangent vector is in the axis-angle representation.
         """
 
-        # -- Compute transpose(X)Y
-        R =  torch.einsum('...ji, ...jk -> ...ik', X, Y)
+        # -- Compute trans(X)Y
+        relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', X, Y)
 
         # -- Compute geodesic distance
-        theta = torch.acos(0.5 * (
-                torch.einsum('...ii -> ...', R) - 1.0
+        angle = torch.acos(0.5 * (
+                torch.einsum('...ii -> ...', relative_rotation) - 1.0
             )
         )
 
         # -- Compute axis of rotation
-        v = torch.stack([
-            R[..., 2, 1] - R[..., 1, 2],
-            R[..., 0, 2] - R[..., 2, 0],
-            R[..., 1, 0] - R[..., 0, 1]
+        axis = torch.stack([
+            relative_rotation[..., 2, 1] - relative_rotation[..., 1, 2],
+            relative_rotation[..., 0, 2] - relative_rotation[..., 2, 0],
+            relative_rotation[..., 1, 0] - relative_rotation[..., 0, 1]
         ], dim = -1)
 
-        v = v / (torch.norm(v, dim = -1, keepdim = True) + 1e-6)
+        axis = axis / (torch.norm(axis, dim = -1, keepdim = True) + 1e-6)
 
-        # -- Return axis angle representation
-        return torch.einsum('..., ...i -> ...i', theta, v)
+        # -- Return the axis-angle representation
+        return torch.einsum('..., ...i -> ...i', angle, axis)

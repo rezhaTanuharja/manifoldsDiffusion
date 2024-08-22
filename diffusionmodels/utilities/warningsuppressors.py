@@ -2,7 +2,12 @@
 diffusionmodels.utilities.warningsuppressors
 ============================================
 
-This module provides functionalities to suppress various warnings in IDEs.
+Provides functionalities to suppress various warnings in IDEs.
+
+Functions
+---------
+unused_variables
+    Suppress unused variables by explicit acknowledgements
 """
 
 

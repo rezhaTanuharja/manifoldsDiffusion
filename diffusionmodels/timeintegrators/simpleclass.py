@@ -2,7 +2,7 @@
 diffusionmodels.timeintegrators.simpleclass
 ===========================================
 
-This module defines the simple classes for timeintegrators
+Defines the simple classes for time integrators
 
 Classes
 -------
@@ -30,10 +30,6 @@ class EulerMaruyama(FirstOrder):
     step_forward(differential_equation, X, t, dt)
         Returns X(t) + dX(X(t), t)
     """
-
-
-    def __init__(self) -> None:
-        super().__init__()
 
 
     def step_forward(
@@ -67,14 +63,17 @@ class EulerMaruyama(FirstOrder):
             the predicted value of X(t + dt)
         """
 
-        return sde.manifold.exp(X, dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t))
+        return sde.manifold.exp(
+            X, 
+            dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
+        )
 
 
 class Heun(FirstOrder):
     """
     A predictor-corrector time integrator using the trapezoidal rule.
 
-    Parameters
+    Attributes
     ----------
     predictor : FirstOrder
         A first order time integrator
@@ -87,7 +86,6 @@ class Heun(FirstOrder):
 
 
     def __init__(self, predictor: FirstOrder) -> None:
-        super().__init__()
         self.predictor = predictor
 
 

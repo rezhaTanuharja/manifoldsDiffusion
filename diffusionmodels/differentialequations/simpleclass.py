@@ -2,7 +2,7 @@
 diffusionmodels.differentialequations.simpleclass
 =================================================
 
-This module defines the simple classes for differential_equations.
+Defines various simple stochastic differential equations.
 
 Classes
 -------

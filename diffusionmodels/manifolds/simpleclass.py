@@ -1,13 +1,13 @@
 """
-manifolds.structures.simpleclass
-================================
+diffusionmodels.manifolds.simpleclass
+=====================================
 
-A module that implements various simple manifolds
+Implements various simple manifolds.
 
 Classes
 -------
 Euclidean
-    An arbitrary dimension manifold with flat geometry
+    An arbitrary-dimension manifold with flat geometry
 """
 
 
@@ -18,7 +18,7 @@ from .baseclass import Manifold
 
 class Euclidean(Manifold):
     """
-    A manifold with flat geometry
+    A class of manifold with flat geometry.
 
     Methods
     -------
@@ -28,9 +28,6 @@ class Euclidean(Manifold):
     log(X, Y)
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
-
-    def __init__(self):
-        pass
 
 
     def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
@@ -51,6 +48,7 @@ class Euclidean(Manifold):
             In Euclidean manifold, simply X + dX
         """
         return X + dX
+
 
     def log(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
         """

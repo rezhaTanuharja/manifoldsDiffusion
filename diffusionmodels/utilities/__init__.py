@@ -2,7 +2,7 @@
 diffusionmodels.utilities
 =========================
 
-This module provides miscellacneous functionalities for diffusionmodels
+Provides miscellaneous functionalities for diffusionmodels
 """
 
 

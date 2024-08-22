@@ -1,18 +1,24 @@
 """
-manifolds.structures
-====================
+diffusionmodels.manifolds
+=========================
 
-A module that provides functionalities to define manifold structures.
+Provides functionalities to define manifold structures.
+
+Modules
+-------
+baseclass       : Defines abstract classes of manifolds
+simpleclass     : Implements various common manifolds
+matrixclass     : Implements various matrix groups
 """
 
 
 from .baseclass import Manifold
 from .simpleclass import Euclidean
-from .matrixclass import SO3
+from .matrixclass import SpecialOrthogonal3
 
 
 __all__ = [
     'Manifold',
     'Euclidean',
-    'SO3'
+    'SpecialOrthogonal3'
 ]

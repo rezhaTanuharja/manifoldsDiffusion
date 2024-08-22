@@ -2,13 +2,13 @@
 diffusionmodels.differentialequations
 =====================================
 
-This module provides functionalities to define differential equations.
+This module provides functionalities to define stochastic differential equations.
 
 Modules
 -------
-baseclass      : Defines the abstract class for the differentialequations module
-simpleclass    : Implements various simple differential equations
-reversedclass  : Implements various reversal of stochastic differential equations
+baseclass      : Defines the abstract class of SDEs
+simpleclass    : Implements various simple SDEs
+reversedclass  : Implements various reversal of SDEs
 """
 
 
