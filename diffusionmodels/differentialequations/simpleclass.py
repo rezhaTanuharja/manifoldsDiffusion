@@ -10,11 +10,13 @@ StandardOU
     An implementation of the standard Ornstein-Uhlenbeck process
 """
 
+
 import torch
 
-from ..utilities import unused_variables
 from .baseclass import StochasticDifferentialEquation
 
+from ..utilities import unused_variables
+from ..manifolds import Manifold
 
 
 class StandardOU(StochasticDifferentialEquation):
@@ -23,8 +25,11 @@ class StandardOU(StochasticDifferentialEquation):
         - drift(X, t) = -speed * X
         - diffusion(X, t) = volatility * N(0, I)
 
-    Parameters
+    Attributes
     ----------
+    manifold: Manifold
+        Provides the manifold structures where the SDE lives
+
     speed : float
         Determines how fast X decays to zero
 
@@ -32,8 +37,8 @@ class StandardOU(StochasticDifferentialEquation):
         Determines how much noise is added to the process
     """
 
-    def __init__(self, speed: float, volatility: float) -> None:
-        super().__init__()
+    def __init__(self, manifold: Manifold, speed: float, volatility: float) -> None:
+        super().__init__(manifold)
         self.speed = speed
         self.volatility = volatility
 

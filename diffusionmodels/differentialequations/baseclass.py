@@ -17,12 +17,19 @@ ReversedSDE
 from abc import ABC, abstractmethod
 import torch
 
+from ..manifolds import Manifold
+
 
 class StochasticDifferentialEquation(ABC):
     """
     An abstract class of stochastic differential equations in the form of
 
         dX = drift(X, t) dt + diffusion(X, t) dW
+
+    Attributes
+    ----------
+    manifold : Manifold
+        Provides the manifold structures where the SDE lives
 
     Methods
     -------
@@ -34,8 +41,8 @@ class StochasticDifferentialEquation(ABC):
     """
 
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, manifold: Manifold) -> None:
+        self.manifold = manifold
 
 
     @abstractmethod
@@ -86,8 +93,11 @@ class ReversedSDE(StochasticDifferentialEquation):
 
         dX = drift(X, t) dt + diffusion(X, t) dW
 
-    Parameters
+    Attributes
     ----------
+    manifold : Manifold
+        Inherited from sde
+
     sde : StochasticDifferentialEquation
         The stochastic differential equations to be reversed
 
@@ -102,7 +112,7 @@ class ReversedSDE(StochasticDifferentialEquation):
 
 
     def __init__(self, sde: StochasticDifferentialEquation) -> None:
-        super().__init__()
+        super().__init__(sde.manifold)
         self.sde = sde
 
 

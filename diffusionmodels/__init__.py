@@ -19,11 +19,13 @@ from . import differentialequations
 from . import timeintegrators
 from . import samplers
 from . import scorefunctions
+from . import manifolds
 
 
 __all__ = [
     'differentialequations',
     'timeintegrators',
     'samplers',
-    'scorefunctions'
+    'scorefunctions',
+    'manifolds'
 ]

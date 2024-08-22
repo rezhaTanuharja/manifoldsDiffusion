@@ -6,6 +6,8 @@ from diffusionmodels.timeintegrators import EulerMaruyama, Heun
 from diffusionmodels.scorefunctions import DirectToReference
 from diffusionmodels.samplers import SimpleRecorder, SimpleSampler
 
+from diffusionmodels.manifolds import Euclidean
+
 
 # -- Use NVIDIA GPU whenever available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -13,12 +15,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # -- Create a sample data
 num_subjects = 1
-dimension = 8
+dimension = 50
 
 X = 10.0 * torch.ones(num_subjects, dimension, device = device)
+X[0, 25:50] += 15.0
 
+manifolds = Euclidean()
 # -- Define a stochastic differential equation
-forward_SDE = StandardOU(speed = 0.0, volatility = 2.0)
+forward_SDE = StandardOU(manifold = manifolds, speed = 0.0, volatility = 2.0)
 
 
 # -- Define parameters for sampling
@@ -28,11 +32,14 @@ time_increment = 0.001
 time_stamps = time_increment * torch.arange(num_samples, device = device)
 
 # -- Create a sampler
-time_integrator = Heun(EulerMaruyama())
+
+incrementor = manifolds.exp
+time_integrator = EulerMaruyama()
 data_recorder = SimpleRecorder()
 
 solution_sampler = SimpleSampler(
     time_integrator = time_integrator,
+    incrementor = incrementor,
     data_recorder = data_recorder
 )
 
@@ -44,7 +51,7 @@ noisy_data = solution_sampler.get_samples(
     dt = time_increment
 )
 
-# -- Prepare denoising steps
+# # -- Prepare denoising steps
 Y = noisy_data[-1]
 drift_corrector = DirectToReference(noisy_data[0], time_stamps[-1])
 reverse_SDE = CorrectedNegative(forward_SDE, drift_corrector)
@@ -58,6 +65,6 @@ denoised_data = solution_sampler.get_samples(
 )
 
 # -- Postprocess and plot
-plt.plot(time_stamps.cpu(), noisy_data.cpu().view(num_samples, dimension), color = 'red', alpha = 0.2)
-plt.plot((time_stamps[-1] + time_stamps).cpu(), denoised_data.cpu().view(num_samples, dimension), color = 'green', alpha = 0.2)
+plt.plot(time_stamps.cpu(), noisy_data.cpu().view(num_samples, dimension), color = 'red', alpha = 0.1)
+plt.plot((time_stamps[-1] + time_stamps[:-1]).cpu(), denoised_data[:-1].cpu().view(num_samples-1, dimension), color = 'green', alpha = 0.1)
 plt.show()

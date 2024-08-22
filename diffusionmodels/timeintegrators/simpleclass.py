@@ -16,7 +16,7 @@ Heun
 
 import torch
 
-from ..differentialequations import StochasticDifferentialEquation
+from ..differentialequations import Incrementor, StochasticDifferentialEquation
 from .baseclass import FirstOrder
 
 
@@ -31,8 +31,10 @@ class EulerMaruyama(FirstOrder):
         Returns X(t) + dX(X(t), t)
     """
 
+
     def __init__(self) -> None:
         super().__init__()
+
 
     def step_forward(
         self,
@@ -65,7 +67,7 @@ class EulerMaruyama(FirstOrder):
             the predicted value of X(t + dt)
         """
 
-        return X + dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
+        return sde.manifold.exp(X, dt * sde.drift(X, t) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t))
 
 
 class Heun(FirstOrder):
@@ -74,18 +76,20 @@ class Heun(FirstOrder):
 
     Parameters
     ----------
-    predictor : first_order
+    predictor : FirstOrder
         A first order time integrator
 
     Methods
     -------
-    step_forward(differential_equation, X, t, dt)
+    step_forward(sde, X, t, dt)
         Returns X(t + dt)
     """
+
 
     def __init__(self, predictor: FirstOrder) -> None:
         super().__init__()
         self.predictor = predictor
+
 
     def step_forward(
         self,
@@ -126,8 +130,10 @@ class Heun(FirstOrder):
         X_pred = self.predictor.step_forward(sde, X, t, dt)
 
         # -- Use trapezoidal rule to correct the prediction
-        return (
-            X + 0.5 * dt * (
-                sde.drift(X, t) + sde.drift(X_pred, t + dt)
-            ) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
+        return sde.manifold.exp(
+            X, (
+                0.5 * dt * (
+                    sde.drift(X, t) + sde.drift(X_pred, t + dt)
+                ) + torch.sqrt(torch.tensor(dt, device = X.device)) * sde.diffusion(X, t)
+            )
         )
