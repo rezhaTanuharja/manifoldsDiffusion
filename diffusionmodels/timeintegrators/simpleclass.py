@@ -16,7 +16,7 @@ Heun
 
 import torch
 
-from ..differentialequations import Incrementor, StochasticDifferentialEquation
+from ..differentialequations import StochasticDifferentialEquation
 from .baseclass import FirstOrder
 
 

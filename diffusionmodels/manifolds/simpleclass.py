@@ -2,7 +2,12 @@
 manifolds.structures.simpleclass
 ================================
 
-A module that defines abstract classes of manifolds
+A module that implements various simple manifolds
+
+Classes
+-------
+Euclidean
+    An arbitrary dimension manifold with flat geometry
 """
 
 

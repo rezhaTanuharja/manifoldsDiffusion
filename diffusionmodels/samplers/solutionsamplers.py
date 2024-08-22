@@ -14,7 +14,7 @@ SimpleSampler
 import torch
 
 from ..timeintegrators import FirstOrder
-from ..differentialequations import Incrementor, StochasticDifferentialEquation
+from ..differentialequations import StochasticDifferentialEquation
 
 from .baseclass import SolutionSampler, DataRecorder
 
@@ -35,11 +35,9 @@ class SimpleSampler(SolutionSampler):
     def __init__(
         self,
         time_integrator: FirstOrder,
-        incrementor: Incrementor,
         data_recorder: DataRecorder
     ) -> None:
         self.time_integrator = time_integrator
-        self.incrementor = incrementor
         self.data_recorder = data_recorder
 
 

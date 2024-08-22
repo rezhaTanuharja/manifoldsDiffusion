@@ -13,7 +13,7 @@ reversedclass  : Implements various reversal of stochastic differential equation
 
 
 from .baseclass import StochasticDifferentialEquation, ReversedSDE
-from .simpleclass import EuclideanIncrementor, StandardOU
+from .simpleclass import StandardOU
 from .reversedclass import CorrectedNegative
 
 
@@ -21,7 +21,6 @@ __all__ = [
     'StochasticDifferentialEquation',
     'ReversedSDE',
 
-    'EuclideanIncrementor',
     'StandardOU',
 
     'CorrectedNegative'
