@@ -91,3 +91,21 @@ class StandardOU(StochasticDifferentialEquation):
         return self.volatility * torch.normal(
             mean = torch.zeros(X.shape, device = X.device), std = 1.0
         )
+
+
+class ExplodingRotationVariance(StochasticDifferentialEquation):
+
+    def __init__(self, manifold: Manifold) -> None:
+        super().__init__(manifold)
+
+
+    def drift(self, X, t):
+
+        unused_variables(X, t)
+
+        return 0.0
+
+    def diffusion(self, X, t):
+        num_samples, num_dimension, num_row, num_col = X.shape
+        unused_variables(t, num_row, num_col)
+        return torch.randn(num_samples, num_dimension, 3, device = "cuda")

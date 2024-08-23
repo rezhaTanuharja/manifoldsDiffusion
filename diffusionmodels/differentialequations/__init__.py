@@ -13,7 +13,7 @@ reversedclass  : Implements various reversal of SDEs
 
 
 from .baseclass import StochasticDifferentialEquation, ReversedSDE
-from .simpleclass import StandardOU
+from .simpleclass import StandardOU, ExplodingRotationVariance
 from .reversedclass import CorrectedNegative
 
 
@@ -22,6 +22,7 @@ __all__ = [
     'ReversedSDE',
 
     'StandardOU',
+    'ExplodingRotationVariance',
 
     'CorrectedNegative'
 ]

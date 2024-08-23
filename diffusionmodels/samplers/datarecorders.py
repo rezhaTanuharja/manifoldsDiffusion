@@ -11,6 +11,8 @@ SimpleRecorder
 """
 
 
+import torch
+
 from .baseclass import DataRecorder
 
 
@@ -39,7 +41,8 @@ class SimpleRecorder(DataRecorder):
     """
 
     def __init__(self):
-        super().__init__()
+        self.record = None
+        self.index = None
 
 
     def reset(self, X, N):
@@ -54,7 +57,8 @@ class SimpleRecorder(DataRecorder):
         N : int
             The number of data chunks to store in record
         """
-        super().reset(X, N)
+        self.record = torch.zeros(N, *(X.shape), device = X.device)
+        self.index = 0
 
 
     def store(self, result):
@@ -78,4 +82,4 @@ class SimpleRecorder(DataRecorder):
         torch.Tensor
             All data inside record
         """
-        return super().get_record()
+        return self.record

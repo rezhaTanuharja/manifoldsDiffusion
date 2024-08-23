@@ -23,77 +23,52 @@ from ..differentialequations import StochasticDifferentialEquation
 
 class DataRecorder(ABC):
     """
-    This class defines how and which data is stored
-
-    Attributes
-    ----------
-    record : torch.Tensor
-        A tensor to store data
-
-    index : int
-        The index of that last saved data
+    An interface to record data
 
     Methods
     -------
-    reset(X, N)
-        Set record to an empty tensor with size N x *(X.shape), set index to 0
+    reset(args, kwargs)
+        Reset record to prepare for a new data recording
 
-    store(result)
-        Define what to do with result, e.g., store in record or do nothing
+    store(data_chunk, args, kwargs)
+        Define what to do with a data chunk, e.g., store in record or do nothing
 
-    get_record()
-        Returns all data in record
+    get_record(args, kwargs)
+        Access previously recorded data
     """
 
 
-    def __init__(self) -> None:
-        self.record = None
-        self.index = None
-
-
-    def reset(
-        self,
-        X: torch.Tensor,
-        N: int
-    ) -> None:
-        """
-        Set record to an empty tensor that can store N times of X, set index to 0
-
-        Parameters
-        ----------
-        X : torch.Tensor
-            A tensor, representing the structure of each data chunk to store in record
-        
-        N : int
-            The number of data chunks to store in record
-        """
-        self.record = torch.zeros(N, *(X.shape), device = X.device)
-        self.index = 0
+    @abstractmethod
+    def __init__(self, *args, **kwargs) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def store(self, result: torch.Tensor) -> None:
+    def reset(self, *args, **kwargs) -> None:
         """
-        Defines what to do with result, which is a data chunk
-
-        Parameters
-        ----------
-        result : torch.Tensor
-            A tensor that can be stored as one data chunk in record
+        Reset instance to prepare for a new data recording
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
-    def get_record(self) -> torch.Tensor:
+    @abstractmethod
+    def store(self, data_chunk, *args, **kwargs) -> None:
         """
-        A method to access data in record
+        Define what to do with a data chunk, e.g., store in record or do nothing
 
-        Returns
-        -------
-        torch.Tensor
-            All data inside record
+        Parameters
+        ----------
+        data_chunk : One piece of data chunk
         """
-        return self.record
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def get_record(self, *args, **kwargs) -> torch.Tensor:
+        """
+        A method to access previously recorded data
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
 class SolutionSampler(ABC):
