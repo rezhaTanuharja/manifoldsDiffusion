@@ -17,6 +17,8 @@ RelativeDirectionCalculator
 from abc import ABC, abstractmethod
 import torch
 
+from ..manifolds import Manifold
+
 
 class DirectionCalculator(ABC):
     """
@@ -29,8 +31,8 @@ class DirectionCalculator(ABC):
     """
 
 
-    def __init__(self):
-        pass
+    def __init__(self, manifold: Manifold) -> None:
+        self.manifold = manifold
 
 
 
@@ -72,10 +74,11 @@ class RelativeDirectionCalculator(DirectionCalculator):
 
     def __init__(
         self,
+        manifold: Manifold,
         X_ref: torch.Tensor,
         t_ref: torch.Tensor
     ):
-        super().__init__()
+        super().__init__(manifold)
         self.X_ref = X_ref
         self.t_ref = t_ref
 

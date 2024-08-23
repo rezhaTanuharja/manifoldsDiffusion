@@ -12,11 +12,13 @@ Classes
 import torch
 from .baseclass import RelativeDirectionCalculator
 
+from ..manifolds import Manifold
+
 
 class DirectToReference(RelativeDirectionCalculator):
 
-    def __init__(self, X_ref, t_ref):
-        super().__init__(X_ref, t_ref)
+    def __init__(self, manifold: Manifold, X_ref: torch.Tensor, t_ref: torch.Tensor):
+        super().__init__(manifold, X_ref, t_ref)
 
 
     def get_direction(
@@ -40,4 +42,5 @@ class DirectToReference(RelativeDirectionCalculator):
         torch.Tensor
             The direction of update, dX
         """
-        return (self.X_ref - X) / (self.t_ref - t)
+        return 1.0 / (self.t_ref - t) * self.manifold.log(X, self.X_ref)
+        # (self.X_ref - X) 1.0 / (self.t_ref - t)
