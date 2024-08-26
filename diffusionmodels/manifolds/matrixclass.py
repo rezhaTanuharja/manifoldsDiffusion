@@ -106,8 +106,9 @@ class SpecialOrthogonal3(Manifold):
         relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', X, Y)
 
         # -- Compute geodesic distance
-        angle = torch.acos(0.5 * (
-                torch.einsum('...ii -> ...', relative_rotation) - 1.0
+        angle = torch.acos(
+            torch.clip(
+                0.5 * (torch.einsum('...ii -> ...', relative_rotation) - 1.0), min = -1.0, max = 1.0
             )
         )
 
@@ -119,6 +120,8 @@ class SpecialOrthogonal3(Manifold):
         ], dim = -1)
 
         axis = axis / (torch.norm(axis, dim = -1, keepdim = True) + 1e-6)
+        if axis.isnan().any():
+            print('yay')
 
         # -- Return the axis-angle representation
         return torch.einsum('..., ...i -> ...i', angle, axis)
