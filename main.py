@@ -15,8 +15,8 @@ from diffusionmodels.scorefunctions import DirectToReference
 file_name = './extractedData/ACCAD/Male1General_c3d/General A2 - Sway_poses.npz'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-num_samples = 500
-num_time_samples = 100
+num_samples = 50
+num_time_samples = 10
 
 
 data = np.load(file_name)['poses']
@@ -43,7 +43,7 @@ noisy_rotation = sampler.get_samples(
 
 directions = torch.zeros(noisy_rotation.shape[:-1], device = device)
 
-for i in range(10):
+for i in range(num_time_samples):
 
     directions[i] = 1.0 / ((num_time_samples - i) * 0.003) * manifold.log(noisy_rotation[i], rotation)
 
@@ -56,6 +56,7 @@ X = noisy_rotation.view(num_samples * num_time_samples, 468)
 X_train = torch.zeros(num_samples * num_time_samples, 469, device = device)
 X_train[:, :-1] = X.view(num_samples * num_time_samples, 468)
 X_train[:, -1] = 1.0 / (0.003 * torch.arange(1, num_samples + 1, device = device).repeat_interleave(num_time_samples))
+# X_train[:, -1] = 0.003 * torch.arange(1, num_samples + 1, device = device).repeat_interleave(num_time_samples)
 # X_train = X.view(1000, 156)
 Y_train = directions.view(num_samples * num_time_samples, 156)
 # print(Y_train[0])
@@ -78,7 +79,7 @@ class MLP(nn.Module):
         # self.fc2 = nn.Linear(hidden_size, hidden_size)
         # self.fc3 = nn.Linear(hidden_size, hidden_size)
         # self.fc4 = nn.Linear(hidden_size, hidden_size)
-        self.fc5 = nn.Linear(hidden_size, hidden_size)
+        # self.fc5 = nn.Linear(hidden_size, hidden_size)
         self.fc6 = nn.Linear(hidden_size, output_size)
         self.leaky_relu = nn.LeakyReLU(negative_slope = 0.01)
 
@@ -87,7 +88,7 @@ class MLP(nn.Module):
         # x = self.leaky_relu(self.fc2(x))
         # x = self.leaky_relu(self.fc3(x))
         # x = self.leaky_relu(self.fc4(x))
-        x = self.leaky_relu(self.fc5(x))
+        # x = self.leaky_relu(self.fc5(x))
         x = self.fc6(x)
         return x
 

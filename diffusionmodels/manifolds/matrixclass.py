@@ -120,8 +120,6 @@ class SpecialOrthogonal3(Manifold):
         ], dim = -1)
 
         axis = axis / (torch.norm(axis, dim = -1, keepdim = True) + 1e-6)
-        if axis.isnan().any():
-            print('yay')
 
         # -- Return the axis-angle representation
         return torch.einsum('..., ...i -> ...i', angle, axis)
