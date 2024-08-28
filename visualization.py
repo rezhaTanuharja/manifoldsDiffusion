@@ -7,7 +7,8 @@ from human_body_prior.tools.omni_tools import copy2cpu as c2c
 comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # amass_npz_fname = './downloads/dmpl_sample.npz'
-amass_npz_fname = './downloads/postprocessed.npz'
+# amass_npz_fname = './downloads/processed_A2.npz'
+amass_npz_fname = './downloads/postprocessed_A2.npz'
 # amass_npz_fname = "./extractedData/ACCAD/Female1Walking_c3d/B1 - stand to walk_poses.npz"
 bdata = np.load(amass_npz_fname)
 
@@ -69,5 +70,5 @@ def vis_body_pose_hand(fId = 0, i = 0):
     body_image = mv.render(render_wireframe=False)
     show_image(body_image, i)
 
-for i in range(100):
+for i in range(1):
     vis_body_pose_hand(fId=i, i = i)

@@ -21,7 +21,7 @@ dim = 3
 num_time_samples = 128
 time_increment = 0.002
 
-batch_size = 32
+batch_size = 64
 num_epochs = 50
 num_super_epochs = 150
 
@@ -60,19 +60,23 @@ class MLP(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size)
+        self.fct = nn.Linear(1, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
         # self.fc3 = nn.Linear(hidden_size, hidden_size)
         self.fc4 = nn.Linear(hidden_size, output_size)
         self.leaky_relu = nn.LeakyReLU(negative_slope = 0.01)
 
-    def forward(self, x):
-        x = self.leaky_relu(self.fc1(x))
+        self.fct.bias.data.fill_(0)
+        self.fct.bias.requires_grad = False
+
+    def forward(self, x, t):
+        x = self.leaky_relu(self.fc1(x) + self.fct(t))
         x = self.leaky_relu(self.fc2(x))
         # x = self.leaky_relu(self.fc3(x))
         x = self.fc4(x)
         return x
 
-input_size = rotations.numel() // num_samples + 1
+input_size = rotations.numel() // num_samples
 output_size = axis_angle_data.numel() // num_samples
 
 model = MLP(
@@ -81,7 +85,7 @@ model = MLP(
     output_size = output_size
 )
 
-# model.load_state_dict(torch.load('model.pth'))
+model.load_state_dict(torch.load('model_norm.pth'))
 
 model.to(device)
 
@@ -122,9 +126,9 @@ for j in range(num_super_epochs):
         num_time_samples * num_samples, num_joints * dim * dim
     )
 
-    noised_rotations = torch.cat((noised_rotations, 1.0 / inverse_time_stamps), dim = -1).contiguous()
+    # noised_rotations = torch.cat((noised_rotations, 1.0 / inverse_time_stamps), dim = -1).contiguous()
 
-    train_dataset = TensorDataset(noised_rotations, directions)
+    train_dataset = TensorDataset(noised_rotations, inverse_time_stamps, directions)
     train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle = True)
 #
 #
@@ -133,11 +137,11 @@ for j in range(num_super_epochs):
         model.train()
         running_loss = 0.0
 
-        for i, (inputs, labels) in enumerate(train_loader):
+        for i, (inputs, times, labels) in enumerate(train_loader):
 
             optimizer.zero_grad()
 
-            outputs = model(inputs)
+            outputs = model(inputs, times)
 
             loss = criterion(outputs, labels)
             loss.backward()
