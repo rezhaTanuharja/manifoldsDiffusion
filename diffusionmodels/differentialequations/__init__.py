@@ -6,7 +6,7 @@ This module provides functionalities to define stochastic differential equations
 
 Modules
 -------
-baseclass      : Defines the abstract class of SDEs
+baseclass      : Provides the interface for SDEs in this package
 simpleclass    : Implements various simple SDEs
 reversedclass  : Implements various reversal of SDEs
 """
@@ -20,5 +20,5 @@ from .reversedclass import CorrectedNegative
 __all__ = [
     'StochasticDifferentialEquation',
     'ExplodingVariance',
-    'CorrectedNegative'
+    'CorrectedNegative',
 ]

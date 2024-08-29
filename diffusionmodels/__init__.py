@@ -30,11 +30,15 @@ solvers                 : Provides functionalities to solve initial value proble
 """
 
 
-from . import initialvalueproblems
-from . import solvers
+from . import manifolds
+from . import differentialequations
+from . import timeintegrators
+from . import samplers
 
 
 __all__ = [
-    'initialvalueproblems',
-    'solvers',
+    'manifolds',
+    'differentialequations',
+    'timeintegrators',
+    'samplers'
 ]

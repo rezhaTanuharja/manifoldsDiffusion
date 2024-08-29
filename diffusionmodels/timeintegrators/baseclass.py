@@ -12,7 +12,7 @@ FirstOrder
 
 
 from abc import ABC, abstractmethod
-from ...initialvalueproblems.differentialequations import StochasticDifferentialEquation
+from ..differentialequations import StochasticDifferentialEquation
 
 import torch
 

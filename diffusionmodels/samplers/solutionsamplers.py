@@ -23,12 +23,12 @@ class SimpleSampler(SolutionSampler):
     """
     A class to sample solutions of SDEs with a fixed time increment
 
-    Attributes
-    ----------
-    time_integrator : FirstOrder
+    Private Attributes
+    ------------------
+    _time_integrator : FirstOrder
         The time integration method used to solve SDEs
 
-    data_recorder : DataRecorder
+    _data_recorder : DataRecorder
         The data recorder to define what and how solution is stored
     """
 
@@ -43,36 +43,14 @@ class SimpleSampler(SolutionSampler):
 
     def get_samples(
         self,
-        IVPs,
+        initial_value_problems,
         num_samples: int,
         dt: float
     ) -> List[torch.Tensor]:
-        """
-        Extract samples by solving SDEs
 
-        Parameters
-        ----------
-        sde : StochasticDifferentialEquation
-            The SDE to solve
+        self._data_recorder.reset(initial_value_problems, num_samples)
 
-        initial_condition : torch.Tensor
-            The initial condition for the sde
-
-        num_samples : int
-            The number of solutions to compute
-
-        dt : float
-            The time increment between samples
-
-        Returns
-        -------
-        torch.Tensor
-            The sampled solution of sde
-        """
-
-        self._data_recorder.reset(IVPs, num_samples)
-
-        for m, problem in enumerate(IVPs):
+        for m, problem in enumerate(initial_value_problems):
 
             X = problem['initial_condition']
 
@@ -81,14 +59,5 @@ class SimpleSampler(SolutionSampler):
                     problem['stochastic_de'], X, n * dt, dt
                 )
                 self._data_recorder.store(m, X)
-
-        # X = initial_condition
-        #
-        # self._data_recorder.reset(X, num_samples)
-        #
-        # for i in range(num_samples):
-        #     # X = self.incrementor(X, self.time_integrator.step_forward(sde, X, i * dt, dt))
-        #     X = self._time_integrator.step_forward(sde, X, i * dt, dt)
-        #     self._data_recorder.store(X)
 
         return self._data_recorder.get_record()

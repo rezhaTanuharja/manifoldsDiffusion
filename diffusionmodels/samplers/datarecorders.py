@@ -21,28 +21,28 @@ class SimpleRecorder(DataRecorder):
     """
     A class of data recorder that simply store all results given to it
 
-    Attributes
-    ----------
-    record : torch.Tensor
-        A tensor to store data
-
-    index : int
-        The index of that last saved data
-
     Methods
     -------
-    reset(X, N)
-        Prepare record to store N of X-shaped tensors, set index to 0
+    reset(inverse_value_problems, num_samples)
+        Prepare record to store a number of solutions for inverse value problems
 
     store(result)
         Store results in record at index then increment index
 
     get_record()
         Returns all data inside record
+
+    Private Attributes
+    ------------------
+    _records : List[torch.Tensor]
+        A list of tensors to store data
+
+    _indices : List[int]
+        A list of indices of the last saved data in each tensor inside _records
     """
 
 
-    def reset(self, inverse_value_problems, num_samples):
+    def reset(self, initial_value_problems, num_samples):
         """
         Set record to an empty tensor that can store N times of X, set index to 0
 
@@ -56,14 +56,12 @@ class SimpleRecorder(DataRecorder):
         """
         self._records = [
             torch.zeros(
-                num_samples, *(IVP['initial_condition'].shape),
-                device = IVP['initial_condition'].device
-            ) for IVP in inverse_value_problems
+                num_samples, *(problem['initial_condition'].shape),
+                device = problem['initial_condition'].device
+            ) for problem in initial_value_problems
         ]
 
-        self._indices = [0 for _ in inverse_value_problems]
-        # self.record = torch.zeros(N, *(X.shape), device = X.device)
-        # self.index = 0
+        self._indices = [0 for _ in initial_value_problems]
 
 
     def store(self, problem_index, result):

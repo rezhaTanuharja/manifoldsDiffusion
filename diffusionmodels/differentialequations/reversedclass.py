@@ -14,6 +14,7 @@ CorrectedNegative
 import torch
 
 from .baseclass import StochasticDifferentialEquation
+from ..manifolds import Manifold
 from ..scorefunctions import DirectionCalculator
 
 
@@ -47,6 +48,9 @@ class CorrectedNegative(StochasticDifferentialEquation):
         self._stochastic_de = stochastic_de
         self._drift_corrector = drift_corrector
 
+
+    def manifold(self) -> Manifold:
+        return self._stochastic_de.manifold()
 
 
     def drift(self, X: torch.Tensor, t: float) -> torch.Tensor:

@@ -27,11 +27,11 @@ class DataRecorder(ABC):
 
     Methods
     -------
-    reset(inverse_value_problems, num_samples)
-        Reset and prepare to store a number of solution to inverse value problems
+    reset(initial_value_problems, num_samples)
+        Reset and prepare to store a number of solution to initial value problems
 
     store(problem_index, result)
-        Define what to do with the result of an inverse value problem
+        Define what to do with the result of an initial value problem
 
     get_record()
         Provide access to previously recorded data
@@ -39,13 +39,13 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def reset(self, inverse_value_problems, num_samples) -> None:
+    def reset(self, initial_value_problems, num_samples) -> None:
         """
         Reset instance to prepare for a new data recording
 
         Parameters
         ----------
-        inverse_value_problems : Tuple()
+        initial_value_problems
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -93,14 +93,20 @@ class SolutionSampler(ABC):
 
 
     @abstractmethod
-    def get_samples(self, *args, **kwargs):
+    def get_samples(
+        self,
+        initial_value_problems,
+        num_samples: int,
+        dt: float
+    ) -> List[torch.Tensor]:
         """
         Extract samples by solving SDEs
 
         Parameters
         ----------
-        sde : StochasticDifferentialEquation
-            The SDE to solve
+        initial_value_problems
+        num_samples
+        dt
 
         Returns
         -------

@@ -15,7 +15,7 @@ import torch
 
 from .baseclass import StochasticDifferentialEquation
 
-from ...utilities import unused_variables
+from ..utilities import unused_variables
 from ..manifolds import Manifold
 
 
@@ -36,7 +36,7 @@ class ExplodingVariance(StochasticDifferentialEquation):
 
     def drift(self, X: torch.Tensor, t: float) -> torch.Tensor:
         unused_variables(X, t)
-        return 0.0
+        return torch.tensor(0.0)
 
 
     def diffusion(self, X: torch.Tensor, t: float) -> torch.Tensor:

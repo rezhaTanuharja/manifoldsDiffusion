@@ -46,6 +46,7 @@ class Manifold(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+
     @abstractmethod
     def tangent_dimension(self) -> Tuple[int, ...]:
         """

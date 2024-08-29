@@ -16,7 +16,7 @@ Heun
 
 import torch
 
-from ...initialvalueproblems.differentialequations import StochasticDifferentialEquation
+from ..differentialequations import StochasticDifferentialEquation
 from .baseclass import FirstOrder
 
 
