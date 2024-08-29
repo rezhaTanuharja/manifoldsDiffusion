@@ -1,6 +1,6 @@
 """
-diffusionmodels.scorefunctions
-==============================
+scorefunctions
+==============
 
 This module provides functionalities to define Stein's score functions
 

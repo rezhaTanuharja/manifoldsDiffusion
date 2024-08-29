@@ -1,6 +1,6 @@
 """
-diffusionmodels.scorefunctions.baseclass
-========================================
+scorefunctions.baseclass
+========================
 
 This module implements simple classes of scorefunctions
 

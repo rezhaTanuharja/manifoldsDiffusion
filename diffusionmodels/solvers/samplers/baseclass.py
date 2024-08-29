@@ -16,9 +16,9 @@ SolutionSampler
 
 import torch
 from abc import ABC, abstractmethod
+from typing import List
 
 from ..timeintegrators import FirstOrder
-from ..differentialequations import StochasticDifferentialEquation
 
 
 class DataRecorder(ABC):
@@ -27,32 +27,31 @@ class DataRecorder(ABC):
 
     Methods
     -------
-    reset(args, kwargs)
-        Reset record to prepare for a new data recording
+    reset(inverse_value_problems, num_samples)
+        Reset and prepare to store a number of solution to inverse value problems
 
-    store(data_chunk, args, kwargs)
-        Define what to do with a data chunk, e.g., store in record or do nothing
+    store(problem_index, result)
+        Define what to do with the result of an inverse value problem
 
-    get_record(args, kwargs)
-        Access previously recorded data
+    get_record()
+        Provide access to previously recorded data
     """
 
 
     @abstractmethod
-    def __init__(self, *args, **kwargs) -> None:
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def reset(self, *args, **kwargs) -> None:
+    def reset(self, inverse_value_problems, num_samples) -> None:
         """
         Reset instance to prepare for a new data recording
+
+        Parameters
+        ----------
+        inverse_value_problems : Tuple()
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def store(self, data_chunk, *args, **kwargs) -> None:
+    def store(self, problem_index, result) -> None:
         """
         Define what to do with a data chunk, e.g., store in record or do nothing
 
@@ -64,7 +63,7 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def get_record(self, *args, **kwargs) -> torch.Tensor:
+    def get_record(self) -> List[torch.Tensor]:
         """
         A method to access previously recorded data
         """
@@ -94,11 +93,7 @@ class SolutionSampler(ABC):
 
 
     @abstractmethod
-    def get_samples(
-        self,
-        sde: StochasticDifferentialEquation,
-        *args, **kwargs
-    ):
+    def get_samples(self, *args, **kwargs):
         """
         Extract samples by solving SDEs
 

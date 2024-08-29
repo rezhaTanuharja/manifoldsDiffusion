@@ -1,6 +1,6 @@
 """
-diffusionmodels.differentialequations
-=====================================
+differentialequations
+=====================
 
 This module provides functionalities to define stochastic differential equations.
 
@@ -12,17 +12,13 @@ reversedclass  : Implements various reversal of SDEs
 """
 
 
-from .baseclass import StochasticDifferentialEquation, ReversedSDE
-from .simpleclass import StandardOU, ExplodingRotationVariance
+from .baseclass import StochasticDifferentialEquation
+from .simpleclass import ExplodingVariance
 from .reversedclass import CorrectedNegative
 
 
 __all__ = [
     'StochasticDifferentialEquation',
-    'ReversedSDE',
-
-    'StandardOU',
-    'ExplodingRotationVariance',
-
+    'ExplodingVariance',
     'CorrectedNegative'
 ]

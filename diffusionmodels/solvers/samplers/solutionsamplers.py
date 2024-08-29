@@ -12,9 +12,9 @@ SimpleSampler
 
 
 import torch
+from typing import List
 
 from ..timeintegrators import FirstOrder
-from ..differentialequations import StochasticDifferentialEquation
 
 from .baseclass import SolutionSampler, DataRecorder
 
@@ -37,17 +37,16 @@ class SimpleSampler(SolutionSampler):
         time_integrator: FirstOrder,
         data_recorder: DataRecorder
     ) -> None:
-        self.time_integrator = time_integrator
-        self.data_recorder = data_recorder
+        self._time_integrator = time_integrator
+        self._data_recorder = data_recorder
 
 
     def get_samples(
         self,
-        sde: StochasticDifferentialEquation,
-        initial_condition: torch.Tensor,
+        IVPs,
         num_samples: int,
         dt: float
-    ) -> torch.Tensor:
+    ) -> List[torch.Tensor]:
         """
         Extract samples by solving SDEs
 
@@ -71,13 +70,25 @@ class SimpleSampler(SolutionSampler):
             The sampled solution of sde
         """
 
-        X = initial_condition
+        self._data_recorder.reset(IVPs, num_samples)
 
-        self.data_recorder.reset(X, num_samples)
+        for m, problem in enumerate(IVPs):
 
-        for i in range(num_samples):
-            # X = self.incrementor(X, self.time_integrator.step_forward(sde, X, i * dt, dt))
-            X = self.time_integrator.step_forward(sde, X, i * dt, dt)
-            self.data_recorder.store(X)
+            X = problem['initial_condition']
 
-        return self.data_recorder.get_record()
+            for n in range(num_samples):
+                X = self._time_integrator.step_forward(
+                    problem['stochastic_de'], X, n * dt, dt
+                )
+                self._data_recorder.store(m, X)
+
+        # X = initial_condition
+        #
+        # self._data_recorder.reset(X, num_samples)
+        #
+        # for i in range(num_samples):
+        #     # X = self.incrementor(X, self.time_integrator.step_forward(sde, X, i * dt, dt))
+        #     X = self._time_integrator.step_forward(sde, X, i * dt, dt)
+        #     self._data_recorder.store(X)
+
+        return self._data_recorder.get_record()

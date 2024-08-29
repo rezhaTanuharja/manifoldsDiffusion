@@ -12,6 +12,7 @@ SimpleRecorder
 
 
 import torch
+from typing import List
 
 from .baseclass import DataRecorder
 
@@ -40,12 +41,8 @@ class SimpleRecorder(DataRecorder):
         Returns all data inside record
     """
 
-    def __init__(self):
-        self.record = None
-        self.index = None
 
-
-    def reset(self, X, N):
+    def reset(self, inverse_value_problems, num_samples):
         """
         Set record to an empty tensor that can store N times of X, set index to 0
 
@@ -57,11 +54,19 @@ class SimpleRecorder(DataRecorder):
         N : int
             The number of data chunks to store in record
         """
-        self.record = torch.zeros(N, *(X.shape), device = X.device)
-        self.index = 0
+        self._records = [
+            torch.zeros(
+                num_samples, *(IVP['initial_condition'].shape),
+                device = IVP['initial_condition'].device
+            ) for IVP in inverse_value_problems
+        ]
+
+        self._indices = [0 for _ in inverse_value_problems]
+        # self.record = torch.zeros(N, *(X.shape), device = X.device)
+        # self.index = 0
 
 
-    def store(self, result):
+    def store(self, problem_index, result):
         """
         Store result as one data chunk inside record
 
@@ -70,10 +75,10 @@ class SimpleRecorder(DataRecorder):
         result : torch.Tensor
             A tensor that can be stored as one data chunk in record
         """
-        self.record[self.index] = result
-        self.index += 1
+        self._records[problem_index][self._indices[problem_index]] = result
+        self._indices[problem_index] += 1
 
-    def get_record(self):
+    def get_record(self) -> List[torch.Tensor]:
         """
         A method to access data in record
 
@@ -82,4 +87,4 @@ class SimpleRecorder(DataRecorder):
         torch.Tensor
             All data inside record
         """
-        return self.record
+        return self._records

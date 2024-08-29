@@ -1,8 +1,8 @@
 """
-diffusionmodels.manifolds.matrixclass
-=====================================
+manifolds.matrixclass
+=====================
 
-A module that implement matrix groups
+Implements matrix groups
 
 Classes
 -------
@@ -12,6 +12,7 @@ SpecialOrthogonal3
 
 
 import torch
+from typing import Tuple
 
 from .baseclass import Manifold
 
@@ -20,25 +21,22 @@ class SpecialOrthogonal3(Manifold):
     """
     The 3-dimension rotation matrix group.
 
-    Attributes
-    ----------
-    bases : torch.Tensor
+    Private Attributes
+    ------------------
+    _bases : torch.Tensor
         A bases of the tangent space at the identity element
 
-    Methods
-    -------
-    exp(X, dX)
-        Increment a point X with a tangent vector dX
-        
-    log(X, Y)
-        Calculate a tangent vector dX such that exp(X, dX) = Y
+    _dimension : Tuple[int, ...]
+        The tensor shape of each point in the manifold
+
+    _tangent_dimension : Tuple[int, ...]
+        The tensor shape of each vector in the manifold tangent space
     """
 
-    def __init__(self) -> None:
+    def __init__(self, device: torch.device) -> None:
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        self.bases = torch.Tensor([
+        # -- use the canonical base of the skew symmetric space
+        self._bases = torch.Tensor([
             [
                 [ 0,  0,  0],
                 [ 0,  0, -1],
@@ -56,51 +54,28 @@ class SpecialOrthogonal3(Manifold):
             ]
         ]).to(device)
 
+        self._dimension = (3, 3)
+        self._tangent_dimension = (3,)
+
+
+    def dimension(self) -> Tuple[int, ...]:
+        return self._dimension
+
+
+    def tangent_dimension(self) -> Tuple[int, ...]:
+        return self._tangent_dimension
+
 
     def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
-        """
-        Increment a point X with a tangent vector dX
-
-        Parameters
-        ----------
-        X : torch.Tensor
-            A point in the manifold
-
-        dX : torch.Tensor
-            A tangent vector in a tangent space AT THE IDENTITY ELEMENT.
-            The tangent vector is in the axis-angle representation.
-
-        Returns
-        -------
-        torch.Tensor
-            A point in the manifold
-        """
 
         # -- Compute skew symmetric matrix from axis angle representation
-        skew_matrix = torch.einsum('...j, jkl -> ...kl', dX, self.bases)
+        skew_matrix = torch.einsum('...j, jkl -> ...kl', dX, self._bases)
 
         # -- Parallel transport the curve and increment X
         return torch.matmul(X, torch.linalg.matrix_exp(skew_matrix))
 
 
     def log(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
-        """
-        Computes a tangent vector dX such that exp(X, dX) = Y
-
-        Parameters
-        ----------
-        X : torch.Tensor
-            The origin point in the manifold, a rotational matrix
-
-        Y : torch.Tensor
-            The destination point in the manifold, a rotational matrix
-
-        Returns
-        -------
-        torch.Tensor
-            A tangent vector in the tangent space at the identity element.
-            The tangent vector is in the axis-angle representation.
-        """
 
         # -- Compute trans(X)Y
         relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', X, Y)

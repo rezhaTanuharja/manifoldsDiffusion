@@ -1,32 +1,60 @@
 """
-diffusionmodels.manifolds.baseclass
-===================================
+manifolds.baseclass
+===================
 
-Defines abstract classes of manifolds.
+Provides the interface for all manifolds in this package
 
 Classes
 -------
 Manifold
-    A base class of all manifolds in this package
+    An abstract class that serves as an interface for all manifolds in this package
 """
 
 
 import torch
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 
 class Manifold(ABC):
     """
-    The base class of all manifolds in this package.
+    An abstract class that serves as an interface for all manifolds in this package
 
     Methods
     -------
+    dimension()
+        Returns the tensor shape of each point in the manifold
+
+    tangent_dimension()
+        Returns the tensor shape of each vector in the manifold tangent space
+
     exp(X, dX)
         Increment a point X with a tangent vector dX
 
     log(X, Y)
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
+
+
+    @abstractmethod
+    def dimension(self) -> Tuple[int, ...]:
+        """
+        Returns
+        -------
+        Tuple[int, ...]
+            The tensor shape of each point in the manifold
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def tangent_dimension(self) -> Tuple[int, ...]:
+        """
+        Returns
+        -------
+        Tuple[int, ...]
+            The tensor shape of each vector in the manifold tangent space
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod

@@ -6,7 +6,7 @@ Provides functionalities to integrate SDEs with respect to time.
 
 Modules
 -------
-baseclass       : Defines the abstract class for the timeintegrators module
+baseclass       : Provides the interface for all time integrators in this package
 simpleclass     : Implements various simple time integrators
 """
 
@@ -17,6 +17,7 @@ from .simpleclass import EulerMaruyama, Heun
 
 __all__ = [
     'FirstOrder',
+
     'EulerMaruyama',
     'Heun'
 ]

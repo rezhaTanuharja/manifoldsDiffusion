@@ -2,7 +2,7 @@
 diffusionmodels.timeintegrators.baseclass
 =========================================
 
-Defines the abstract base classes for time integrators
+Provides the interface for all time integrators in this package
 
 Classes
 -------
@@ -12,7 +12,7 @@ FirstOrder
 
 
 from abc import ABC, abstractmethod
-from ..differentialequations import StochasticDifferentialEquation
+from ...initialvalueproblems.differentialequations import StochasticDifferentialEquation
 
 import torch
 
@@ -23,7 +23,7 @@ class FirstOrder(ABC):
 
     Methods
     -------
-    step_forward(differential_equation, X, t, dt)
+    step_forward(stochastic_de, X, t, dt)
         Returns X(t + dt)
     """
 
@@ -31,17 +31,16 @@ class FirstOrder(ABC):
     @abstractmethod
     def step_forward(
         self,
-        sde: StochasticDifferentialEquation,
+        stochastic_de: StochasticDifferentialEquation,
         X: torch.Tensor,
-        t: float,
-        dt: float
+        t: float, dt: float
     ) -> torch.Tensor:
         """
         Evaluate X(t + dt) from a given stochastic differential equation
 
         Parameters
         ----------
-        sde: StochasticDifferentialEquation
+        stochastic_de: StochasticDifferentialEquation
             A differential equation in the form of
             dX = drift(X, t) dt + diffusion(X, t) dW
 

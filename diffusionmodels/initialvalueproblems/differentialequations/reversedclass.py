@@ -1,6 +1,6 @@
 """
-diffusionmodels.differentialequations.reversedclass
-===================================================
+differentialequations.reversedclass
+===================================
 
 This module implements classes of reversed differentialequations
 
@@ -13,11 +13,11 @@ CorrectedNegative
 
 import torch
 
-from .baseclass import StochasticDifferentialEquation, ReversedSDE
+from .baseclass import StochasticDifferentialEquation
 from ..scorefunctions import DirectionCalculator
 
 
-class CorrectedNegative(ReversedSDE):
+class CorrectedNegative(StochasticDifferentialEquation):
     """
     This class reverses the processes described by differential_equations
 
@@ -41,11 +41,11 @@ class CorrectedNegative(ReversedSDE):
 
     def __init__(
         self,
-        sde: StochasticDifferentialEquation,
+        stochastic_de: StochasticDifferentialEquation,
         drift_corrector: DirectionCalculator
     ):
-        super().__init__(sde)
-        self.drift_corrector = drift_corrector
+        self._stochastic_de = stochastic_de
+        self._drift_corrector = drift_corrector
 
 
 
@@ -68,28 +68,11 @@ class CorrectedNegative(ReversedSDE):
         """
 
         return (
-            -self.sde.drift(X, t) + (
-                self.sde.diffusion(X, t) ** 2
-            ) * self.drift_corrector.get_direction(X, t)
+            -self._stochastic_de.drift(X, t) + (
+                self._stochastic_de.diffusion(X, t) ** 2
+            ) * self._drift_corrector.get_direction(X, t)
         )
 
 
     def diffusion(self, X: torch.Tensor, t: float) -> torch.Tensor:
-        """
-        Evaluate the diffusion tensor of the reversed SDE
-
-        Parameters
-        ----------
-        X : torch.Tensor
-            The current spatial location, i.e., X(t)
-
-        t: float
-            The current time
-
-        Returns
-        -------
-        torch.Tensor
-            diffusion = sde.diffusion(X, t)
-        """
-
-        return self.sde.diffusion(X, t)
+        return self._stochastic_de.diffusion(X, t)
