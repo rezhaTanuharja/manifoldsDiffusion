@@ -2,7 +2,7 @@
 manifolds.matrixclass
 =====================
 
-Implements matrix groups
+Implements various matrix groups
 
 Classes
 -------
@@ -80,10 +80,11 @@ class SpecialOrthogonal3(Manifold):
         # -- Compute trans(X)Y
         relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', X, Y)
 
-        # -- Compute geodesic distance
+        # -- Compute geodesic distance, compensate for numerical inaccuracies
         angle = torch.acos(
             torch.clip(
-                0.5 * (torch.einsum('...ii -> ...', relative_rotation) - 1.0), min = -1.0, max = 1.0
+                0.5 * (torch.einsum('...ii -> ...', relative_rotation) - 1.0),
+                min = -1.0, max = 1.0
             )
         )
 

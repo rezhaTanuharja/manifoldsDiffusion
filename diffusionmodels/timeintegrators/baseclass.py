@@ -2,7 +2,7 @@
 diffusionmodels.timeintegrators.baseclass
 =========================================
 
-Provides the interface for all time integrators in this package
+Provides the interface for all time integrators
 
 Classes
 -------
@@ -45,7 +45,7 @@ class FirstOrder(ABC):
             dX = drift(X, t) dt + diffusion(X, t) dW
 
         X : torch.Tensor
-            The value of X but not necessarily the present value
+            The value of X at present time, i.e., X(t)
 
         t : float
             The current time

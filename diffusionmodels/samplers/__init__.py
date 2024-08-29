@@ -6,7 +6,7 @@ Provides functionalities to sample SDE solutions at discrete points.
 
 Modules
 -------
-baseclass           : Defines the abstract class for samplers
+baseclass           : Provides the interfaces of samplers
 datarecorders       : Implements various data recorders
 solutionsamplers    : Implements various solution samplers
 """

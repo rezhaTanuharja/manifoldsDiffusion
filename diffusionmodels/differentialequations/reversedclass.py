@@ -30,12 +30,12 @@ class CorrectedNegative(StochasticDifferentialEquation):
 
     The correction is proportional to the square of diffusion
 
-    Attributes
-    ----------
-    sde : StochasticDifferentialEquation
+    Private Attributes
+    ------------------
+    _stochastic_de : StochasticDifferentialEquation
         The stochastic differential_equations to be reversed
 
-    drift_corrector : DirectionCalculator
+    _drift_corrector : DirectionCalculator
         A function that takes X as input and output the drift correction
     """
 

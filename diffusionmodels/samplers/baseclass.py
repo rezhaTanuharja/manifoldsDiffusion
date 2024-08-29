@@ -18,6 +18,7 @@ import torch
 from abc import ABC, abstractmethod
 from typing import List
 
+from ..differentialequations import InitialValueProblems
 from ..timeintegrators import FirstOrder
 
 
@@ -39,25 +40,37 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def reset(self, initial_value_problems, num_samples) -> None:
+    def reset(
+        self,
+        initial_value_problems: InitialValueProblems,
+        num_samples: int
+    ) -> None:
         """
         Reset instance to prepare for a new data recording
 
         Parameters
         ----------
-        initial_value_problems
+        initial_value_problems : InitialValueProblems
+            A list of dict of initial-value problems
+
+        num_samples : int
+            The number of samples to record
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def store(self, problem_index, result) -> None:
+    def store(self, problem_index: int, result: torch.Tensor) -> None:
         """
         Define what to do with a data chunk, e.g., store in record or do nothing
 
         Parameters
         ----------
-        data_chunk : One piece of data chunk
+        problem_index : int
+            The index of the current initial-value problem
+
+        result : torch.Tensor
+            The latest solution of the initial-value problem
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -74,28 +87,25 @@ class SolutionSampler(ABC):
     """
     An abstract class to define how to extract a time-series from SDEs
 
-    Attributes
-    ----------
-    time_integrator : FirstOrder
-        The time integration method used to solve SDEs
-
-    data_recorder : DataRecorder
-        The data recorder to define what and how solution is stored
+    Methods
+    -------
+    get_samples(initial_value_problems, num_samples, dt)
+        Solve initial-value problems and store a number of solutions
     """
 
+    @abstractmethod
     def __init__(
         self,
         time_integrator: FirstOrder,
         data_recorder: DataRecorder
     ) -> None:
-        self.time_integrator = time_integrator
-        self.data_recorder = data_recorder
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
     def get_samples(
         self,
-        initial_value_problems,
+        initial_value_problems: InitialValueProblems,
         num_samples: int,
         dt: float
     ) -> List[torch.Tensor]:
@@ -104,13 +114,18 @@ class SolutionSampler(ABC):
 
         Parameters
         ----------
-        initial_value_problems
-        num_samples
-        dt
+        initial_value_problems : InitialValueProblems
+            A list of dict of initial-value problems
+
+        num_samples : int
+            The number of solutions to record
+
+        dt : float
+            The time increment between consecutive solutions
 
         Returns
         -------
-        torch.Tensor
-            The sampled solution of sde
+        List[torch.Tensor, ...]
+            The sampled solutions for each initial-value problem
         """
         raise NotImplementedError("Subclasses must implement this method")

@@ -2,12 +2,12 @@
 differentialequations.baseclass
 ===============================
 
-Provides the interface for stochastic differential equations in this package
+Provides the interface of stochastic differential equations
 
 Classes
 -------
 StochasticDifferentialEquation
-    An interface for SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
+    SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
 """
 
 
@@ -88,3 +88,63 @@ class StochasticDifferentialEquation(ABC):
             The diffusion term, diffusion(X, t) dW
         """
         raise NotImplementedError("Subclasses must implement this method")
+
+
+class InitialValueProblems:
+    """
+    A list of initial-value problems, i.e., a list of dictionaries with keys:
+        - 'initial_condition'
+        - 'stochastic_de'
+
+    Behaves like a list of dictionaries
+
+    Methods
+    -------
+    append(initial_condition, stochastic_de)
+        Check if initial condition and SDE are compatible and add to the list
+
+    Private Attributes
+    ------------------
+    _elements
+        A list of dictionaries with keys as described above
+    """
+
+
+    def __init__(self):
+        self._elements = []
+
+
+    def __iter__(self):
+        return iter(self._elements)
+
+
+    def append(
+        self,
+        initial_condition: torch.Tensor,
+        stochastic_de: StochasticDifferentialEquation
+    ):
+        """
+        Check if initial condition and SDE are compatible and add to the list
+
+        Parameters
+        ----------
+        initial_condition : torch.Tensor
+            A point in a manifold that serves as X(0)
+
+        stochastic_de : StochasticDifferentialEquation
+            A stochastic differential equation
+        """
+
+        if initial_condition.dim() < 3:
+            raise ValueError("Initial condition must have more than 2 dimensions")
+
+        if initial_condition.shape[2:] != stochastic_de.manifold().dimension():
+            raise ValueError("Initial condition and SDE don't live in the same manifold")
+
+        self._elements.append(
+            {
+                'initial_condition': initial_condition,
+                'stochastic_de': stochastic_de
+            }
+        )
+

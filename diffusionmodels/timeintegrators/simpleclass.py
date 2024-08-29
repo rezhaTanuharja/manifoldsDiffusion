@@ -60,8 +60,7 @@ class Heun(FirstOrder):
         self,
         stochastic_de: StochasticDifferentialEquation,
         X: torch.Tensor,
-        t: float,
-        dt: float
+        t: float, dt: float
     ) -> torch.Tensor:
         """
         Evaluate X(t + dt) using the trapezoidal rule

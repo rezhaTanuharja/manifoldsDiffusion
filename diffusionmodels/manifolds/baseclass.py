@@ -7,7 +7,7 @@ Provides the interface for all manifolds in this package
 Classes
 -------
 Manifold
-    An abstract class that serves as an interface for all manifolds in this package
+    An abstract class that serves as an interface of all manifolds
 """
 
 
@@ -18,7 +18,7 @@ from typing import Tuple
 
 class Manifold(ABC):
     """
-    An abstract class that serves as an interface for all manifolds in this package
+    An abstract class that serves as an interface of all manifolds
 
     Methods
     -------

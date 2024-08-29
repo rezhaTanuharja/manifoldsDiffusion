@@ -6,7 +6,7 @@ Provides functionalities to integrate SDEs with respect to time.
 
 Modules
 -------
-baseclass       : Provides the interface for all time integrators in this package
+baseclass       : Provides the interface for all time integrators
 simpleclass     : Implements various simple time integrators
 """
 

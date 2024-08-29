@@ -2,32 +2,14 @@ import torch
 
 import diffusionmodels as dm
 
+# -- aliases for conciseness
 SpecialOrthogonal3 = dm.manifolds.SpecialOrthogonal3
 ExplodingVariance = dm.differentialequations.ExplodingVariance
+InitialValueProblems = dm.differentialequations.InitialValueProblems
 SimpleSampler = dm.samplers.SimpleSampler
 SimpleRecorder = dm.samplers.SimpleRecorder
-
 EulerMaruyama = dm.timeintegrators.EulerMaruyama
 Heun = dm.timeintegrators.Heun
-
-
-class InitialValueProblems:
-
-    def __init__(self):
-        self._elements = []
-
-    def __iter__(self):
-        return iter(self._elements)
-
-    def append(self, initial_condition, stochastic_de):
-
-        self._elements.append(
-            {
-                'initial_condition': initial_condition,
-                'stochastic_de': stochastic_de
-            }
-        )
-
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
