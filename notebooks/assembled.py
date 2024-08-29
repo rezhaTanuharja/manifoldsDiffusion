@@ -26,11 +26,6 @@ IVPs = ivp.InitialValueProblems()
 IVPs.append(rotation, stochastic_de)
 IVPs.append(revolution, stochastic_de)
 
-# IVPs = (
-#     {'initial_condition': rotation, 'stochastic_de': stochastic_de},
-#     {'initial_condition': revolution, 'stochastic_de': stochastic_de},
-# )
-
 sampler = slv.SimpleSampler(
     time_integrator = slv.Heun(predictor = slv.EulerMaruyama()),
     data_recorder = slv.SimpleRecorder()
