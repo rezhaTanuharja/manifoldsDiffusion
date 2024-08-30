@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from diffusionmodels.manifolds import SpecialOrthogonal3
-from diffusionmodels.differentialequations import ExplodingRotationVariance
+from diffusionmodels.differentialequations import ExplodingVariance
 from diffusionmodels.timeintegrators import EulerMaruyama
 from diffusionmodels.samplers import SimpleRecorder, SimpleSampler
 
@@ -20,8 +20,9 @@ hidden_size = 512
 
 
 # -- define problem geometry and governing equations
-manifold = SpecialOrthogonal3()
-sde = ExplodingRotationVariance(manifold) # TODO change name to ExplodingVariance
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+manifold = SpecialOrthogonal3(device = device)
+sde = ExplodingVariance(manifold) # TODO change name to ExplodingVariance
 time_integrator = EulerMaruyama()
 sampler = SimpleSampler(time_integrator, SimpleRecorder())
 
@@ -36,7 +37,6 @@ num_joints = axis_angle_data.size // (num_time_samples * num_samples * dim)
 
 
 # -- convert into torch tensor and move to an appropriate device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 noised_data = torch.tensor(axis_angle_data, device = device)
 noised_data = noised_data.view(num_time_samples * num_samples, num_joints, dim)
@@ -99,7 +99,8 @@ for _ in range(128):
     output = model(noised_rotations, 1.0 / times)
     # output = time_increment * output
     # output = time_increment / torch.sqrt(times) * output
-    output = time_increment * torch.sqrt(times) * output
+    # output = time_increment * torch.sqrt(times) * output
+    output = time_increment * (times ** 0.4) * output
     output = output.view(num_time_samples, num_samples, num_joints, dim)
 
     noised = manifold.exp(noised, output)

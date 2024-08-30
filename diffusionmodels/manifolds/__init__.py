@@ -12,7 +12,7 @@ matrixclass     : Implements various matrix groups
 
 
 from .baseclass import Manifold
-from .matrixclass import SpecialOrthogonal3
+from .simpleclass import SpecialOrthogonal3
 
 
 __all__ = [

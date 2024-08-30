@@ -12,16 +12,11 @@ solutionsamplers    : Implements various solution samplers
 """
 
 
-from .baseclass import SolutionSampler, DataRecorder
-from .datarecorders import SimpleRecorder
-from .solutionsamplers import SimpleSampler
+from .baseclass import Solver
+from .simpleclass import SimpleSolver
 
 
 __all__ = [
-    'DataRecorder',
-    'SolutionSampler',
-
-    'SimpleRecorder',
-
-    'SimpleSampler'
+    'Solver',
+    'SimpleSolver'
 ]

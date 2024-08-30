@@ -16,12 +16,18 @@ samplers                : Provides solution sampling methods
 from . import manifolds
 from . import differentialequations
 from . import timeintegrators
-from . import samplers
+from . import recorders
+from . import solvers
+from . import pipeline
+from . import utilities
 
 
 __all__ = [
     'manifolds',
     'differentialequations',
     'timeintegrators',
-    'samplers'
+    'recorders',
+    'solvers',
+    'pipeline',
+    'utilities',
 ]

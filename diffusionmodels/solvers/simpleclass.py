@@ -12,14 +12,16 @@ SimpleSampler
 
 
 import torch
-from typing import List
+from typing import List, Tuple
 
+from ..differentialequations import StochasticDifferentialEquation
 from ..timeintegrators import FirstOrder
+from ..recorders import DataRecorder
 
-from .baseclass import SolutionSampler, DataRecorder
+from .baseclass import Solver
 
 
-class SimpleSampler(SolutionSampler):
+class SimpleSolver(Solver):
     """
     A class to sample solutions of SDEs with a fixed time increment
 
@@ -35,28 +37,30 @@ class SimpleSampler(SolutionSampler):
     def __init__(
         self,
         time_integrator: FirstOrder,
-        data_recorder: DataRecorder
+        data_recorder: DataRecorder,
+        num_points: int,
+        grid_size: float
     ) -> None:
         self._time_integrator = time_integrator
         self._data_recorder = data_recorder
+        self._num_points = num_points
+        self._grid_size = grid_size
 
 
-    def get_samples(
+    def solve(
         self,
-        initial_value_problems,
-        num_samples: int,
-        dt: float
+        initial_value_problems: List[Tuple[torch.Tensor, StochasticDifferentialEquation]],
     ) -> List[torch.Tensor]:
 
-        self._data_recorder.reset(initial_value_problems, num_samples)
+        self._data_recorder.reset(initial_value_problems, self._num_points)
 
         for m, problem in enumerate(initial_value_problems):
 
-            X = problem['initial_condition']
+            X = problem[0]
 
-            for n in range(num_samples):
+            for n in range(self._num_points):
                 X = self._time_integrator.step_forward(
-                    problem['stochastic_de'], X, n * dt, dt
+                    problem[1], X, n * self._grid_size, self._grid_size
                 )
                 self._data_recorder.store(m, X)
 

@@ -1,17 +1,5 @@
-"""
-samplers.datarecorders
-======================
-
-This module implements various simple data recorders
-
-Classes
--------
-SimpleRecorder
-    A data recorder that store all results given to it
-"""
-
-
 import torch
+
 from typing import List
 
 from .baseclass import DataRecorder
@@ -35,8 +23,8 @@ class SimpleRecorder(DataRecorder):
 
         self._records = [
             torch.zeros(
-                num_samples, *(problem['initial_condition'].shape),
-                device = problem['initial_condition'].device
+                num_samples, *(problem[0].shape),
+                device = problem[0].device
             ) for problem in initial_value_problems
         ]
 
