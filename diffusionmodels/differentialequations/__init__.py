@@ -12,14 +12,13 @@ reversedclass  : Implements various reversal of SDEs
 """
 
 
-from .baseclass import StochasticDifferentialEquation, InitialValueProblems
+from .baseclass import StochasticDifferentialEquation
 from .simpleclass import ExplodingVariance
 from .reversedclass import CorrectedNegative
 
 
 __all__ = [
     'StochasticDifferentialEquation',
-    'InitialValueProblems',
     'ExplodingVariance',
     'CorrectedNegative',
 ]
