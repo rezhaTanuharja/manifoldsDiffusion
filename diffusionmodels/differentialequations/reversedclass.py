@@ -11,6 +11,8 @@ CorrectedNegative
 """
 
 
+# TODO: Need to be refactored to take into account the new score functions
+
 import torch
 
 from .baseclass import StochasticDifferentialEquation

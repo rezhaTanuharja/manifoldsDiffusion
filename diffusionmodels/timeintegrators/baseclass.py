@@ -23,7 +23,7 @@ class FirstOrder(ABC):
 
     Methods
     -------
-    step_forward(stochastic_de, X, t, dt)
+    `step_forward(stochastic_de, X, t, dt)`
         Returns X(t + dt)
     """
 
@@ -40,22 +40,21 @@ class FirstOrder(ABC):
 
         Parameters
         ----------
-        stochastic_de: StochasticDifferentialEquation
-            A differential equation in the form of
-            dX = drift(X, t) dt + diffusion(X, t) dW
+        `stochastic_de: StochasticDifferentialEquation`
+            A stochastic differential equation
 
-        X : torch.Tensor
+        `X : torch.Tensor`
             The value of X at present time, i.e., X(t)
 
-        t : float
+        `t : float`
             The current time
 
-        dt: float
+        `dt: float`
             The time increment or the temporal step
 
         Returns
         -------
-        torch.Tensor
+        `torch.Tensor`
             the predicted value of X(t + dt)
         """
         raise NotImplementedError("Subclasses must implement this method")

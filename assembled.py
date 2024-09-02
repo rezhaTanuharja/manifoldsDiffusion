@@ -8,6 +8,9 @@ import numpy as np
 
 import diffusionmodels as dm
 
+# TODO: fix this please
+# NOTE: this is not a joke
+
 num_samples = 1000
 num_time_samples = 128
 batch_size = 100
