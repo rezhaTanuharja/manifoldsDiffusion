@@ -1,11 +1,6 @@
 """
 manifolds.matrixclass
-=====================
-
-Implements various matrix groups
-
-Classes
--------
+===================== Implements various matrix groups Classes -------
 SpecialOrthogonal3
     The 3-dimension rotation matrix group
 """

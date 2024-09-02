@@ -61,7 +61,7 @@ class DirectionCalculator(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
 
-class RelativeDirectionCalculator(DirectionCalculator):
+class RelativeDirectionCalculator(ABC):
     """
     An abstract class that computes a direction using the current position and a reference position
 
@@ -74,21 +74,17 @@ class RelativeDirectionCalculator(DirectionCalculator):
 
     def __init__(
         self,
-        manifold: Manifold,
-        X_ref: torch.Tensor,
-        t_ref: torch.Tensor
+        manifold: Manifold
     ):
-        super().__init__(manifold)
-        self.X_ref = X_ref
-        self.t_ref = t_ref
+        self._manifold = manifold
 
 
 
     @abstractmethod
     def get_direction(
         self,
-        X: torch.Tensor,
-        t: float,
+        origin: torch.Tensor, destination: torch.Tensor,
+        scale: float,
     ) -> torch.Tensor:
         """
         Compute the direction, dX, to update X(t)

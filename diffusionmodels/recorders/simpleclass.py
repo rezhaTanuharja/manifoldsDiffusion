@@ -19,21 +19,27 @@ class SimpleRecorder(DataRecorder):
     """
 
 
-    def reset(self, initial_value_problems, num_samples):
+    def reset(self, X, num_samples):
 
-        self._records = [
-            torch.zeros(
-                num_samples, *(problem[0].shape),
-                device = problem[0].device
-            ) for problem in initial_value_problems
-        ]
+        self._records = torch.zeros(
+            (num_samples, *X.shape),
+            device = X.device
+        )
 
-        self._indices = [0 for _ in initial_value_problems]
+        self._timestamps = torch.zeros(
+            num_samples, device = X.device
+        )
+
+        self._indices = 0
 
 
-    def store(self, problem_index, result):
-        self._records[problem_index][self._indices[problem_index]] = result
-        self._indices[problem_index] += 1
+    def store(self, result, time):
+        self._records[self._indices] = result
+        self._timestamps[self._indices] = time
+        self._indices += 1
 
-    def get_record(self) -> List[torch.Tensor]:
-        return self._records
+    def get_record(self):
+        return {
+            'noised': self._records,
+            'time': self._timestamps
+        }

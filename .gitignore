@@ -5,6 +5,8 @@
 .venv/
 .conda_env/
 
+**/*.pth
+
 # Ignore editor configurations
 pyrightconfig.json
 

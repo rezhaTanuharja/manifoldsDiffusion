@@ -49,19 +49,19 @@ class SimpleSolver(Solver):
 
     def solve(
         self,
-        initial_value_problems: List[Tuple[torch.Tensor, StochasticDifferentialEquation]],
-    ) -> List[torch.Tensor]:
+        initial_value, stochastic_de
+    ) -> torch.Tensor:
 
-        self._data_recorder.reset(initial_value_problems, self._num_points)
+        self._data_recorder.reset(initial_value, self._num_points)
 
-        for m, problem in enumerate(initial_value_problems):
+        # for m, (initial_value, stochastic_de) in enumerate(initial_value_problems):
 
-            X = problem[0]
+        X = initial_value
 
-            for n in range(self._num_points):
-                X = self._time_integrator.step_forward(
-                    problem[1], X, n * self._grid_size, self._grid_size
-                )
-                self._data_recorder.store(m, X)
+        for n in range(self._num_points):
+            X = self._time_integrator.step_forward(
+                stochastic_de, X, n * self._grid_size, self._grid_size
+            )
+            self._data_recorder.store(X, (n + 1) * self._grid_size)
 
         return self._data_recorder.get_record()

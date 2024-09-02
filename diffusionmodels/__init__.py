@@ -9,7 +9,9 @@ Modules
 manifolds               : Provides manifold structures
 differentialequations   : Provides stochastic differntial equations
 timeintegrators         : Provides time integration methods
-samplers                : Provides solution sampling methods
+recorders               : Provides means to store SDE solutions
+solvers                 : Provides SDE solvers
+pipeline                : Provides functionalities to define data preprocessing
 """
 
 
@@ -20,6 +22,7 @@ from . import recorders
 from . import solvers
 from . import pipeline
 from . import utilities
+from . import scorefunctions
 
 
 __all__ = [
@@ -30,4 +33,5 @@ __all__ = [
     'solvers',
     'pipeline',
     'utilities',
+    'scorefunctions',
 ]

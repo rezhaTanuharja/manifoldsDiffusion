@@ -4,12 +4,9 @@ from typing import List, Tuple
 import torch
 
 from ..differentialequations import StochasticDifferentialEquation
-
-
 class DataRecorder(ABC):
     """
     An interface to record data
-
     Methods
     -------
     reset(initial_value_problems, num_samples)
@@ -26,7 +23,7 @@ class DataRecorder(ABC):
     @abstractmethod
     def reset(
         self,
-        initial_value_problems: List[Tuple[torch.Tensor, StochasticDifferentialEquation]],
+        X,
         num_samples: int
     ) -> None:
         """
@@ -44,7 +41,7 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def store(self, problem_index: int, result: torch.Tensor) -> None:
+    def store(self, result: torch.Tensor, time) -> None:
         """
         Define what to do with a data chunk, e.g., store in record or do nothing
 
@@ -60,7 +57,7 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def get_record(self) -> List[torch.Tensor]:
+    def get_record(self):
         """
         A method to access previously recorded data
         """

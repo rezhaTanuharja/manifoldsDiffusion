@@ -12,11 +12,11 @@ simpleclass     : Implements simple score_functions
 
 
 from .baseclass import DirectionCalculator, RelativeDirectionCalculator
-from .simpleclass import DirectToReference
+from .simpleclass import Direction
 
 
 __all__ = [
     'DirectionCalculator',
     'RelativeDirectionCalculator',
-    'DirectToReference'
+    'Direction'
 ]

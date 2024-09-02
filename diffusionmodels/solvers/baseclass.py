@@ -48,8 +48,8 @@ class Solver(ABC):
     @abstractmethod
     def solve(
         self,
-        initial_value_problems: List[Tuple[torch.Tensor, StochasticDifferentialEquation]],
-    ) -> List[torch.Tensor]:
+        initial_value, stochastic_de
+    ) -> torch.Tensor:
         """
         Extract samples by solving SDEs
 
