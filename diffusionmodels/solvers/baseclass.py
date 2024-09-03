@@ -16,10 +16,9 @@ SolutionSampler
 
 import torch
 from abc import ABC, abstractmethod
-from typing import List, Tuple
 
 from ..differentialequations import StochasticDifferentialEquation
-from ..timeintegrators import FirstOrder
+from ..timeintegrators import Explicit
 from ..recorders import DataRecorder
 
 
@@ -37,7 +36,7 @@ class Solver(ABC):
     @abstractmethod
     def __init__(
         self,
-        time_integrator: FirstOrder,
+        time_integrator: Explicit,
         data_recorder: DataRecorder,
         num_points: int,
         grid_size: float
@@ -46,27 +45,35 @@ class Solver(ABC):
 
 
     @abstractmethod
+    def set_num_points(self, num_points: int) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def set_grid_size(self, grid_size: float) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
     def solve(
         self,
-        initial_value, stochastic_de
+        initial_value: torch.Tensor,
+        stochastic_de: StochasticDifferentialEquation
     ) -> torch.Tensor:
         """
         Extract samples by solving SDEs
 
         Parameters
         ----------
-        initial_value_problems : InitialValueProblems
-            A list of dict of initial-value problems
+        `initial_value : torch.Tensor`
+            The initial value of the problem
 
-        num_samples : int
-            The number of solutions to record
-
-        dt : float
-            The time increment between consecutive solutions
+        `stochastic_de : StochasticDifferentialEquation`
+            The stochastic differential equation to solve
 
         Returns
         -------
-        List[torch.Tensor, ...]
-            The sampled solutions for each initial-value problem
+        `torch.Tensor`
+            The solutions of the initial-value problem stored by the data recorder
         """
         raise NotImplementedError("Subclasses must implement this method")

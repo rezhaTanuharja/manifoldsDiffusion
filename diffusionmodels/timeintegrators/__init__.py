@@ -11,12 +11,12 @@ simpleclass     : Implements various simple time integrators
 """
 
 
-from .baseclass import FirstOrder
+from .baseclass import Explicit
 from .simpleclass import EulerMaruyama, Heun
 
 
 __all__ = [
-    'FirstOrder',
+    'Explicit',
 
     'EulerMaruyama',
     'Heun'

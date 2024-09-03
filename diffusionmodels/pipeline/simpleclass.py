@@ -1,17 +1,25 @@
 from .baseclass import Transform
+from typing import List, Any
 
 
 class Pipeline(Transform):
+    """
+    A transformation that consists of several sequential transformations (a pipeline)
+
+    Private Attributes
+    ------------------
+    `_transforms : List[Transform]`
+        A list of transformations to perform in a single data pass
+    """
 
 
-    def __init__(self, transforms):
+    def __init__(self, transforms: List[Transform]) -> None:
         self._transforms = transforms
 
 
-    def __call__(self, x):
+    def __call__(self, data: Any) -> Any:
         
         for transform in self._transforms:
+            data = transform(data)
 
-            x = transform(x)
-
-        return x
+        return data

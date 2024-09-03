@@ -6,20 +6,21 @@ Provides the interface for all time integrators
 
 Classes
 -------
-FirstOrder
-    Time integration method that only requires values at a single timestamp
+Explicit
+    Time integration method that only requires values at the present and past time
 """
 
 
 from abc import ABC, abstractmethod
+from typing import Union, List
 from ..differentialequations import StochasticDifferentialEquation
 
 import torch
 
 
-class FirstOrder(ABC):
+class Explicit(ABC):
     """
-    An abstract class of first-order time integrations.
+    An abstract class of explicit time-integration
 
     Methods
     -------
@@ -32,8 +33,9 @@ class FirstOrder(ABC):
     def step_forward(
         self,
         stochastic_de: StochasticDifferentialEquation,
-        X: torch.Tensor,
-        t: float, dt: float
+        X: Union[torch.Tensor, List[torch.Tensor]],
+        t: Union[float, List[float]],
+        dt: float
     ) -> torch.Tensor:
         """
         Evaluate X(t + dt) from a given stochastic differential equation
@@ -43,13 +45,13 @@ class FirstOrder(ABC):
         `stochastic_de: StochasticDifferentialEquation`
             A stochastic differential equation
 
-        `X : torch.Tensor`
-            The value of X at present time, i.e., X(t)
+        `X : torch.Tensor | List[torch.Tensor]`
+            The value of X at present (and possibly past) time
 
-        `t : float`
-            The current time
+        `t : float | List[float]`
+            The current (and possibly past) time
 
-        `dt: float`
+        `dt: float | List[float]`
             The time increment or the temporal step
 
         Returns

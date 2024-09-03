@@ -17,10 +17,10 @@ Heun
 import torch
 
 from ..differentialequations import StochasticDifferentialEquation
-from .baseclass import FirstOrder
+from .baseclass import Explicit
 
 
-class EulerMaruyama(FirstOrder):
+class EulerMaruyama(Explicit):
     """
     An explicit first-order time integrator
     """
@@ -40,18 +40,18 @@ class EulerMaruyama(FirstOrder):
         )
 
 
-class Heun(FirstOrder):
+class Heun(Explicit):
     """
-    A predictor-corrector time integrator using the trapezoidal rule.
+    An explicit time-integation with trapezoidal predictor-corrector method
 
     Private Attributes
     ------------------
-    _predictor : FirstOrder
-        A first-order time integrator
+    _predictor : Explicit
+        An explicit time integrator
     """
 
 
-    def __init__(self, predictor: FirstOrder) -> None:
+    def __init__(self, predictor: Explicit) -> None:
         self._predictor = predictor
 
 
@@ -66,7 +66,7 @@ class Heun(FirstOrder):
 
             (1) `X_pred = predictor.step_forward(X, t, dt)`
 
-            (2) `drift = 0.5 * [ drift(X_pred, t + dt) + drift(X, t) ]`
+            (2) `drift = 0.5 * []`
 
             (3) `X(t + dt) = X(t) + drift dt + diffusion(X, t) dW`
         """

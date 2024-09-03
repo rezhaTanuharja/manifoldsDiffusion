@@ -1,29 +1,45 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple
+from typing import Dict
 
 import torch
 
-from ..differentialequations import StochasticDifferentialEquation
+# from ..differentialequations import StochasticDifferentialEquation
 class DataRecorder(ABC):
     """
     An interface to record data
+
     Methods
     -------
-    reset(initial_value_problems, num_samples)
-        Reset and prepare to store a number of solution to initial value problems
+    reset(initial_value, num_samples)
+        Reset and prepare to store a data with size equals to `num_samples` of `initial_value`
 
     store(problem_index, result)
         Define what to do with the result of an initial value problem
 
     get_record()
         Provide access to previously recorded data
+
+    Private Attributes
+    ------------------
+    `_device : torch.device`
+        The device to store the record
     """
 
+
+    def __init__(self, device: torch.device) -> None:
+        """
+        Parameters
+        ----------
+        `device : torch.device`
+            Determines where the record will be stored
+        """
+        self._device = device
+    
 
     @abstractmethod
     def reset(
         self,
-        X,
+        initial_value: torch.Tensor,
         num_samples: int
     ) -> None:
         """
@@ -31,35 +47,44 @@ class DataRecorder(ABC):
 
         Parameters
         ----------
-        initial_value_problems : InitialValueProblems
-            A list of dict of initial-value problems
+        `initial_value : torch.Tensor`
+            A tensor that has the same shape as one data chunk to store
 
-        num_samples : int
-            The number of samples to record
+        `num_samples : int`
+            The number of data chunks to record
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def store(self, result: torch.Tensor, time) -> None:
+    def store(
+        self,
+        result: torch.Tensor,
+        time: float
+    ) -> None:
         """
         Define what to do with a data chunk, e.g., store in record or do nothing
 
         Parameters
         ----------
-        problem_index : int
-            The index of the current initial-value problem
+        `result : torch.Tensor`
+            A data chunk(s) to store
 
-        result : torch.Tensor
-            The latest solution of the initial-value problem
+        `time : float`
+            The timestamp associated with the data chunk(s)
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def get_record(self):
+    def get_record(self) -> Dict[torch.Tensor, torch.Tensor]:
         """
         A method to access previously recorded data
+
+        Returns
+        -------
+        `Dict['time': torch.Tensor, 'data': torch.Tensor]`
+            A dictionary of stored data and the timestamps
         """
         raise NotImplementedError("Subclasses must implement this method")
 
