@@ -1,0 +1,63 @@
+# config.yaml
+
+
+# -------- #
+# Datasets #
+# -------- #
+
+file_name: './extractedData/ACCAD/Male1General_c3d/General A2 - Sway_poses.npz'
+
+
+# -------- #
+# Subjects #
+# -------- #
+
+# the number of subjects to load from AMASS datasets
+num_subjects: 1000
+
+# the number of subjects to send to GPU and process at each iteration
+subject_batch: 250
+
+# -- each subject is duplicated and noised instead of using a loop to noise each subject multiple times
+num_subject_duplicates: 20
+
+
+# ---- #
+# Time #
+# ---- #
+
+# each copy of a subject X[n] is noised into X[m, n]  where m is in [0, num_time_points - 1]
+num_time_points: 128
+
+# the time resoluttion
+time_increment: 0.002
+
+
+# ----- #
+# Model #
+# ----- #
+
+input_size: 468
+hidden_size: 512
+output_size: 156
+
+negative_slope: 0.01
+
+time_multiplier: 100.0
+
+
+# -------- #
+# Training #
+# -------- #
+
+# the number of data used in training at each iteration
+training_batch: 1024
+
+# the number of training epochs
+num_epochs: 2500
+
+# limit the norm of gradient during training, used to prevent overshoot
+max_norm: 3.0
+
+# a hyperparameter to tune the training process
+learning_rate: 0.00005
