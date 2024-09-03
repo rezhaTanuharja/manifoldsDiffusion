@@ -152,7 +152,7 @@ for i in range(param['num_epochs']):
 
             optimizer.step()
 
-    if i % 500 == 0:
+    if i % 250 == 0:
         torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
 
     print(f'Epoch [{i + 1}/{param["num_epochs"]}], Loss: {(running_loss / (len(data_loader) * len(train_load))):.4f}')

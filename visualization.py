@@ -4,6 +4,8 @@ import numpy as np
 from human_body_prior.tools.omni_tools import copy2cpu as c2c
 # from os import path as osp
 
+# TODO: this script needs to be completely cleaned up
+
 comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # amass_npz_fname = './downloads/dmpl_sample.npz'
