@@ -10,12 +10,12 @@ import diffusionmodels as dm
 
 num_samples = 1000
 num_time_samples = 128
-batch_size = 100
+batch_size = 250
 time_batch = 512
-num_epochs = 2000
+num_epochs = 7500
 max_norm = 3.0
 repeat_noise = 10
-learning_rate = 0.00005
+learning_rate = 0.0001
 file_name = './extractedData/ACCAD/Male1General_c3d/General A2 - Sway_poses.npz'
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -148,7 +148,10 @@ for k in range(num_epochs):
 
     print(f'Epoch [{k + 1}/{num_epochs}], Loss: {(running_loss / (repeat_noise * len(data_loader) * len(train_load))):.4f}')
 
-torch.save(model.state_dict(), 'model_norm.pth')
+    if k % 1500 == 0:
+        torch.save(model.state_dict(), 'model_norm.pth')
+
+
 
 # print(amass_dataset.device)
     # print(data['time'].shape)
