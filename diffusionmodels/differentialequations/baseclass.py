@@ -6,10 +6,7 @@ Provides the interface of stochastic differential equations
 
 Classes
 -------
-StochasticDifferentialEquation
-    SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW
-"""
-
+StochasticDifferentialEquation SDEs in the form of dX = drift(X, t) dt + diffusion(X, t) dW """
 
 from abc import ABC, abstractmethod
 import torch

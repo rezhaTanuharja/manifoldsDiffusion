@@ -87,8 +87,7 @@ data_pipeline = dm.pipeline.Pipeline(
             )
         },
 
-        # -- reshape tensors so the first shape is
-        # -- (num_subjects * num_subject_duplicates * num_time_points)
+        # -- reshape tensors so the first shape is (num_subjects * num_subject_duplicates * num_time_points)
         # -- and the second one is the rest of the dimensions flattened into one
         lambda dataset: {
 

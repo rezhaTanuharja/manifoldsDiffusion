@@ -16,6 +16,7 @@ SolutionSampler
 
 import torch
 from abc import ABC, abstractmethod
+from typing import Dict
 
 from ..differentialequations import StochasticDifferentialEquation
 from ..timeintegrators import Explicit
@@ -59,7 +60,7 @@ class Solver(ABC):
         self,
         initial_value: torch.Tensor,
         stochastic_de: StochasticDifferentialEquation
-    ) -> torch.Tensor:
+    ) -> Dict[torch.Tensor, torch.Tensor]:
         """
         Extract samples by solving SDEs
 
@@ -73,7 +74,7 @@ class Solver(ABC):
 
         Returns
         -------
-        `torch.Tensor`
-            The solutions of the initial-value problem stored by the data recorder
+        `Dict['time': torch.Tensor, 'data': torch.Tensor]`
+            A dictionary of SDE solution and time
         """
         raise NotImplementedError("Subclasses must implement this method")

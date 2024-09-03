@@ -1,6 +1,6 @@
 """
-diffusionmodels.samplers.solutionsamplers
-=========================================
+diffusionmodels.solvers.simpleclass
+===================================
 
 This module implements various solution samplers
 
@@ -12,13 +12,13 @@ SimpleSampler
 
 
 import torch
-from typing import List, Tuple
 
-from ..differentialequations import StochasticDifferentialEquation
 from ..timeintegrators import Explicit
 from ..recorders import DataRecorder
 
 from .baseclass import Solver
+
+from typing import Dict
 
 
 class SimpleSolver(Solver):
@@ -57,7 +57,7 @@ class SimpleSolver(Solver):
     def solve(
         self,
         initial_value, stochastic_de
-    ) -> torch.Tensor:
+    ) -> Dict[torch.Tensor, torch.Tensor]:
 
         self._data_recorder.reset(initial_value, self._num_points)
 
