@@ -14,7 +14,6 @@ solvers                 : Provides SDE solvers
 pipeline                : Provides functionalities to define data preprocessing
 """
 
-
 from . import manifolds
 from . import differentialequations
 from . import timeintegrators

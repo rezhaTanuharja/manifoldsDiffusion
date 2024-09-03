@@ -16,22 +16,24 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 
+# NOTE: All interfaces must be defined in the same style as this one
+
 class Manifold(ABC):
     """
     An abstract class that serves as an interface of all manifolds
 
     Methods
     -------
-    dimension()
+    `dimension()`
         Returns the tensor shape of each point in the manifold
 
-    tangent_dimension()
+    `tangent_dimension()`
         Returns the tensor shape of each vector in the manifold tangent space
 
-    exp(X, dX)
+    `exp(X, dX)`
         Increment a point X with a tangent vector dX
 
-    log(X, Y)
+    `log(X, Y)`
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
 
@@ -41,7 +43,7 @@ class Manifold(ABC):
         """
         Returns
         -------
-        Tuple[int, ...]
+        `Tuple[int, ...]`
             The tensor shape of each point in the manifold
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -52,7 +54,7 @@ class Manifold(ABC):
         """
         Returns
         -------
-        Tuple[int, ...]
+        `Tuple[int, ...]`
             The tensor shape of each vector in the manifold tangent space
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -65,15 +67,15 @@ class Manifold(ABC):
 
         Parameters
         ----------
-        X : torch.Tensor
+        `X : torch.Tensor`
             A point in the manifold
 
-        dX : torch.Tensor
+        `dX : torch.Tensor`
             A tangent vector in a tangent space on the manifold
 
         Returns
         -------
-        torch.Tensor
+        `torch.Tensor`
             A point in the manifold
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -86,15 +88,15 @@ class Manifold(ABC):
 
         Parameters
         ----------
-        X : torch.Tensor
+        `X : torch.Tensor`
             The origin point in the manifold
 
-        Y : torch.Tensor
+        `Y : torch.Tensor`
             The destination point in the manifold
 
         Returns
         -------
-        torch.Tensor
+        `torch.Tensor`
             A tangent vector on the manifold
         """
         raise NotImplementedError("Subclasses must implement this method")

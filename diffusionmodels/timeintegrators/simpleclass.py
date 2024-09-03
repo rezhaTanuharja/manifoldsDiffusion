@@ -7,10 +7,10 @@ Defines the simple classes for time integrators
 Classes
 -------
 EulerMaruyama
-    An implementation of an explicit time integrator
+    An explicit first-order time integrator
 
 Heun
-    An implementation of a predictor-corrector time integrator with a trapezoidal rule
+    A predictor-corrector time integrator using a trapezoidal rule
 """
 
 
@@ -22,8 +22,7 @@ from .baseclass import FirstOrder
 
 class EulerMaruyama(FirstOrder):
     """
-    An explicit time integrator in the form of
-        X(t + dt) = X(t) + dX(X(t), t)
+    An explicit first-order time integrator
     """
 
 
@@ -48,7 +47,7 @@ class Heun(FirstOrder):
     Private Attributes
     ------------------
     _predictor : FirstOrder
-        A first order time integrator
+        A first-order time integrator
     """
 
 
@@ -63,11 +62,13 @@ class Heun(FirstOrder):
         t: float, dt: float
     ) -> torch.Tensor:
         """
-        Evaluate X(t + dt) using the trapezoidal rule
-            
-            dX = 0.5 (sde.drift(X, t) + sde.drift(X_pred, t + dt)) dt + diffusion(X, t) dW
+        Do a prediction, then correct the drift by simple averaging:
 
-        The value of X_pred is obtained from predictor.step_forward(sde, X, t, dt)
+            (1) `X_pred = predictor.step_forward(X, t, dt)`
+
+            (2) `drift = 0.5 * [ drift(X_pred, t + dt) + drift(X, t) ]`
+
+            (3) `X(t + dt) = X(t) + drift dt + diffusion(X, t) dW`
         """
 
         # -- Predict future X using the Euler_Maruyama method

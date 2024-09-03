@@ -21,17 +21,17 @@ class StochasticDifferentialEquation(ABC):
     """
     An abstract class of stochastic differential equations in the form of
 
-        dX = drift(X, t) dt + diffusion(X, t) dW
+        `dX = drift(X, t) dt + diffusion(X, t) dW`
 
     Methods
     -------
-    manifold()
+    `manifold()`
         Provides access to the manifold the SDE lives in
 
-    drift(X, t)
+    `drift(X, t)`
         Evaluate the drift tensor field at (X, t)
 
-    diffusion(X, t)
+    `diffusion(X, t)`
         Evaluate the diffusion tensor field at (X, t)
     """
 
@@ -41,7 +41,7 @@ class StochasticDifferentialEquation(ABC):
         """
         Returns
         -------
-        Manifold
+        `Manifold`
             A manifold the SDE lives in
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -55,15 +55,15 @@ class StochasticDifferentialEquation(ABC):
 
         Parameters
         ----------
-        X : torch.Tensor
+        `X : torch.Tensor`
             The spatial location to evaluate
 
-        t : float
+        `t : float`
             The temporal location to evaluate
 
         Returns
         -------
-        torch.Tensor
+        `torch.Tensor`
             The drift tensor, drift(X, t)
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -76,15 +76,15 @@ class StochasticDifferentialEquation(ABC):
 
         Parameters
         ----------
-        X : torch.Tensor
+        `X : torch.Tensor`
             The spatial location to evaluate
 
-        t : float
+        `t : float`
             The temporal location to evaluate
 
         Returns
         -------
-        torch.Tensor
+        `torch.Tensor`
             The diffusion term, diffusion(X, t) dW
         """
         raise NotImplementedError("Subclasses must implement this method")
