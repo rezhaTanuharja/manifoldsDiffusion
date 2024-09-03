@@ -76,7 +76,6 @@ data_pipeline = dm.pipeline.Pipeline(
         # -- use score function as data label for training
         lambda dataset: {
 
-
             'time': dataset['time'],
             'points': dataset['data'],
 
@@ -85,6 +84,7 @@ data_pipeline = dm.pipeline.Pipeline(
                 destination = dataset['original'],
                 scale = 1.0 / dataset['time']
             )
+
         },
 
         # -- reshape tensors so the first shape is (num_subjects * num_subject_duplicates * num_time_points)
@@ -99,6 +99,7 @@ data_pipeline = dm.pipeline.Pipeline(
 
             'points': dataset['points'].flatten(0, 1).flatten(1),
             'labels': dataset['labels'].flatten(0, 1).flatten(1)
+
         },
 
     ]
@@ -109,7 +110,7 @@ data_pipeline = dm.pipeline.Pipeline(
 # -- This part defines the NN model, loss function, and optimizer
 
 model = NaiveMLP()
-model.load_state_dict(torch.load('model_norm.pth'))
+model.load_state_dict(torch.load('projects/humanposeestimation/models/naive_model.pth'))
 model.to(device)
 
 criterion = torch.nn.MSELoss()

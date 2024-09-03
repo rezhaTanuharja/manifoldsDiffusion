@@ -60,4 +60,4 @@ num_epochs: 2500
 max_norm: 3.0
 
 # a hyperparameter to tune the training process
-learning_rate: 0.00005
+learning_rate: 0.00002
