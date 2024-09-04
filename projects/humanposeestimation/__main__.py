@@ -116,7 +116,6 @@ model.to(device)
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
 
-
 datasets = np.load(param['file_name'])['poses']
 datasets = torch.tensor(datasets[:param['num_subjects']]).float()
 
@@ -131,30 +130,30 @@ for i in range(param['num_epochs']):
     model.train()
     running_loss = 0.0
 
-    for j, dataset in enumerate(data_loader):
+    for dataset in data_loader:
 
+        # -- process data using the predefined pipeline
         data = data_pipeline(dataset)
 
-        train_data = TensorDataset(data['time'], data['points'], data['labels'])
-        train_load = DataLoader(train_data, batch_size = param['num_time_points'], shuffle = True)
+        # -- forward
+        optimizer.zero_grad()
+        outputs = model(data['points'], data['time'])
 
-        for k, (time, points, labels) in enumerate(train_load):
+        # -- back propagation
+        loss = criterion(outputs, data['labels'])
+        loss.backward()
 
-            optimizer.zero_grad()
+        # -- avoid huge update by clipping the gradient
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm = param['max_norm'])
 
-            outputs = model(points, time)
+        # -- model update
+        optimizer.step()
+        running_loss += loss.item()
 
-            loss = criterion(outputs, labels)
-            loss.backward()
-
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm = param['max_norm'])
-
-            running_loss += loss.item()
-
-            optimizer.step()
-
+    # -- periodic save to avoid losing huge progress
     if i % 250 == 0:
         torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
 
-    print(f'Epoch [{i + 1}/{param["num_epochs"]}], Loss: {(running_loss / (len(data_loader) * len(train_load))):.4f}')
+    # -- output training progress
+    print(f'Epoch [{(i + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')
 
