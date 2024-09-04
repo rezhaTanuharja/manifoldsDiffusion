@@ -13,10 +13,9 @@ SimpleSampler
 
 import torch
 
-from ..timeintegrators import Explicit
-from ..recorders import DataRecorder
-
 from .baseclass import Solver
+from ..timeintegrators import TimeIntegrator
+from ..recorders import DataRecorder
 
 from typing import Dict
 
@@ -36,7 +35,7 @@ class SimpleSolver(Solver):
 
     def __init__(
         self,
-        time_integrator: Explicit,
+        time_integrator: TimeIntegrator,
         data_recorder: DataRecorder,
         num_points: int,
         grid_size: float
@@ -46,13 +45,15 @@ class SimpleSolver(Solver):
         self._num_points = num_points
         self._grid_size = grid_size
 
+    def to(self, device: torch.device) -> None:
+        self._time_integrator.to(device)
+        self._data_recorder.to(device)
 
     def set_num_points(self, num_points: int) -> None:
         self._num_points = num_points
 
     def set_grid_size(self, grid_size: float) -> None:
         self._grid_size = grid_size
-
 
     def solve(
         self,

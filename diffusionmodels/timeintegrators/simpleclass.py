@@ -16,14 +16,22 @@ Heun
 
 import torch
 
+from ..utilities.warningsuppressors import unused_variables
 from ..differentialequations import StochasticDifferentialEquation
-from .baseclass import Explicit
+from .baseclass import TimeIntegrator
 
 
-class EulerMaruyama(Explicit):
+class EulerMaruyama(TimeIntegrator):
     """
     An explicit first-order time integrator
     """
+
+    def __init__(self) -> None:
+        pass
+
+    def to(self, device: torch.device) -> None:
+        unused_variables(device)
+        pass
 
 
     def step_forward(
@@ -40,20 +48,22 @@ class EulerMaruyama(Explicit):
         )
 
 
-class Heun(Explicit):
+class Heun(TimeIntegrator):
     """
     An explicit time-integation with trapezoidal predictor-corrector method
 
     Private Attributes
     ------------------
-    _predictor : Explicit
+    _predictor : TimeIntegrator
         An explicit time integrator
     """
 
 
-    def __init__(self, predictor: Explicit) -> None:
+    def __init__(self, predictor: TimeIntegrator) -> None:
         self._predictor = predictor
 
+    def to(self, device: torch.device) -> None:
+        self._predictor.to(device)
 
     def step_forward(
         self,

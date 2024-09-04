@@ -1,15 +1,18 @@
 from abc import ABC, abstractmethod
+from contextlib import AbstractAsyncContextManager
 from typing import Dict
 
 import torch
 
-# from ..differentialequations import StochasticDifferentialEquation
 class DataRecorder(ABC):
     """
     An interface to record data
 
     Methods
     -------
+    `to(device)`
+        Moves any tensor attributes to device
+
     reset(initial_value, num_samples)
         Reset and prepare to store a data with size equals to `num_samples` of `initial_value`
 
@@ -26,14 +29,22 @@ class DataRecorder(ABC):
     """
 
 
-    def __init__(self, device: torch.device) -> None:
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def to(self, device = torch.device) -> None:
         """
+        Move any tensor attributes to device
+
         Parameters
         ----------
-        `device : torch.device`
-            Determines where the record will be stored
+        `device: torch.device`
+            A device object from PyTorch
         """
-        self._device = device
+        raise NotImplementedError("Subclasses must implement this method")
     
 
     @abstractmethod

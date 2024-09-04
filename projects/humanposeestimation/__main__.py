@@ -22,7 +22,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # --    SDE solver
 # --    score function
 
-manifold = dm.manifolds.SpecialOrthogonal3(device = device)
+manifold = dm.manifolds.SpecialOrthogonal3()
 
 stochastic_de = dm.differentialequations.ExplodingVariance(
 
@@ -33,12 +33,21 @@ stochastic_de = dm.differentialequations.ExplodingVariance(
 
 solver = dm.solvers.SimpleSolver(
     time_integrator = dm.timeintegrators.EulerMaruyama(),
-    data_recorder = dm.recorders.SimpleRecorder(device = device),
+    data_recorder = dm.recorders.SimpleRecorder(),
     num_points = param['num_time_points'],
     grid_size = param['time_increment']
 )
 
 score_function = dm.scorefunctions.Direction(manifold = manifold)
+
+# -- send all objects to the same device
+for obj in [
+    manifold,
+    stochastic_de,
+    solver,
+    score_function,
+]:
+    obj.to(device)
 
 
 ### NOTE: 

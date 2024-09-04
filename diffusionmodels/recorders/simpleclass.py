@@ -1,7 +1,5 @@
 import torch
 
-from typing import Union, List
-
 from .baseclass import DataRecorder
 
 
@@ -11,16 +9,21 @@ class SimpleRecorder(DataRecorder):
 
     Private Attributes
     ------------------
-    _records : List[torch.Tensor]
+    `_device : torch.device`
+        The device that stores the record
+
+    `_records : List[torch.Tensor]`
         A list of tensors to store data
 
-    _indices : List[int]
+    `_indices : List[int]`
         A list of indices of the last saved data in each tensor inside _records
     """
 
+    def __init__(self):
+        self._device = torch.device('cpu')
 
-    def __init__(self, device: torch.device) -> None:
-        super().__init__(device)
+    def to(self, device = torch.device) -> None:
+        self._device = device
 
     def reset(
         self,
@@ -31,13 +34,13 @@ class SimpleRecorder(DataRecorder):
         self._indices = 0
 
         self._timestamps = torch.zeros(
-            num_samples, device = self._device
+            size = (num_samples,), device = self._device
         )
 
         record_shape = (num_samples, ) + initial_value.shape
 
         self._records = torch.zeros(
-            record_shape,
+            size = record_shape,
             dtype = initial_value.dtype,
             device = self._device
         )

@@ -6,7 +6,7 @@ Provides the interface for all time integrators
 
 Classes
 -------
-Explicit
+TimeIntegrator
     Time integration method that only requires values at the present and past time
 """
 
@@ -18,15 +18,36 @@ from ..differentialequations import StochasticDifferentialEquation
 import torch
 
 
-class Explicit(ABC):
+class TimeIntegrator(ABC):
     """
-    An abstract class of explicit time-integration
+    An abstract class of a time-integration
 
     Methods
     -------
+    `to(device)`
+        Moves any tensor attributes to device
+
     `step_forward(stochastic_de, X, t, dt)`
         Returns X(t + dt)
     """
+
+
+    @abstractmethod
+    def __init__(self):
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod

@@ -24,6 +24,9 @@ class Manifold(ABC):
 
     Methods
     -------
+    `to(device)`
+        Moves any tensor attributes to device
+
     `dimension()`
         Returns the tensor shape of each point in the manifold
 
@@ -36,6 +39,24 @@ class Manifold(ABC):
     `log(X, Y)`
         Calculate a tangent vector dX such that exp(X, dX) = Y
     """
+
+
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod

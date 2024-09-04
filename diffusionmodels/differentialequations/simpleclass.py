@@ -43,6 +43,10 @@ class ExplodingVariance(StochasticDifferentialEquation):
         self._variance_scale = variance_scale
 
 
+    def to(self, device: torch.device) -> None:
+        self._manifold.to(device)
+
+
     def manifold(self) -> Manifold:
         return self._manifold
 
@@ -53,7 +57,7 @@ class ExplodingVariance(StochasticDifferentialEquation):
         unused_variables(X, t)
 
         # -- this will be broadcasted, do not waste memory
-        return torch.tensor(0.0, device = X.device)
+        return torch.tensor(0.0, dtype = X.dtype, device = X.device)
 
 
     def diffusion(self, X: torch.Tensor, t: float) -> torch.Tensor:
@@ -66,5 +70,6 @@ class ExplodingVariance(StochasticDifferentialEquation):
         # -- diffusion is a multivariate Gaussian
         return self._variance_scale * torch.randn(
             num_samples, num_dimension, *self._manifold.tangent_dimension(),
+            dtype = X.dtype,
             device = X.device
         )

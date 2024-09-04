@@ -1,16 +1,13 @@
 """
-diffusionmodels.samplers.baseclass
-==================================
+diffusionmodels.solvers.baseclass
+=================================
 
-This module defines the abstract base classes for samplers
+This module provides the interface for all solvers in this package
 
 Classes
 -------
-DataRecorder
-    An abstract class to define how and which data is stored
-
-SolutionSampler
-    An abstract class to define how to extract a time-series from SDEs
+Solver
+    The interface for all solvers in this package
 """
 
 
@@ -19,25 +16,42 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from ..differentialequations import StochasticDifferentialEquation
-from ..timeintegrators import Explicit
+from ..timeintegrators import TimeIntegrator
 from ..recorders import DataRecorder
 
 
 class Solver(ABC):
     """
-    An abstract class to define how to extract a time-series from SDEs
+    The interface for all solvers in this package
 
     Methods
     -------
-    get_samples(initial_value_problems, num_samples, dt)
-        Solve initial-value problems and store a number of solutions
+    `to(device)`
+        Moves any tensor attributes to device
+
+    `get_samples(initial_value, stochastic_de)`
+        Solve an SDE with the given initial value
+
+    Private Attributes
+    ----------
+    `_time_integrator : TimeIntegrator`
+        A time integrator to solve SDEs
+
+    `_data_recorder : DataRecorder`
+        A recorder that can store SDE solutions
+
+    `_num_points : int`
+        Number of time steps to solve
+
+    `_grid_size : float`
+        The resolution in time
     """
 
 
     @abstractmethod
     def __init__(
         self,
-        time_integrator: Explicit,
+        time_integrator: TimeIntegrator,
         data_recorder: DataRecorder,
         num_points: int,
         grid_size: float
@@ -46,12 +60,41 @@ class Solver(ABC):
 
 
     @abstractmethod
+    def to(self, device: torch.device):
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
     def set_num_points(self, num_points: int) -> None:
+        """
+        Change the number of timesteps
+
+        Parameters
+        ----------
+        `num_points : int`
+            The new number of timesteps
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
     def set_grid_size(self, grid_size: float) -> None:
+        """
+        Change the time resolution
+
+        Parameters
+        ----------
+        `grid_size : float`
+            The new time resolution
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
 

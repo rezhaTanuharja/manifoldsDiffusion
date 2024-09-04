@@ -1,14 +1,13 @@
 """
-diffusionmodels.samplers
-========================
+diffusionmodels.solvers
+=======================
 
-Provides functionalities to sample SDE solutions at discrete points.
+Provides functionalities to solve SDE and store a finite number of the solution
 
 Modules
 -------
-baseclass           : Provides the interfaces of samplers
-datarecorders       : Implements various data recorders
-solutionsamplers    : Implements various solution samplers
+baseclass           : Provides the interfaces of all solvers in this package
+simpleclass         : Implements various simple solvers
 """
 
 

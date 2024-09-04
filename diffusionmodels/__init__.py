@@ -12,6 +12,8 @@ timeintegrators         : Provides time integration methods
 recorders               : Provides means to store SDE solutions
 solvers                 : Provides SDE solvers
 dataprocessing          : Provides functionalities to define data preprocessing steps
+scorefunctions          : Provides functionalities to compute pseudo "Stein score function"
+utilities               : Provides various useful functions
 """
 
 from . import manifolds
@@ -20,8 +22,8 @@ from . import timeintegrators
 from . import recorders
 from . import solvers
 from . import dataprocessing
-from . import utilities
 from . import scorefunctions
+from . import utilities
 
 
 __all__ = [
@@ -31,6 +33,6 @@ __all__ = [
     'recorders',
     'solvers',
     'dataprocessing',
-    'utilities',
     'scorefunctions',
+    'utilities',
 ]

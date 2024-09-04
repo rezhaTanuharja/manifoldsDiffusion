@@ -18,14 +18,11 @@ from ..manifolds import Manifold
 class Direction(RelativeDirectionCalculator):
 
     def __init__(self, manifold: Manifold):
-        super().__init__(manifold)
+        self._manifold = manifold
 
+    def to(self, device: torch.device) -> None:
+        self._manifold.to(device)
 
-    # def get_direction(
-    #     self,
-    #     X: torch.Tensor, X_ref: torch.Tensor,
-    #     t: float,
-    # ) -> torch.Tensor:
     def get_direction(
         self,
         origin: torch.Tensor, destination: torch.Tensor,

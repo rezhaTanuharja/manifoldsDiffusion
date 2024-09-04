@@ -22,6 +22,9 @@ class StochasticDifferentialEquation(ABC):
 
     Methods
     -------
+    `to(device)`
+        Moves any tensor attributes to device
+
     `manifold()`
         Provides access to the manifold the SDE lives in
 
@@ -31,6 +34,24 @@ class StochasticDifferentialEquation(ABC):
     `diffusion(X, t)`
         Evaluate the diffusion tensor field at (X, t)
     """
+
+
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
+        raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod

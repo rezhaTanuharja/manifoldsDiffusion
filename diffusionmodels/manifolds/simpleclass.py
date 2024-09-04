@@ -33,7 +33,7 @@ class SpecialOrthogonal3(Manifold):
         The tensor shape of each vector in the manifold tangent space
     """
 
-    def __init__(self, device: torch.device) -> None:
+    def __init__(self) -> None:
 
         # -- use the canonical base of the skew symmetric space
         self._bases = torch.Tensor([
@@ -52,10 +52,14 @@ class SpecialOrthogonal3(Manifold):
                 [ 1,  0,  0],
                 [ 0,  0,  0]
             ]
-        ]).to(device)
+        ])
 
         self._dimension = (3, 3)
         self._tangent_dimension = (3,)
+
+
+    def to(self, device: torch.device) -> None:
+        self._bases = self._bases.to(device)
 
 
     def dimension(self) -> Tuple[int, ...]:

@@ -24,10 +24,8 @@ class Pipeline(Transform):
         A list of transformations to perform in a single data pass
     """
 
-
     def __init__(self, transforms: List[Transform]) -> None:
         self._transforms = transforms
-
 
     def __call__(self, data: Any) -> Any:
         
