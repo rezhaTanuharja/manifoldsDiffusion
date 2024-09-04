@@ -3,7 +3,7 @@ import torch
 import numpy as np
 import diffusionmodels as dm
 
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader
 from models.definitions import NaiveMLP
 
 
@@ -44,7 +44,7 @@ score_function = dm.scorefunctions.Direction(manifold = manifold)
 ### NOTE: 
 # -- This part defines the data processing steps
 
-data_pipeline = dm.pipeline.Pipeline(
+data_pipeline = dm.dataprocessing.Pipeline(
     transforms = [
 
         # -- move dataset to the same device

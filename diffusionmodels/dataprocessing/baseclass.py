@@ -1,8 +1,8 @@
 """
-pipeline.baseclass
-==================
+dataprocessing.baseclass
+========================
 
-Provides the interface for all transformations in this package
+Provides the interface for all data processing steps in this package
 
 Class
 -----

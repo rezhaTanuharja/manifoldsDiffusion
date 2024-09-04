@@ -11,7 +11,7 @@ differentialequations   : Provides stochastic differntial equations
 timeintegrators         : Provides time integration methods
 recorders               : Provides means to store SDE solutions
 solvers                 : Provides SDE solvers
-pipeline                : Provides functionalities to define data preprocessing
+dataprocessing          : Provides functionalities to define data preprocessing steps
 """
 
 from . import manifolds
@@ -19,7 +19,7 @@ from . import differentialequations
 from . import timeintegrators
 from . import recorders
 from . import solvers
-from . import pipeline
+from . import dataprocessing
 from . import utilities
 from . import scorefunctions
 
@@ -30,7 +30,7 @@ __all__ = [
     'timeintegrators',
     'recorders',
     'solvers',
-    'pipeline',
+    'dataprocessing',
     'utilities',
     'scorefunctions',
 ]

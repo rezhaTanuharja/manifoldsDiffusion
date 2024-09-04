@@ -1,3 +1,15 @@
+"""
+dataprocessing.simpleclass
+==========================
+
+Implements various simple data processing steps
+
+Class
+-----
+Pipeline        : A transformation that consists of sequential smaller transformations
+"""
+
+
 from .baseclass import Transform
 from typing import List, Any
 
