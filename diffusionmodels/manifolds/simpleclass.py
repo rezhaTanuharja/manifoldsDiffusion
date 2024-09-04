@@ -1,8 +1,8 @@
 """
-manifolds.matrixclass
+manifolds.simpleclass
 ===================== 
 
-Implements various matrix groups
+Implements various simple classes of manifolds
 
 Classes
 -------
@@ -89,12 +89,7 @@ class SpecialOrthogonal3(Manifold):
         )
 
         # -- compute axis of rotation
-        axis = torch.stack([
-            relative_rotation[..., 2, 1] - relative_rotation[..., 1, 2],
-            relative_rotation[..., 0, 2] - relative_rotation[..., 2, 0],
-            relative_rotation[..., 1, 0] - relative_rotation[..., 0, 1]
-        ], dim = -1)
-
+        axis = torch.einsum('...ijk, ...jk -> ...i', self._bases, relative_rotation)
         axis = axis / (torch.norm(axis, dim = -1, keepdim = True) + 1e-6)
 
         # -- return the axis-angle representation
