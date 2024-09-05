@@ -1,38 +1,34 @@
 import yaml
 import torch
-import torch.nn as nn
 import torch.distributed as dist 
 from torch.nn.parallel import DistributedDataParallel as DDP
 import numpy as np
 import diffusionmodels as dm
 import os
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, DistributedSampler
 from models.definitions import NaiveMLP
 
-import argparse
 
+### NOTE: this part sets the parallelization
 
-def setup():
+if torch.cuda.is_available():
 
-
-    local_rank = int(os.environ['LOCAL_RANK'])
+    # -- initialize the process group
     dist.init_process_group(backend='nccl')
+
+    # -- get the local rank of the process
+    local_rank = int(os.environ['LOCAL_RANK'])
+
+    # -- ensure subsequent cuda operations are performed in the right device
     torch.cuda.set_device(local_rank)
+    device = torch.device('cuda')
 
-    return local_rank
 
+### NOTE: this part loads the simulation parameters
 
-local_rank = setup()
-
-# -- load the simulation parameters
 with open('./projects/humanposeestimation/parameters.yaml') as config_file:
     param = yaml.safe_load(config_file)
-
-# -- use NVIDIA GPU if it is available
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# dist.init_process_group(backend='nccl')
 
 
 ### NOTE: 
@@ -60,13 +56,12 @@ solver = dm.solvers.SimpleSolver(
 
 score_function = dm.scorefunctions.Direction(manifold = manifold)
 
-# -- send all objects to the same device
-for obj in [
+for obj in (
     manifold,
     stochastic_de,
     solver,
     score_function,
-]:
+):
     obj.to(device)
 
 
@@ -143,22 +138,24 @@ model = NaiveMLP()
 model.load_state_dict(torch.load('model_norm.pth'))
 # model = nn.DataParallel(model)
 model.to(device)
-model = DDP(model)
+model = DDP(model, device_ids=[local_rank, ])
 
 criterion = torch.nn.MSELoss()
-criterion = criterion.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
 
 datasets = np.load(param['file_name'])['poses']
 datasets = torch.tensor(datasets[:param['num_subjects']]).float()
 
-data_loader = DataLoader(datasets, batch_size = param['subject_batch'], shuffle = True)
+sampler = DistributedSampler(datasets, num_replicas = dist.get_world_size(), rank = local_rank)
+data_loader = DataLoader(datasets, batch_size = param['subject_batch'], sampler = sampler, num_workers = 2, pin_memory = True)
 
 
 ### NOTE: 
 # -- This is the model training process
 
-for i in range(param['num_epochs']):
+for epoch in range(param['num_epochs']):
+
+    sampler.set_epoch(epoch)
 
     model.train()
     running_loss = 0.0
@@ -184,9 +181,9 @@ for i in range(param['num_epochs']):
         running_loss += loss.item()
 
     # -- periodic save to avoid losing huge progress
-    if i % 250 == 0:
+    if epoch % 250 == 0:
         torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
 
     # -- output training progress
-    print(f'Epoch [{(i + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')
+    print(f'Epoch [{(epoch + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')
 
