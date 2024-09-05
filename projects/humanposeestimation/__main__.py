@@ -1,11 +1,29 @@
 import yaml
 import torch
+import torch.nn as nn
+import torch.distributed as dist 
+from torch.nn.parallel import DistributedDataParallel as DDP
 import numpy as np
 import diffusionmodels as dm
+import os
 
 from torch.utils.data import DataLoader
 from models.definitions import NaiveMLP
 
+import argparse
+
+
+def setup():
+
+
+    local_rank = int(os.environ['LOCAL_RANK'])
+    dist.init_process_group(backend='nccl')
+    torch.cuda.set_device(local_rank)
+
+    return local_rank
+
+
+local_rank = setup()
 
 # -- load the simulation parameters
 with open('./projects/humanposeestimation/parameters.yaml') as config_file:
@@ -13,6 +31,8 @@ with open('./projects/humanposeestimation/parameters.yaml') as config_file:
 
 # -- use NVIDIA GPU if it is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# dist.init_process_group(backend='nccl')
 
 
 ### NOTE: 
@@ -119,10 +139,14 @@ data_pipeline = dm.dataprocessing.Pipeline(
 # -- This part defines the NN model, loss function, and optimizer
 
 model = NaiveMLP()
-model.load_state_dict(torch.load('projects/humanposeestimation/models/naive_model.pth'))
+# model.load_state_dict(torch.load('projects/humanposeestimation/models/naive_model.pth'))
+model.load_state_dict(torch.load('model_norm.pth'))
+# model = nn.DataParallel(model)
 model.to(device)
+model = DDP(model)
 
 criterion = torch.nn.MSELoss()
+criterion = criterion.to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
 
 datasets = np.load(param['file_name'])['poses']
@@ -146,7 +170,7 @@ for i in range(param['num_epochs']):
 
         # -- forward
         optimizer.zero_grad()
-        outputs = model(data['points'], data['time'])
+        outputs = model(data['points'].cuda(non_blocking=True), data['time'].cuda(non_blocking=True))
 
         # -- back propagation
         loss = criterion(outputs, data['labels'])
