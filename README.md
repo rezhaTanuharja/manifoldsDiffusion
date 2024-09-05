@@ -31,8 +31,8 @@ git clone https://github.com/rezhaTanuharja/manifoldsDiffusion.git
 
 <div>
   <p>
-    Next, create a symlink inside your system path, pointing to the <code>diffusionmodels</code> directory.
-    If you are unsure about your system path, execute the following Python commands:
+    Next, check your system path, this is the path that Python search for when you import a module.
+    Execute the following:
   </p>
 </div>
 
@@ -41,6 +41,35 @@ import sys
 
 for path in sys.path:
   print(path)
+```
+
+<div>
+  <p>
+    If the <code>diffusionmodels</code> directory is not located in any of these path, you won't be able to import it as a module.
+    Therefore, add a symlink in one of the path, for example the one with <code>.../site-packages/</code>, pointing to the <code>diffusionmodels</code> directory by executing
+  </p>
+</div>
+
+```bash
+ln -s <absolute_path_to_diffusionmodels> .../site-packages/diffusionmodels
+```
+
+<div>
+  <p>
+    Replace <code>&lt;absolute_path_to_diffusionmodels&gt;</code> and complete the <code>...</code> using the actual paths in your machine.
+Now, you should be able to import the module, e.g.,
+  </p>
+</div>
+
+```python
+import diffusionmodels as dm
+
+
+differential_equations = dm.ExplodingVariance()
+
+### the rest of the code
+### ...
+### ...
 ```
 
 <div id="documentations", align="left">
