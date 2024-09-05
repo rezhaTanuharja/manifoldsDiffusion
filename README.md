@@ -1,7 +1,7 @@
-<div align="center">
+<div align="left">
   <h1>Diffusion Model in Riemannian Manifolds</h1>
   <p>
-    <a href="#dependencies">Dependencies</a>
+    <a href="#structure">Repository Structure</a>
     ∙
     <a href="#instructions">How to Use</a>
     ∙
@@ -9,24 +9,35 @@
   </p>
 </div>
 
-<div id="dependencies", align="left">
-  <h2>Dependencies</h2>
-  <p>Coming soon!</p>
+<div>
+  <h2 id="structure", align="left">Repository Structure</h2>
+  <p>
+    There are two main directories in this repository: <code>diffusionmodels</code> and <code>projects</code>.
+    The former contains the core functionalities to train and evaluate diffusion model in manifolds, including non-Euclidean ones.
+    The latter contains worked projects using these functionalities.
+  </p>
 </div>
 
 <div id="instructions", align="left">
-
   <h2>How to Use</h2>
-
   <p>
-    To use the project, you first need to clone the repository using <a href="https://git-scm.com" target="_blank">Git</a>:
+    To use the project, you need to clone the repository using <a href="https://git-scm.com" target="_blank">Git</a>:
   </p>
-
   <pre><code class="language-bash"><!--
   -->git clone https://github.com/rezhaTanuharja/manifoldsDiffusion.git<!--
   --></code></pre>
-
   <p>
+    Next, create a symlink inside your system path, pointing to the <code>diffusionmodels</code> directory.
+    If you are unsure about your system path, execute the following Python commands:
+  </p>
+  <pre><code class="language-python"><!--
+  -->import sys
+  <br><!--
+  -->for path in sys.path:
+  &nbsp print(path)<!--
+  --></code></pre>
+
+  <!-- <p>
     Next, we need to do the following steps (please see detailed instructions):
   </p>
 
@@ -36,7 +47,7 @@
     <li>Do some Deep Learnings and save the world!</li>
   </ol>
 
-  <p>More is coming!</p>
+  <p>More is coming!</p> -->
 
   <!-- <div>
     <h3>Download datasets from AMASS</h3>
