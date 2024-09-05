@@ -149,7 +149,14 @@ def main():
     datasets = torch.tensor(datasets[:param['num_subjects']]).float()
 
     sampler = DistributedSampler(datasets, num_replicas = dist.get_world_size(), rank = local_rank)
-    data_loader = DataLoader(datasets, batch_size = param['subject_batch'], sampler = sampler, num_workers = 2, pin_memory = True)
+
+    data_loader = DataLoader(
+        datasets,
+        batch_size = param['subject_batch'],
+        sampler = sampler,
+        num_workers = 2,
+        pin_memory = True
+    )
 
 
     ### NOTE: This is the model training process
