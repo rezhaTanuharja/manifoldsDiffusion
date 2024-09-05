@@ -1,18 +1,25 @@
+import os
 import yaml
+import numpy as np
+
 import torch
 import torch.distributed as dist 
-from torch.nn.parallel import DistributedDataParallel as DDP
-import numpy as np
-import diffusionmodels as dm
-import os
-
 from torch.utils.data import DataLoader, DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+import diffusionmodels as dm
 from models.definitions import NaiveMLP
 
 
-### NOTE: this part sets the parallelization
+def main():
 
-if torch.cuda.is_available():
+
+    if not torch.cuda.is_available():
+        print('This script requires CUDA, aborting...')
+        return
+
+
+    ### NOTE: this part sets the parallelization
 
     # -- initialize the process group
     dist.init_process_group(backend='nccl')
@@ -25,167 +32,162 @@ if torch.cuda.is_available():
     device = torch.device('cuda')
 
 
-### NOTE: this part loads the simulation parameters
+    ### NOTE: this part loads the simulation parameters
 
-with open('./projects/humanposeestimation/parameters.yaml') as config_file:
-    param = yaml.safe_load(config_file)
-
-
-### NOTE: 
-# -- This part defines the diffusion problem:
-# --    manifold
-# --    stochastic differential equations 
-# --    SDE solver
-# --    score function
-
-manifold = dm.manifolds.SpecialOrthogonal3()
-
-stochastic_de = dm.differentialequations.ExplodingVariance(
-
-    manifold = manifold,
-    variance_scale = param['time_increment'] ** 0.5
-
-)
-
-solver = dm.solvers.SimpleSolver(
-    time_integrator = dm.timeintegrators.EulerMaruyama(),
-    data_recorder = dm.recorders.SimpleRecorder(),
-    num_points = param['num_time_points'],
-    grid_size = param['time_increment']
-)
-
-score_function = dm.scorefunctions.Direction(manifold = manifold)
-
-for obj in (
-    manifold,
-    stochastic_de,
-    solver,
-    score_function,
-):
-    obj.to(device)
+    with open('./projects/humanposeestimation/parameters.yaml') as config_file:
+        param = yaml.safe_load(config_file)
 
 
-### NOTE: 
-# -- This part defines the data processing steps
+    ### NOTE: This part defines the diffusion problem
 
-data_pipeline = dm.dataprocessing.Pipeline(
-    transforms = [
+    manifold = dm.manifolds.SpecialOrthogonal3()
 
-        # -- move dataset to the same device
-        lambda dataset: dataset.to(device),
+    stochastic_de = dm.differentialequations.ExplodingVariance(
 
-        # -- AMASS dataset is a 2D tensor with shape (num_subjects, num_joints * tangent_dimension)
-        # -- reshape to (num_subjects, num_points, *manifold.tangent_dimension)
-        lambda dataset: dataset.unflatten(-1, (-1, *manifold.tangent_dimension())),
+        manifold = manifold,
+        variance_scale = param['time_increment'] ** 0.5
 
-        # -- convert each tangent vector into its corresponding rotation matrix
-        # -- return a tensor with shape (num_subjects, num_joints, *manifold.dimension)
-        lambda dataset: manifold.exp(
-            torch.eye(3, device = device).view(*manifold.dimension()),
-            dataset
-        ),
+    )
 
-        # -- duplicate all subjects so we generate multiple noise paths simultaneously
-        lambda dataset: dataset.unsqueeze(0).expand(
-            param['num_subject_duplicates'], *dataset.shape
-        ).flatten(0,1),
+    solver = dm.solvers.SimpleSolver(
+        time_integrator = dm.timeintegrators.EulerMaruyama(),
+        data_recorder = dm.recorders.SimpleRecorder(),
+        num_points = param['num_time_points'],
+        grid_size = param['time_increment']
+    )
 
-        # -- the forward noising process
-        # -- returns {time, data} where data[i] is the noised data at time[i]
-        lambda dataset: {
-            **(solver.solve(dataset, stochastic_de)),
-            'original': dataset
-        },
+    score_function = dm.scorefunctions.Direction(manifold = manifold)
 
-        # -- use score function as data label for training
-        lambda dataset: {
-
-            'time': dataset['time'],
-            'points': dataset['data'],
-
-            'labels': score_function.get_direction(
-                origin = dataset['data'],
-                destination = dataset['original'],
-                scale = 1.0 / dataset['time']
-            )
-
-        },
-
-        # -- reshape tensors so the first shape is (num_subjects * num_subject_duplicates * num_time_points)
-        # -- and the second one is the rest of the dimensions flattened into one
-        lambda dataset: {
-
-            'time': dataset['time'].reshape(
-                *dataset['time'].shape, 1
-            ).expand(
-                -1, param['num_subject_duplicates'] * param['subject_batch']
-            ).flatten(0, 1).unsqueeze(-1),
-
-            'points': dataset['points'].flatten(0, 1).flatten(1),
-            'labels': dataset['labels'].flatten(0, 1).flatten(1)
-
-        },
-
-    ]
-)
+    for obj in (
+        manifold,
+        stochastic_de,
+        solver,
+        score_function,
+    ):
+        obj.to(device)
 
 
-### NOTE: 
-# -- This part defines the NN model, loss function, and optimizer
+    ### NOTE: This part defines the data-processing steps
 
-state_dict = torch.load('projects/humanposeestimation/models/naive_model.pth')
-state_dict ={
-    key.replace('module.', ''): value for key, value in state_dict.items()
-}
-model = NaiveMLP()
-model.load_state_dict(state_dict)
-model.to(device)
-model = DDP(model, device_ids=[local_rank, ])
+    data_pipeline = dm.dataprocessing.Pipeline(
+        transforms = [
 
-criterion = torch.nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
+            # -- move dataset to the same device
+            lambda dataset: dataset.to(device, non_blocking = True),
 
-datasets = np.load(param['file_name'])['poses']
-datasets = torch.tensor(datasets[:param['num_subjects']]).float()
+            # -- AMASS dataset is a 2D tensor with shape (num_subjects, num_joints * tangent_dimension)
+            # -- reshape to (num_subjects, num_points, *manifold.tangent_dimension)
+            lambda dataset: dataset.unflatten(-1, (-1, *manifold.tangent_dimension())),
 
-sampler = DistributedSampler(datasets, num_replicas = dist.get_world_size(), rank = local_rank)
-data_loader = DataLoader(datasets, batch_size = param['subject_batch'], sampler = sampler, num_workers = 2, pin_memory = True)
+            # -- convert each tangent vector into its corresponding rotation matrix
+            # -- return a tensor with shape (num_subjects, num_joints, *manifold.dimension)
+            lambda dataset: manifold.exp(
+                torch.eye(3, device = device).view(*manifold.dimension()),
+                dataset
+            ),
+
+            # -- duplicate all subjects so we generate multiple noise paths simultaneously
+            lambda dataset: dataset.unsqueeze(0).expand(
+                param['num_subject_duplicates'], *dataset.shape
+            ).flatten(0,1),
+
+            # -- the forward noising process
+            # -- returns {time, data} where data[i] is the noised data at time[i]
+            lambda dataset: {
+                **(solver.solve(dataset, stochastic_de)),
+                'original': dataset
+            },
+
+            # -- use score function as data label for training
+            lambda dataset: {
+
+                'time': dataset['time'],
+                'points': dataset['data'],
+
+                'labels': score_function.get_direction(
+                    origin = dataset['data'],
+                    destination = dataset['original'],
+                    scale = 1.0 / dataset['time']
+                )
+
+            },
+
+            # -- reshape tensors so the first shape is (num_subjects * num_subject_duplicates * num_time_points)
+            # -- and the second one is the rest of the dimensions flattened into one
+            lambda dataset: {
+
+                'time': dataset['time'].reshape(
+                    *dataset['time'].shape, 1
+                ).expand(
+                    -1, param['num_subject_duplicates'] * param['subject_batch']
+                ).flatten(0, 1).unsqueeze(-1),
+
+                'points': dataset['points'].flatten(0, 1).flatten(1),
+                'labels': dataset['labels'].flatten(0, 1).flatten(1)
+
+            },
+
+        ]
+    )
 
 
-### NOTE: 
-# -- This is the model training process
+    ### NOTE: This part defines the neural-network model, loss function, and optimizer
 
-for epoch in range(param['num_epochs']):
+    state_dict = torch.load('projects/humanposeestimation/models/naive_model.pth')
+    state_dict ={
+        key.replace('module.', ''): value for key, value in state_dict.items()
+    }
+    model = NaiveMLP()
+    model.load_state_dict(state_dict)
+    model.to(device)
+    model = DDP(model, device_ids=[local_rank, ])
 
-    sampler.set_epoch(epoch)
+    criterion = torch.nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
 
-    model.train()
-    running_loss = 0.0
+    datasets = np.load(param['file_name'])['poses']
+    datasets = torch.tensor(datasets[:param['num_subjects']]).float()
 
-    for dataset in data_loader:
+    sampler = DistributedSampler(datasets, num_replicas = dist.get_world_size(), rank = local_rank)
+    data_loader = DataLoader(datasets, batch_size = param['subject_batch'], sampler = sampler, num_workers = 2, pin_memory = True)
 
-        # -- process data using the predefined pipeline
-        data = data_pipeline(dataset)
 
-        # -- forward
-        optimizer.zero_grad()
-        outputs = model(data['points'].cuda(non_blocking=True), data['time'].cuda(non_blocking=True))
+    ### NOTE: This is the model training process
 
-        # -- back propagation
-        loss = criterion(outputs, data['labels'])
-        loss.backward()
+    for epoch in range(param['num_epochs']):
 
-        # -- avoid huge update by clipping the gradient
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm = param['max_norm'])
+        sampler.set_epoch(3000 + epoch)
 
-        # -- model update
-        optimizer.step()
-        running_loss += loss.item()
+        model.train()
+        running_loss = 0.0
 
-    # -- periodic save to avoid losing huge progress
-    if epoch % 250 == 0:
-        torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
+        for dataset in data_loader:
 
-    # -- output training progress
-    print(f'Epoch [{(epoch + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')
+            # -- process data using the predefined pipeline
+            data = data_pipeline(dataset)
 
+            # -- forward
+            optimizer.zero_grad()
+            outputs = model(data['points'], data['time'])
+
+            # -- back propagation
+            loss = criterion(outputs, data['labels'])
+            loss.backward()
+
+            # -- avoid huge update by clipping the gradient
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm = param['max_norm'])
+
+            # -- model update
+            optimizer.step()
+            running_loss += loss.item()
+
+        # -- periodic save to avoid losing huge progress
+        if epoch % 250 == 0:
+            torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
+
+        # -- output training progress
+        print(f'Epoch [{(epoch + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')
+
+
+if __name__ == "__main__":
+    main()

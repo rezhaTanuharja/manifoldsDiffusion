@@ -16,7 +16,7 @@ file_name: './extractedData/ACCAD/Male1General_c3d/General A2 - Sway_poses.npz'
 num_subjects: 1000
 
 # the number of subjects to send to GPU and process at each iteration
-subject_batch: 125
+subject_batch: 100
 
 # -- each subject is duplicated and noised instead of using a loop to noise each subject multiple times
 num_subject_duplicates: 50
@@ -38,10 +38,10 @@ time_increment: 0.002
 # -------- #
 
 # the number of training epochs
-num_epochs: 2500
+num_epochs: 4000
 
 # limit the norm of gradient during training, used to prevent overshoot
 max_norm: 3.0
 
 # a hyperparameter to tune the training process
-learning_rate: 0.00002
+learning_rate: 0.00008
