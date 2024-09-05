@@ -8,6 +8,8 @@
 **/*.pth
 *.pth
 
+log
+
 # Ignore editor configurations
 pyrightconfig.json
 
