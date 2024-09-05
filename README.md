@@ -32,8 +32,8 @@
   </p>
   <pre><code class="language-python"><!--
   -->import sys
-  <br><!--
-  -->for path in sys.path:
+  <br>
+  for path in sys.path:
   &nbsp print(path)<!--
   --></code></pre>
 
