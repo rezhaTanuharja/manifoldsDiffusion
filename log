@@ -1,0 +1,38 @@
+W0905 18:44:49.943000 131054282953856 torch/distributed/run.py:757] 
+W0905 18:44:49.943000 131054282953856 torch/distributed/run.py:757] *****************************************
+W0905 18:44:49.943000 131054282953856 torch/distributed/run.py:757] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0905 18:44:49.943000 131054282953856 torch/distributed/run.py:757] *****************************************
+Epoch [0001/2500], Loss: 0.0286
+Epoch [0001/2500], Loss: 0.0286
+Epoch [0002/2500], Loss: 0.0286
+Epoch [0002/2500], Loss: 0.0286
+Epoch [0003/2500], Loss: 0.0285
+Epoch [0003/2500], Loss: 0.0286
+Epoch [0004/2500], Loss: 0.0286Epoch [0004/2500], Loss: 0.0286
+
+Epoch [0005/2500], Loss: 0.0286
+Epoch [0005/2500], Loss: 0.0286
+Epoch [0006/2500], Loss: 0.0286
+Epoch [0006/2500], Loss: 0.0285
+Epoch [0007/2500], Loss: 0.0286
+Epoch [0007/2500], Loss: 0.0286
+Epoch [0008/2500], Loss: 0.0285
+Epoch [0008/2500], Loss: 0.0285
+Epoch [0009/2500], Loss: 0.0286
+Epoch [0009/2500], Loss: 0.0285
+Epoch [0010/2500], Loss: 0.0285
+Epoch [0010/2500], Loss: 0.0286
+Epoch [0011/2500], Loss: 0.0285
+Epoch [0011/2500], Loss: 0.0286
+Epoch [0012/2500], Loss: 0.0285
+Epoch [0012/2500], Loss: 0.0285
+Epoch [0013/2500], Loss: 0.0285
+Epoch [0013/2500], Loss: 0.0285
+Epoch [0014/2500], Loss: 0.0285
+Epoch [0014/2500], Loss: 0.0285
+Epoch [0015/2500], Loss: 0.0285
+Epoch [0015/2500], Loss: 0.0285
+Epoch [0016/2500], Loss: 0.0285
+Epoch [0016/2500], Loss: 0.0285
+Epoch [0017/2500], Loss: 0.0285
+Epoch [0017/2500], Loss: 0.0285

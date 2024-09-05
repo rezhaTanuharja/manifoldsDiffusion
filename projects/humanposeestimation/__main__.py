@@ -133,10 +133,12 @@ data_pipeline = dm.dataprocessing.Pipeline(
 ### NOTE: 
 # -- This part defines the NN model, loss function, and optimizer
 
+state_dict = torch.load('projects/humanposeestimation/models/naive_model.pth')
+state_dict ={
+    key.replace('module.', ''): value for key, value in state_dict.items()
+}
 model = NaiveMLP()
-# model.load_state_dict(torch.load('projects/humanposeestimation/models/naive_model.pth'))
-model.load_state_dict(torch.load('model_norm.pth'))
-# model = nn.DataParallel(model)
+model.load_state_dict(state_dict)
 model.to(device)
 model = DDP(model, device_ids=[local_rank, ])
 
