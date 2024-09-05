@@ -31,7 +31,7 @@
     If you are unsure about your system path, execute the following Python commands:
   </p>
   <pre><code class="language-python"><!--
-  -->import sys<br><br>
+  -->import sys
   for path in sys.path:
   &nbsp print(path)<!--
   --></code></pre>
