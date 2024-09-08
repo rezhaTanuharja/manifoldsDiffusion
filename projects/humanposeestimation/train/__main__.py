@@ -19,7 +19,7 @@ def main():
         return
 
 
-    ### NOTE: this part sets the parallelization
+    #NOTE: this part sets the parallelization
 
     # -- initialize the process group
     dist.init_process_group(backend='nccl')
@@ -32,13 +32,13 @@ def main():
     device = torch.device('cuda')
 
 
-    ### NOTE: this part loads the simulation parameters
+    #NOTE: this part loads the simulation parameters
 
     with open('./projects/humanposeestimation/parameters.yaml') as config_file:
         param = yaml.safe_load(config_file)
 
 
-    ### NOTE: This part defines the diffusion problem
+    #NOTE: This part defines the diffusion problem
 
     manifold = dm.manifolds.SpecialOrthogonal3()
 
@@ -67,7 +67,7 @@ def main():
         obj.to(device)
 
 
-    ### NOTE: This part defines the data-processing steps
+    #NOTE: This part defines the data-processing steps
 
     data_pipeline = dm.dataprocessing.Pipeline(
         transforms = [
@@ -131,7 +131,7 @@ def main():
     )
 
 
-    ### NOTE: This part defines the neural-network model, loss function, and optimizer
+    #NOTE: This part defines the neural-network model, loss function, and optimizer
 
     state_dict = torch.load('projects/humanposeestimation/models/naive_model.pth')
     state_dict ={
@@ -159,11 +159,11 @@ def main():
     )
 
 
-    ### NOTE: This is the model training process
+    #NOTE: This is the model training process
 
     for epoch in range(param['num_epochs']):
 
-        sampler.set_epoch(3000 + epoch)
+        sampler.set_epoch(16000 + epoch)
 
         model.train()
         running_loss = 0.0

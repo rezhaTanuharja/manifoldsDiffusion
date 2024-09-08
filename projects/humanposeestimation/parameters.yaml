@@ -27,7 +27,7 @@ num_subject_duplicates: 50
 # ---- #
 
 # each copy of a subject X[n] is noised into X[m, n]  where m is in [0, num_time_points - 1]
-num_time_points: 128
+num_time_points: 256
 
 # the time resoluttion
 time_increment: 0.002
@@ -38,7 +38,7 @@ time_increment: 0.002
 # -------- #
 
 # the number of training epochs
-num_epochs: 4000
+num_epochs: 10000
 
 # limit the norm of gradient during training, used to prevent overshoot
 max_norm: 3.0
