@@ -70,7 +70,7 @@ def main():
     #NOTE: This part defines the data-processing steps
 
     data_pipeline = dm.dataprocessing.Pipeline(
-        transforms = [
+       transforms = [
 
             # -- move dataset to the same device
             lambda dataset: dataset.to(device, non_blocking = True),
@@ -163,7 +163,7 @@ def main():
 
     for epoch in range(param['num_epochs']):
 
-        sampler.set_epoch(16000 + epoch)
+        sampler.set_epoch(36000 + epoch)
 
         model.train()
         running_loss = 0.0
