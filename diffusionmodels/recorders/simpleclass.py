@@ -68,6 +68,9 @@ class UniformRandomRecorder(DataRecorder):
     `_keep_ratio : float`
         The approximate ratio of subset in record to the full data
 
+    `_kept_indices : torch.Tensor`
+        This contains the indices of data to store in record
+
     `_records : torch.Tensor`
         A tensor to store data
 
@@ -103,13 +106,7 @@ class UniformRandomRecorder(DataRecorder):
             device = self._device
         )
 
-        # self._kept_indices = torch.randint(
-        #     low = 0, high = num_samples,
-        #     size = (num_samples_kept, )
-        # )
-        # self._kept_indices = torch.sort(self._kept_indices)
         self._kept_indices = torch.randperm(num_samples)[:num_samples_kept]
-
 
         self._store_index = 0
         self._current_index = 0
