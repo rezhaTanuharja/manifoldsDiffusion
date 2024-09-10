@@ -45,14 +45,16 @@ def main():
     stochastic_de = dm.differentialequations.ExplodingVariance(
 
         manifold = manifold,
-        variance_scale = param['time_increment'] ** 0.5
+        # variance_scale = param['time_increment'] ** 0.5
+        variance_scale = 0.5
 
     )
 
     solver = dm.solvers.SimpleSolver(
         time_integrator = dm.timeintegrators.EulerMaruyama(),
-        data_recorder = dm.recorders.SimpleRecorder(),
-        num_points = param['num_time_points'],
+        # data_recorder = dm.recorders.SimpleRecorder(),
+        data_recorder = dm.recorders.UniformRandomRecorder(keep_ratio = 0.75),
+        num_points = param['num_time_points'] * 4,
         grid_size = param['time_increment']
     )
 
@@ -107,7 +109,7 @@ def main():
                 'labels': score_function.get_direction(
                     origin = dataset['data'],
                     destination = dataset['original'],
-                    scale = 1.0 / dataset['time']
+                    scale = 10.0 / dataset['time'] ** 0.5
                 )
 
             },
@@ -133,7 +135,7 @@ def main():
 
     #NOTE: This part defines the neural-network model, loss function, and optimizer
 
-    state_dict = torch.load('projects/humanposeestimation/models/naive_model.pth')
+    state_dict = torch.load('projects/humanposeestimation/models/naive_scaled_model.pth')
     state_dict ={
         key.replace('module.', ''): value for key, value in state_dict.items()
     }
@@ -143,7 +145,8 @@ def main():
     model = DDP(model, device_ids=[local_rank, ])
 
     criterion = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'])
+    optimizer = torch.optim.Adam(model.parameters(), lr = param['learning_rate'] * 0.1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0 = 10, T_mult = 2)
 
     datasets = np.load(param['file_name'])['poses']
     datasets = torch.tensor(datasets[:param['num_subjects']]).float()
@@ -163,7 +166,7 @@ def main():
 
     for epoch in range(param['num_epochs']):
 
-        sampler.set_epoch(36000 + epoch)
+        sampler.set_epoch(epoch)
 
         model.train()
         running_loss = 0.0
@@ -172,6 +175,9 @@ def main():
 
             # -- process data using the predefined pipeline
             data = data_pipeline(dataset)
+
+            # print(data['labels'][0])
+            # break
 
             # -- forward
             optimizer.zero_grad()
@@ -188,9 +194,11 @@ def main():
             optimizer.step()
             running_loss += loss.item()
 
+            scheduler.step(epoch)
+
         # -- periodic save to avoid losing huge progress
         if epoch % 250 == 0:
-            torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_model.pth')
+            torch.save(model.state_dict(), 'projects/humanposeestimation/models/naive_scaled_model.pth')
 
         # -- output training progress
         print(f'Epoch [{(epoch + 1):04}/{param["num_epochs"]}], Loss: {(running_loss / len(data_loader)):.4f}')

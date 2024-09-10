@@ -12,10 +12,11 @@ simpleclass     : Implements various simple data recorders
 
 
 from .baseclass import DataRecorder
-from .simpleclass import SimpleRecorder
+from .simpleclass import SimpleRecorder, UniformRandomRecorder
 
 
 __all__ = [
     'DataRecorder',
-    'SimpleRecorder'
+    'SimpleRecorder',
+    'UniformRandomRecorder'
 ]

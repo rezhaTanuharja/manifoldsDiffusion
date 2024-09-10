@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from contextlib import AbstractAsyncContextManager
 from typing import Dict
 
 import torch
@@ -30,7 +29,7 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 
@@ -49,10 +48,7 @@ class DataRecorder(ABC):
 
     @abstractmethod
     def reset(
-        self,
-        initial_value: torch.Tensor,
-        num_samples: int
-    ) -> None:
+        self, initial_value: torch.Tensor, num_samples: int) -> None:
         """
         Reset instance to prepare for a new data recording
 
@@ -69,10 +65,7 @@ class DataRecorder(ABC):
 
     @abstractmethod
     def store(
-        self,
-        result: torch.Tensor,
-        time: float
-    ) -> None:
+        self, result: torch.Tensor, time: float) -> None:
         """
         Define what to do with a data chunk, e.g., store in record or do nothing
 
@@ -88,7 +81,7 @@ class DataRecorder(ABC):
 
 
     @abstractmethod
-    def get_record(self) -> Dict[torch.Tensor, torch.Tensor]:
+    def get_record(self) -> Dict[str, torch.Tensor]:
         """
         A method to access previously recorded data
 
