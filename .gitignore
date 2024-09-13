@@ -5,8 +5,8 @@
 .venv/
 .conda_env/
 
-**/*.pth
-*.pth
+# **/*.pth
+# *.pth
 
 log
 
