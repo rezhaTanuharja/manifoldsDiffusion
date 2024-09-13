@@ -4,14 +4,15 @@ import numpy as np
 from human_body_prior.tools.omni_tools import copy2cpu as c2c
 # from os import path as osp
 
-# TODO: this script needs to be completely cleaned up
+#TODO: this script needs to be completely cleaned up
 
 comp_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # amass_npz_fname = './downloads/dmpl_sample.npz'
 # amass_npz_fname = './downloads/processed_A2.npz'
-amass_npz_fname = './downloads/postprocessed_A2.npz'
-# amass_npz_fname = "./extractedData/ACCAD/Female1Walking_c3d/B1 - stand to walk_poses.npz"
+# amass_npz_fname = './downloads/postprocessed_A2.npz'
+# amass_npz_fname = './projects/humanposeestimation/visualize/data/A2_subject1_noised.npz'
+amass_npz_fname = "./extractedData/ACCAD/Female1Walking_c3d/B1 - stand to walk_poses.npz"
 bdata = np.load(amass_npz_fname)
 
 # subject_gender = bdata['gender']
@@ -34,10 +35,17 @@ faces = c2c(bm.f)
 # time_length = len(bdata['trans'])
 time_length = 5
 
+copied_data = bdata['poses']
+
+copied_data[400, 9:66] = copied_data[200, 9:66]
+copied_data[400, 3:6] = copied_data[200, 3:6]
+copied_data[0, 9:66] = copied_data[200, 9:66]
+# copied_data[0, 3:6] = copied_data[200, 3:6]
+
 body_parms = {
-    'root_orient': torch.Tensor(bdata['poses'][:, :3]).to(comp_device), # controls the global root orientation
-    'pose_body': torch.Tensor(bdata['poses'][:, 3:66]).to(comp_device), # controls the body
-    'pose_hand': torch.Tensor(bdata['poses'][:, 66:]).to(comp_device), # controls the finger articulation
+    'root_orient': torch.Tensor(copied_data[:, :3]).to(comp_device), # controls the global root orientation
+    'pose_body': torch.Tensor(copied_data[:, 3:66]).to(comp_device), # controls the body
+    'pose_hand': torch.Tensor(copied_data[:, 66:]).to(comp_device), # controls the finger articulation
     # 'trans': torch.Tensor(bdata['trans']).to(comp_device), # controls the global body position
     # 'betas': torch.Tensor(np.repeat(bdata['betas'][:num_betas][np.newaxis], repeats=time_length, axis=0)).to(comp_device), # controls the body shape. Body shape is static
     # 'dmpls': torch.Tensor(bdata['dmpls'][:, :num_dmpls]).to(comp_device) # controls soft tissue dynamics
@@ -72,5 +80,6 @@ def vis_body_pose_hand(fId = 0, i = 0):
     body_image = mv.render(render_wireframe=False)
     show_image(body_image, i)
 
-for i in range(1):
-    vis_body_pose_hand(fId=i, i = i)
+for i in range(bdata['poses'].shape[0]):
+    if i % 50 == 0:
+        vis_body_pose_hand(fId=i, i = i)

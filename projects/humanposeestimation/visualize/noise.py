@@ -21,14 +21,15 @@ def main():
     stochastic_de = dm.differentialequations.ExplodingVariance(
 
         manifold = manifold,
-        variance_scale = param['time_increment'] ** 0.5
+        # variance_scale = param['time_increment'] ** 0.5
+        variance_scale = 0.5
 
     )
 
     solver = dm.solvers.SimpleSolver(
         time_integrator = dm.timeintegrators.EulerMaruyama(),
         data_recorder = dm.recorders.SimpleRecorder(),
-        num_points = param['num_time_points'],
+        num_points = param['num_time_points'] * 4,
         grid_size = param['time_increment']
     )
 
@@ -58,11 +59,6 @@ def main():
                 dataset
             ),
 
-            # -- duplicate all subjects so we generate multiple noise paths simultaneously
-            lambda dataset: dataset.unsqueeze(0).expand(
-                param['num_subject_duplicates'], *dataset.shape
-            ).flatten(0,1),
-
             # -- the forward noising process
             # -- returns {time, data} where data[i] is the noised data at time[i]
             lambda dataset: (solver.solve(dataset, stochastic_de))['data'],
@@ -81,7 +77,6 @@ def main():
 
     datasets = np.load(param['file_name'])['poses']
     datasets = torch.tensor(datasets[:1]).float()
-    # datasets = torch.tensor(datasets[:param['num_subjects']]).float()
 
     datasets = data_pipeline(datasets)
 
