@@ -11,7 +11,8 @@ CorrectedNegative
 """
 
 
-# TODO: Need to be refactored to take into account the new score functions
+#TODO: Currently the reversed class has only been patched for visualization
+# however, it needs to be refactored for general cases
 
 import torch
 
