@@ -21,7 +21,6 @@ def main():
     stochastic_de = dm.differentialequations.ExplodingVariance(
 
         manifold = manifold,
-        # variance_scale = param['time_increment'] ** 0.5
         variance_scale = 0.5
 
     )
@@ -76,12 +75,12 @@ def main():
     )
 
     datasets = np.load(param['file_name'])['poses']
-    datasets = torch.tensor(datasets[:1]).float()
+    datasets = torch.tensor(datasets[0:1]).float()
 
     datasets = data_pipeline(datasets)
 
     datasets = datasets.detach().cpu().numpy()
-    np.savez('./projects/humanposeestimation/visualize/data/A2_subject1_noised.npz', poses=datasets)
+    np.savez('./projects/humanposeestimation/visualize/data/A2_subject1_noised_0.npz', poses=datasets)
 
 if __name__ == "__main__":
     main()

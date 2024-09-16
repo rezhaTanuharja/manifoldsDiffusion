@@ -15,9 +15,13 @@ CorrectedNegative
 
 import torch
 
+from typing import Any
+
+from diffusionmodels.utilities.warningsuppressors import unused_variables
+
 from .baseclass import StochasticDifferentialEquation
 from ..manifolds import Manifold
-from ..scorefunctions import DirectionCalculator
+# from ..scorefunctions import DirectionCalculator
 
 
 class CorrectedNegative(StochasticDifferentialEquation):
@@ -45,11 +49,14 @@ class CorrectedNegative(StochasticDifferentialEquation):
     def __init__(
         self,
         stochastic_de: StochasticDifferentialEquation,
-        drift_corrector: DirectionCalculator
+        drift_corrector: Any
     ):
         self._stochastic_de = stochastic_de
         self._drift_corrector = drift_corrector
 
+    def to(self, device: torch.device) -> None:
+        unused_variables(device)
+        pass
 
     def manifold(self) -> Manifold:
         return self._stochastic_de.manifold()
@@ -73,11 +80,19 @@ class CorrectedNegative(StochasticDifferentialEquation):
             drift = -sde.drift + diffusion * diffusion * correction
         """
 
-        return (
-            -self._stochastic_de.drift(X, t) + (
-                self._stochastic_de.diffusion(X, t) ** 2
-            ) * self._drift_corrector.get_direction(X, t)
-        )
+        Y = X.flatten(1)
+        t_tensor = torch.tensor([t]).cuda()
+
+        result = (1.0) * self._drift_corrector(Y, t_tensor)
+        result = result.view(1, 52, 3)
+        return result
+
+        # return (
+        #     -self._stochastic_de.drift(X, t) + (
+        #         # self._stochastic_de.diffusion(X, t) ** 2
+        #         1.0
+        #     ) * self._drift_corrector(X, t)
+        # )
 
 
     def diffusion(self, X: torch.Tensor, t: float) -> torch.Tensor:

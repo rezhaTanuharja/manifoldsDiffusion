@@ -13,7 +13,6 @@ from models.definitions import NaiveMLP
 
 def main():
 
-
     if not torch.cuda.is_available():
         print('This script requires CUDA, aborting...')
         return
@@ -45,14 +44,12 @@ def main():
     stochastic_de = dm.differentialequations.ExplodingVariance(
 
         manifold = manifold,
-        # variance_scale = param['time_increment'] ** 0.5
         variance_scale = 0.5
 
     )
 
     solver = dm.solvers.SimpleSolver(
         time_integrator = dm.timeintegrators.EulerMaruyama(),
-        # data_recorder = dm.recorders.SimpleRecorder(),
         data_recorder = dm.recorders.UniformRandomRecorder(keep_ratio = 0.75),
         num_points = param['num_time_points'] * 4,
         grid_size = param['time_increment']
@@ -175,9 +172,6 @@ def main():
 
             # -- process data using the predefined pipeline
             data = data_pipeline(dataset)
-
-            # print(data['labels'][0])
-            # break
 
             # -- forward
             optimizer.zero_grad()
