@@ -69,7 +69,7 @@ def main():
     #NOTE: This part defines the data-processing steps
 
     data_pipeline = dm.dataprocessing.Pipeline(
-       transforms = [
+        transforms = [
 
             # -- move dataset to the same device
             lambda dataset: dataset.to(device, non_blocking = True),
