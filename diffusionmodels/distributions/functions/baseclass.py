@@ -22,6 +22,9 @@ class CumulativeDistributionFunction(ABC):
 
     Methods
     -------
+    `to(device)`
+        Move any tensor attribute to device
+
     `at(time)`
         Access the CDF at the given time
 
@@ -35,6 +38,11 @@ class CumulativeDistributionFunction(ABC):
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def to(self, device: torch.device) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 

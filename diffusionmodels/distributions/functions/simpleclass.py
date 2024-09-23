@@ -25,6 +25,10 @@ class Linear(CumulativeDistributionFunction):
         self._lower_bound = lower_bound
         self._upper_bound = upper_bound
 
+    def to(self, device: torch.device) -> None:
+        unused_variables(device)
+        pass
+
     def at(self, time: float) -> CumulativeDistributionFunction:
         unused_variables(time)
         return self

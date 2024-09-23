@@ -13,6 +13,7 @@ Bisection
 
 import torch
 
+from diffusionmodels.utilities.warningsuppressors import unused_variables
 from ..functions import CumulativeDistributionFunction
 from .baseclass import InversionMethod
 
@@ -21,6 +22,10 @@ class Bisection(InversionMethod):
 
     def __init__(self, num_iterations: int) -> None:
         self._num_iterations = num_iterations
+
+    def to(self, device: torch.device) -> None:
+        unused_variables(device)
+        pass
 
     def solve(
         self,

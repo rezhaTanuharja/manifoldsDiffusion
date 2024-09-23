@@ -23,12 +23,19 @@ class InversionMethod(ABC):
 
     Methods
     -------
+    `to(device)`
+        Move any tensor attribute to device
+
     `solve(values, function)`
         Find the points where function evaluates to the given values
     """
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def to(self, device: torch.device) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
