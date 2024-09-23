@@ -18,23 +18,13 @@ utilities               : Provides various useful functions
 
 from . import manifolds
 from . import distributions
-# from . import differentialequations
-# from . import timeintegrators
-# from . import recorders
-# from . import solvers
-# from . import dataprocessing
-# from . import scorefunctions
+from . import dataprocessing
 from . import utilities
 
 
 __all__ = [
     'manifolds',
     'distributions',
-    # 'differentialequations',
-    # 'timeintegrators',
-    # 'recorders',
-    # 'solvers',
-    # 'dataprocessing',
-    # 'scorefunctions',
+    'dataprocessing',
     'utilities',
 ]
