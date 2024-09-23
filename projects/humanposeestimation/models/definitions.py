@@ -7,7 +7,7 @@ class NaiveMLP(nn.Module):
 
     def __init__(self):
 
-        super(NaiveMLP, self).__init__()
+        super().__init__()
 
         self.fc1 = nn.Linear(468, 512)
         self.fc2 = nn.Linear(512, 512)

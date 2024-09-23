@@ -58,7 +58,7 @@ class SimpleSolver(Solver):
     def solve(
         self,
         initial_value, stochastic_de
-    ) -> Dict[torch.Tensor, torch.Tensor]:
+    ) -> Dict[str, torch.Tensor]:
 
         self._data_recorder.reset(initial_value, self._num_points)
 

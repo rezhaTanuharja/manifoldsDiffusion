@@ -50,12 +50,12 @@ def main():
 
     solver = dm.solvers.SimpleSolver(
         time_integrator = dm.timeintegrators.EulerMaruyama(),
-        data_recorder = dm.recorders.UniformRandomRecorder(keep_ratio = 0.75),
-        num_points = param['num_time_points'] * 4,
+        data_recorder = dm.recorders.UniformRandomRecorder(keep_ratio = param['keep_ratio']),
+        num_points = param['num_time_points'],
         grid_size = param['time_increment']
     )
 
-    score_function = dm.scorefunctions.Direction(manifold = manifold)
+    score_function = dm.scorefunctions.Geodesic(manifold = manifold)
 
     for obj in (
         manifold,

@@ -17,25 +17,23 @@ RelativeDirectionCalculator
 from abc import ABC, abstractmethod
 import torch
 
-from ..manifolds import Manifold
 
-
-class RelativeDirectionCalculator(ABC):
+class Direction(ABC):
     """
-    An abstract class that computes a direction using the current position and a reference position
+    An abstract class that computes a direction from an origin to a destination
 
     Methods
     -------
     `to(device)`
         Moves any tensor attributes to device
 
-    get_direction(X, X_ref, time, t_ref)
-        Compute the direction to update X(t)
+    get_direction(origin, destination, scale)
+        Compute direction from the origin to destination multiplied by the scale
     """
 
 
     @abstractmethod
-    def __init__(self, manifold: Manifold) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 

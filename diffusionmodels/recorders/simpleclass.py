@@ -126,3 +126,47 @@ class UniformRandomRecorder(DataRecorder):
             'data': self._records,
             'time': self._timestamps
         }
+
+
+class StridedRecorder(DataRecorder):
+
+    def __init__(self, stride: int) -> None:
+        self._device = torch.device('cpu')
+        self._stride = stride
+
+    def to(self, device = torch.device) -> None:
+        self._device = device
+
+    def reset(self, initial_value: torch.Tensor, num_samples: int) -> None:
+
+        num_samples_kept = int(num_samples / self._stride)
+        record_shape = (num_samples_kept, ) + initial_value.shape
+
+        self._timestamps = torch.zeros(
+            size = (num_samples_kept,), device = self._device
+        )
+
+        self._records = torch.zeros(
+            size = record_shape,
+            dtype = initial_value.dtype,
+            device = self._device
+        )
+
+        self._store_index = 0
+        self._current_index = 0
+
+    def store(self, result: torch.Tensor, time: float) -> None:
+
+        if (self._store_index + 1) % self._stride == 0:
+
+            self._records[self._current_index] = result
+            self._timestamps[self._current_index] = time
+            self._current_index += 1
+
+        self._store_index += 1
+
+    def get_record(self) -> Dict[str, torch.Tensor]:
+        return {
+            'data': self._records,
+            'time': self._timestamps
+        }

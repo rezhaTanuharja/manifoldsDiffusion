@@ -10,12 +10,12 @@ Classes
 
 
 import torch
-from .baseclass import RelativeDirectionCalculator
+from .baseclass import Direction
 
-from ..manifolds import Manifold
+from ...manifolds import Manifold
 
 
-class Direction(RelativeDirectionCalculator):
+class Geodesic(Direction):
 
     def __init__(self, manifold: Manifold):
         self._manifold = manifold
@@ -46,4 +46,3 @@ class Direction(RelativeDirectionCalculator):
         """
         direction = self._manifold.log(origin, destination)
         return torch.einsum('i..., i... -> i...', scale, direction)
-        # return 1.0 / (t) * self._manifold.log(X, X_ref)

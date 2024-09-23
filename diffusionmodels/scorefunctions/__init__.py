@@ -11,11 +11,11 @@ simpleclass     : Implements simple score_functions
 """
 
 
-from .baseclass import RelativeDirectionCalculator
-from .simpleclass import Direction
+from .baseclass import Direction
+from .simpleclass import Geodesic
 
 
 __all__ = [
-    'RelativeDirectionCalculator',
-    'Direction'
+    'Direction',
+    'Geodesic',
 ]

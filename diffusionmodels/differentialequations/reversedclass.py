@@ -85,7 +85,8 @@ class CorrectedNegative(StochasticDifferentialEquation):
         t_tensor = torch.tensor([t]).cuda()
 
         result = (1.0) * self._drift_corrector(Y, t_tensor)
-        result = result.view(1, 52, 3)
+        result = result.unflatten(-1, (-1, *(self.manifold().tangent_dimension())))
+        # result = result.view(1, 52, 3)
         return result
 
         # return (

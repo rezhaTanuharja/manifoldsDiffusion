@@ -37,7 +37,7 @@ class StochasticDifferentialEquation(ABC):
 
 
     @abstractmethod
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 
