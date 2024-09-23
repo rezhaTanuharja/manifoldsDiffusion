@@ -16,6 +16,7 @@ from typing import Dict
 
 import torch
 
+
 class CumulativeDistributionFunction(ABC):
     """
     An abstract class that serves as an interface of all CDFs
@@ -43,13 +44,21 @@ class CumulativeDistributionFunction(ABC):
 
     @abstractmethod
     def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
     def at(self, time: float):
         """
-        Access the CDF at the given time
+        Access the CDF at the given time, does nothing for a time-invariant distribution
 
         Parameters
         ----------
@@ -59,7 +68,7 @@ class CumulativeDistributionFunction(ABC):
         Returns
         -------
         `self`
-            The same instance after it is moved to the given time
+            The same instance of distribution after it is moved to the given time
         """
         raise NotImplementedError("Subclasses must implement this method")
 

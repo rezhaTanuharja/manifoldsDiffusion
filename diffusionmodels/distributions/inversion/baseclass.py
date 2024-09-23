@@ -36,6 +36,14 @@ class InversionMethod(ABC):
 
     @abstractmethod
     def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
@@ -44,4 +52,20 @@ class InversionMethod(ABC):
         values: torch.Tensor,
         function: CumulativeDistributionFunction
     ) -> torch.Tensor:
+        """
+        Invert a given function to find the preimage of the given values
+
+        Parameters
+        ----------
+        `values: torch.Tensor`
+            The function values
+
+        `function: CumulativeDistributionFunction`
+            The function to be inverted
+
+        Returns
+        -------
+        `torch.Tensor`
+            The points where the function evaluates to the given values
+        """
         raise NotImplementedError("Subclasses must implement this method")

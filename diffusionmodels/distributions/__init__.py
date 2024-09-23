@@ -6,6 +6,11 @@ Provides functionalities to define a data distribution
 
 Modules
 -------
+baseclass       : Provides the interface for all distribution in this package
+simpleclass     : Provides various simple distributions
+
+Submodules
+----------
 functions       : Provides functions such as PDFs and CDFs
 inversion       : Provides methods to invert a CDF to sample with the inverse transform method
 """

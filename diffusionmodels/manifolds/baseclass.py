@@ -25,7 +25,7 @@ class Manifold(ABC):
     Methods
     -------
     `to(device)`
-        Moves any tensor attributes to device
+        Moves any tensor attribute to device
 
     `dimension()`
         Returns the tensor shape of each point in the manifold
