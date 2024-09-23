@@ -13,6 +13,7 @@ InverseTransform            : A distribution defined by its CDF and sampled usin
 
 from diffusionmodels.distributions.functions.baseclass import CumulativeDistributionFunction
 from diffusionmodels.distributions.inversion.baseclass import InversionMethod
+from diffusionmodels.utilities.warningsuppressors import unused_variables
 from .baseclass import Distribution
 from typing import Optional
 import torch
@@ -26,16 +27,12 @@ class MultivariateGaussian(Distribution):
         mean: Optional[torch.Tensor] = None,
         covariance: Optional[torch.Tensor] = None
     ) -> None:
-        self._dimension = dimension
-
         if mean == None or mean.numel() != dimension:
             mean = torch.zeros(size = (dimension,))
-
         self._mean = mean
 
         if covariance == None or covariance.shape != (dimension, dimension):
             covariance = torch.eye(dimension)
-
         self._covariance = covariance
 
         self._distribution = torch.distributions.MultivariateNormal(mean, covariance)
@@ -46,6 +43,10 @@ class MultivariateGaussian(Distribution):
         self._covariance = self._covariance.to(device)
 
         self._distribution = torch.distributions.MultivariateNormal(self._mean, self._covariance)
+
+    def at(self, time: float) -> Distribution:
+        unused_variables(time)
+        return self
 
     def sample(self, num_samples: int) -> torch.Tensor:
         return self._distribution.sample((num_samples,))
@@ -67,6 +68,10 @@ class InverseTransform(Distribution):
 
         self._cumulative_distribution_function.to(device)
         self._inversion_method.to(device)
+
+    def at(self, time: float) -> Distribution:
+        self._cumulative_distribution_function = self._cumulative_distribution_function.at(time)
+        return self
 
     def sample(self, num_samples: int) -> torch.Tensor:
 

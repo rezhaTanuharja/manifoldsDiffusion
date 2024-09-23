@@ -35,6 +35,10 @@ class Distribution(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
+    def at(self, time: float) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
     def sample(self, num_samples: int) -> torch.Tensor:
         """
         Generate a number of random samples from the distribution
