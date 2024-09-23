@@ -13,8 +13,14 @@ inversion       : Provides methods to invert a CDF to sample with the inverse tr
 from . import functions
 from . import inversion
 
+from .baseclass import Distribution
+from .simpleclass import MultivariateGaussian, InverseTransform
+
 
 __all__ = [
     'functions',
     'inversion',
+    'Distribution',
+    'MultivariateGaussian',
+    'InverseTransform',
 ]

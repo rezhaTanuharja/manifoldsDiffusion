@@ -22,10 +22,10 @@ class Bisection(InversionMethod):
 
     def __init__(self, num_iterations: int) -> None:
         self._num_iterations = num_iterations
+        self._device = torch.device('cpu')
 
     def to(self, device: torch.device) -> None:
-        unused_variables(device)
-        pass
+        self._device = device
 
     def solve(
         self,
@@ -35,8 +35,8 @@ class Bisection(InversionMethod):
 
         boundaries = function.boundaries()
 
-        lower_bound = torch.full_like(values, boundaries['lower_bound'])
-        upper_bound = torch.full_like(values, boundaries['upper_bound'])
+        lower_bound = torch.full_like(values, boundaries['lower_bound'], device = self._device)
+        upper_bound = torch.full_like(values, boundaries['upper_bound'], device = self._device)
 
         for _ in range(self._num_iterations):
 
