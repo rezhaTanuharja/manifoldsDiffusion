@@ -13,12 +13,22 @@ Bisection
 
 import torch
 
-from diffusionmodels.utilities.warningsuppressors import unused_variables
 from ..functions import CumulativeDistributionFunction
 from .baseclass import InversionMethod
 
 
 class Bisection(InversionMethod):
+    """
+    An inversion method using the bisection root-finder
+
+    Private Attributes
+    ------------------
+    `num_iterations: int`
+        The number of iteration to perform to find the roots
+
+    `device: torch.device`
+        The device where all tensors are located
+    """
 
     def __init__(self, num_iterations: int) -> None:
         self._num_iterations = num_iterations

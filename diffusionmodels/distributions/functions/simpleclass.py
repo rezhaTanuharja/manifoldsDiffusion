@@ -20,6 +20,17 @@ import torch
 
 
 class Linear(CumulativeDistributionFunction):
+    """
+    The CDF for uniform distributions (mainly just for interface testing)
+
+    Private Attributes
+    ------------------
+    `_lower_bound: float`
+        The highest value at which the CDF value is zero
+
+    `_upper_bound: float`
+        The lowest value at which the CDF value is one
+    """
 
     def __init__(self, lower_bound: float, upper_bound: float) -> None:
         self._lower_bound = lower_bound

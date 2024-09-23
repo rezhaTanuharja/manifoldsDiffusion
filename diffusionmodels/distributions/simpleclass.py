@@ -7,19 +7,33 @@ Provides various simple distributions
 Classes
 -------
 MultivariateGaussian        : A multivariate normal distribution
-InverseTransform            : A distribution defined by its CDF and sampled using the inverse transform method
+InverseTransform            : A distribution defined by its CDF
 """
 
 
-from diffusionmodels.distributions.functions.baseclass import CumulativeDistributionFunction
-from diffusionmodels.distributions.inversion.baseclass import InversionMethod
-from diffusionmodels.utilities.warningsuppressors import unused_variables
+from ..utilities.warningsuppressors import unused_variables
+from .functions import CumulativeDistributionFunction
+from .inversion import InversionMethod
 from .baseclass import Distribution
 from typing import Optional
 import torch
 
 
 class MultivariateGaussian(Distribution):
+    """
+    A multivariate normal distribution
+
+    Private Attributes
+    ------------------
+    `_mean: torch.Tensor`
+        The mean vector of the multivariate Gaussian
+
+    `_covariance: torch.Tensor`
+        The covariance matrix of the multivariate Gaussian
+
+    `_distribution: torch.distributions.MultivariateNormal`
+        An instance of MultivariateNormal
+    """
 
     def __init__(
         self,
@@ -53,6 +67,20 @@ class MultivariateGaussian(Distribution):
 
 
 class InverseTransform(Distribution):
+    """
+    A distribution defined by a CDF and sampled from using the inverse transform method
+
+    Private Attributes
+    ------------------
+    `_cumulative_distribution_function: CumulativeDistributionFunction`
+        The CDF that defines the data distribution
+
+    `_inversion_method: InversionMethod`
+        The method to find the inverse of CDFs
+
+    `_device: torch.device`
+        The device where all tensors are located
+    """
 
     def __init__(
         self,

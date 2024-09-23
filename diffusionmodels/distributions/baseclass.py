@@ -22,6 +22,9 @@ class Distribution(ABC):
     `to(device)`
         Send all tensor attributes to device
 
+    `at(time)`
+        Access distribution at the given time
+
     `sample(num_samples)`
         Generate a number of random samples from the distribution
     """
