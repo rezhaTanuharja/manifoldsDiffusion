@@ -8,6 +8,9 @@ Classes
 -------
 Linear
     The CDF of a uniform distribution (useless, just to test the interface)
+
+Heaviside
+    The CDF associated with a dirac distribution at the origin
 """
 
 
@@ -56,24 +59,16 @@ class Linear(CumulativeDistributionFunction):
         }
 
 
-class StepFunction(CumulativeDistributionFunction):
+class Heaviside(CumulativeDistributionFunction):
+    """
+    The distribution associated with a dirac distribution at the origin
+    """
 
-    def __init__(self, num_waves: int) -> None:
-        self._num_waves = num_waves
-        self._lower_bound = 0.0
-        self._upper_bound = torch.pi
+    def __init__(self) -> None:
+        pass
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
-
-        wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
-        wave_numbers = wave_numbers[:, *[None for _ in range(points.dim())]]
-
-        angles = wave_numbers * points[None, ...]
-
-        return 1.0 / torch.pi * points + 2.0 / torch.pi * torch.sum(
-            torch.sin(angles) / wave_numbers,
-            dim = 0
-        )
+        return torch.where(points > 0.0, 1.0, 0.0)
 
     def to(self, device: torch.device) -> None:
         unused_variables(device)
@@ -85,11 +80,6 @@ class StepFunction(CumulativeDistributionFunction):
 
     def boundaries(self) -> Dict[str, float]:
         return {
-            'lower_bound': self._lower_bound,
-            'upper_bound': self._upper_bound,
+            'lower_bound': -1.0,
+            'upper_bound':  1.0
         }
-
-
-
-
-
