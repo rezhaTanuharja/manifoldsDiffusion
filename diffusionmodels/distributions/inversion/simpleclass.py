@@ -11,9 +11,9 @@ Bisection
 """
 
 
+from typing import Callable, Dict
 import torch
 
-from ..functions import CumulativeDistributionFunction
 from .baseclass import InversionMethod
 
 
@@ -23,10 +23,10 @@ class Bisection(InversionMethod):
 
     Private Attributes
     ------------------
-    `num_iterations: int`
+    `_num_iterations: int`
         The number of iteration to perform to find the roots
 
-    `device: torch.device`
+    `_device: torch.device`
         The device where all tensors are located
     """
 
@@ -40,19 +40,18 @@ class Bisection(InversionMethod):
     def solve(
         self,
         values: torch.Tensor,
-        function: CumulativeDistributionFunction
+        function: Callable[[torch.Tensor], torch.Tensor],
+        search_range: Dict[str, float]
     ) -> torch.Tensor:
 
-        boundaries = function.boundaries()
-
-        lower_bound = torch.full_like(values, boundaries['lower_bound'], device = self._device)
-        upper_bound = torch.full_like(values, boundaries['upper_bound'], device = self._device)
+        lower_bound = torch.full_like(values, search_range['lower_bound'], device = self._device)
+        upper_bound = torch.full_like(values, search_range['upper_bound'], device = self._device)
 
         for _ in range(self._num_iterations):
 
             midpoint = 0.5 * (lower_bound + upper_bound)
 
-            function_values = function.evaluate(midpoint)
+            function_values = function(midpoint)
 
             lower_bound = torch.where(function_values <  values, midpoint, lower_bound)
             upper_bound = torch.where(function_values >= values, midpoint, upper_bound)

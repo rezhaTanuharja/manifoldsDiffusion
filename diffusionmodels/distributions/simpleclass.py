@@ -107,5 +107,6 @@ class InverseTransform(Distribution):
 
         return self._inversion_method.solve(
             values = values,
-            function = self._cumulative_distribution_function
+            function = self._cumulative_distribution_function,
+            search_range = self._cumulative_distribution_function.boundaries()
         )

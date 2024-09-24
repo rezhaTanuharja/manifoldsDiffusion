@@ -12,9 +12,8 @@ InversionMethod
 
 
 from abc import ABC, abstractmethod
+from typing import Callable, Dict
 import torch
-
-from ..functions import CumulativeDistributionFunction
 
 
 class InversionMethod(ABC):
@@ -50,7 +49,8 @@ class InversionMethod(ABC):
     def solve(
         self,
         values: torch.Tensor,
-        function: CumulativeDistributionFunction
+        function: Callable[[torch.Tensor], torch.Tensor],
+        search_range: Dict[str, float]
     ) -> torch.Tensor:
         """
         Invert a given function to find the preimage of the given values
@@ -60,8 +60,11 @@ class InversionMethod(ABC):
         `values: torch.Tensor`
             The function values
 
-        `function: CumulativeDistributionFunction`
-            The function to be inverted
+        `function: Callable[[torch.Tensor], torch.Tensor]`
+            An object that takes a tensor as an input and output the same-sized tensor
+
+        `search_range: Dict[str, float]`
+            A dictionary with keys 'lower_bound' and 'upper_bound'
 
         Returns
         -------

@@ -43,6 +43,22 @@ class CumulativeDistributionFunction(ABC):
 
 
     @abstractmethod
+    def __call__(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points to evaluate the CDF
+
+        Returns
+        -------
+        `torch.Tensor`
+            The probability that a random sample is lower than or equal to point
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
     def to(self, device: torch.device) -> None:
         """
         Move any tensor attributes to device
@@ -69,22 +85,6 @@ class CumulativeDistributionFunction(ABC):
         -------
         `self`
             The same instance of distribution after it is moved to the given time
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def evaluate(self, points: torch.Tensor) -> torch.Tensor:
-        """
-        Parameters
-        ----------
-        `points: torch.Tensor`
-            The points to evaluate the CDF
-
-        Returns
-        -------
-        `torch.Tensor`
-            The probability that a random sample is lower than or equal to point
         """
         raise NotImplementedError("Subclasses must implement this method")
 

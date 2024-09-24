@@ -11,10 +11,11 @@ simpleclass     : Implements various simple PDFs and CDFs
 """
 
 from .baseclass import CumulativeDistributionFunction
-from .simpleclass import Linear
+from .simpleclass import Linear, StepFunction
 
 
 __all__ = [
     'CumulativeDistributionFunction',
     'Linear',
+    'StepFunction',
 ]
