@@ -19,13 +19,12 @@ from . import functions
 from . import inversion
 
 from .baseclass import Distribution
-from .simpleclass import MultivariateGaussian, InverseTransform
+from .simpleclass import InverseTransform
 
 
 __all__ = [
     'functions',
     'inversion',
     'Distribution',
-    'MultivariateGaussian',
     'InverseTransform',
 ]

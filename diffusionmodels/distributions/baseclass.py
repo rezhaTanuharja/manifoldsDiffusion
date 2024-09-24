@@ -10,6 +10,7 @@ Distribution        : The interface for all distributions in this package
 """
 
 from abc import ABC, abstractmethod
+from typing import Callable
 import torch
 
 
@@ -39,6 +40,14 @@ class Distribution(ABC):
 
     @abstractmethod
     def at(self, time: float) -> None:
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def cumulative_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod

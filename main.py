@@ -18,18 +18,18 @@ distribution = dm.distributions.InverseTransform(
 #     mean_squared_displacement = lambda t: 0.375 * t ** 2
 # )
 #
-# angles = torch.pi * torch.arange(start = -1.0, end = 1.0, step = 0.01)
+angles = torch.pi * torch.arange(start = -1.0, end = 1.0, step = 0.01)
 # angles.to(device)
 
-# times = [0.3 * (1.0 + i) for i in range(10)]
+times = [0.3 * (1.0 + i) for i in range(10)]
 
-# for t in times:
-#     values = cumulative_distribution_function.at(time = t).density(angles)
-#     plt.plot(angles.cpu(), values.cpu())
+for t in times:
+    values = distribution.at(time = t).cumulative_function()(angles)
+    plt.plot(angles.cpu(), values.cpu())
 
-random_samples = distribution.at(time = 1.0).sample(num_samples = 2000)
+# random_samples = distribution.at(time = 1.0).sample(num_samples = 2000)
 
-plt.hist(random_samples.cpu())
+# plt.hist(random_samples.cpu())
 plt.show()
 # distribution.to(device)
 
