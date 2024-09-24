@@ -10,16 +10,14 @@ baseclass       : Provides the interface for all PDFs and CDFs in this package
 simpleclass     : Implements various simple PDFs and CDFs
 """
 
-from .baseclass import CumulativeDistributionFunction
-from .simpleclass import Linear, Heaviside
+from .baseclass import DistributionFunction
+from .simpleclass import Linear
 
 from . import periodic
 
 
 __all__ = [
-    'CumulativeDistributionFunction',
+    'DistributionFunction',
     'Linear',
-    'Heaviside',
-
     'periodic',
 ]

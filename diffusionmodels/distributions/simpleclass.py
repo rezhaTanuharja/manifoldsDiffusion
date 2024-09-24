@@ -12,7 +12,7 @@ InverseTransform            : A distribution defined by its CDF
 
 
 from ..utilities.warningsuppressors import unused_variables
-from .functions import CumulativeDistributionFunction
+from .functions import DistributionFunction
 from .inversion import InversionMethod
 from .baseclass import Distribution
 from typing import Optional
@@ -84,21 +84,21 @@ class InverseTransform(Distribution):
 
     def __init__(
         self,
-        cumulative_distribution_function: CumulativeDistributionFunction,
+        distribution_function: DistributionFunction,
         inversion_method: InversionMethod
     ) -> None:
-        self._cumulative_distribution_function = cumulative_distribution_function
+        self._distribution_function = distribution_function
         self._inversion_method = inversion_method
         self._device = torch.device('cpu')
 
     def to(self, device: torch.device):
         self._device = device
 
-        self._cumulative_distribution_function.to(device)
+        self._distribution_function.to(device)
         self._inversion_method.to(device)
 
     def at(self, time: float) -> Distribution:
-        self._cumulative_distribution_function = self._cumulative_distribution_function.at(time)
+        self._distribution_function = self._distribution_function.at(time)
         return self
 
     def sample(self, num_samples: int) -> torch.Tensor:
@@ -107,6 +107,6 @@ class InverseTransform(Distribution):
 
         return self._inversion_method.solve(
             values = values,
-            function = self._cumulative_distribution_function,
-            search_range = self._cumulative_distribution_function.boundaries()
+            function = self._distribution_function.cumulative,
+            search_range = self._distribution_function.boundaries()
         )

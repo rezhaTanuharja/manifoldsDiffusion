@@ -11,7 +11,7 @@ simpleclass     : Provides various simple distributions
 
 Submodules
 ----------
-functions       : Provides functions such as PDFs and CDFs
+functions       : Provides distribution functions that include PDFs and CDFs
 inversion       : Provides methods to invert a CDF to sample with the inverse transform method
 """
 

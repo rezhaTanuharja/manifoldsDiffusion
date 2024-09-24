@@ -11,12 +11,12 @@ HeatKernel
 """
 
 from ...utilities.warningsuppressors import unused_variables
-from .baseclass import CumulativeDistributionFunction
+from .baseclass import DistributionFunction
 from typing import Dict, Callable
 import torch
 
 
-class HeatKernel(CumulativeDistributionFunction):
+class HeatKernel(DistributionFunction):
     """
     The solution to a heat equation with periodic boundary conditions
 
@@ -41,7 +41,7 @@ class HeatKernel(CumulativeDistributionFunction):
         self._mean_squared_displacement = mean_squared_displacement
         self._time = 0.0
 
-    def __call__(self, points: torch.Tensor) -> torch.Tensor:
+    def cumulative(self, points: torch.Tensor) -> torch.Tensor:
 
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
         wave_numbers = wave_numbers[:, *[None for _ in range(points.dim())]]
@@ -57,11 +57,27 @@ class HeatKernel(CumulativeDistributionFunction):
             dim = 0
         )
 
+    def density(self, points: torch.Tensor) -> torch.Tensor:
+
+        wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
+        wave_numbers = wave_numbers[:, *[None for _ in range(points.dim())]]
+
+        angles = wave_numbers * points[None, ...]
+
+        temporal_components = 1.0 / torch.pi * torch.exp(
+            -self._mean_squared_displacement(self._time) * wave_numbers ** 2
+        )
+
+        return 0.5 / torch.pi + torch.sum(
+            temporal_components * torch.cos(angles),
+            dim = 0
+        )
+
     def to(self, device: torch.device) -> None:
         unused_variables(device)
         pass
 
-    def at(self, time: float) -> CumulativeDistributionFunction:
+    def at(self, time: float) -> DistributionFunction:
         self._time = time
         return self
 

@@ -17,7 +17,7 @@ from typing import Dict
 import torch
 
 
-class CumulativeDistributionFunction(ABC):
+class DistributionFunction(ABC):
     """
     An abstract class that serves as an interface of all CDFs
 
@@ -29,8 +29,11 @@ class CumulativeDistributionFunction(ABC):
     `at(time)`
         Access the CDF at the given time
 
-    `evaluate(points)`
+    `cumulative(points)`
         Returns the CDF values at the given points
+
+    `density(points)`
+        Returns the PDF values at the given points
 
     `boundaries()`
         Return a dictionary containing lower and upper bound of the CDF domain
@@ -43,7 +46,7 @@ class CumulativeDistributionFunction(ABC):
 
 
     @abstractmethod
-    def __call__(self, points: torch.Tensor) -> torch.Tensor:
+    def cumulative(self, points: torch.Tensor) -> torch.Tensor:
         """
         Parameters
         ----------
@@ -54,6 +57,22 @@ class CumulativeDistributionFunction(ABC):
         -------
         `torch.Tensor`
             The probability that a random sample is lower than or equal to point
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def density(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points to evaluate the CDF
+
+        Returns
+        -------
+        `torch.Tensor`
+            The probability density value at the given points
         """
         raise NotImplementedError("Subclasses must implement this method")
 
