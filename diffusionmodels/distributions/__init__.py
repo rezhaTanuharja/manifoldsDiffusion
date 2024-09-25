@@ -19,7 +19,7 @@ from . import functions
 from . import inversion
 
 from .baseclass import Distribution
-from .simpleclass import InverseTransform
+from .simpleclass import InverseTransform, UniformSphere
 
 
 __all__ = [
@@ -27,4 +27,5 @@ __all__ = [
     'inversion',
     'Distribution',
     'InverseTransform',
+    'UniformSphere',
 ]

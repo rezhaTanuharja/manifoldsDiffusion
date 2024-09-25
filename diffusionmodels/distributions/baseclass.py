@@ -69,11 +69,6 @@ class Distribution(ABC):
 
 
     @abstractmethod
-    def cumulative_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        raise NotImplementedError("Subclasses must implement this method")
-
-        
-    @abstractmethod
     def sample(self, num_samples: int) -> torch.Tensor:
         """
         Generate a number of random samples from the distribution

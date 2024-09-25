@@ -6,63 +6,17 @@ Provides various simple distributions
 
 Classes
 -------
-MultivariateGaussian        : A multivariate normal distribution
-InverseTransform            : A distribution defined by its CDF
+InverseTransform            : A distribution defined by its distribution function
+UniformSphere               : A uniform distribution on unit spheres
 """
 
 
+from ..utilities.warningsuppressors import unused_variables
 from .functions import DistributionFunction
 from .inversion import InversionMethod
 from .baseclass import Distribution
 from typing import Callable
 import torch
-
-
-# class MultivariateGaussian(Distribution):
-#     """
-#     A multivariate normal distribution
-#
-#     Private Attributes
-#     ------------------
-#     `_mean: torch.Tensor`
-#         The mean vector of the multivariate Gaussian
-#
-#     `_covariance: torch.Tensor`
-#         The covariance matrix of the multivariate Gaussian
-#
-#     `_distribution: torch.distributions.MultivariateNormal`
-#         An instance of MultivariateNormal
-#     """
-#
-#     def __init__(
-#         self,
-#         dimension: int,
-#         mean: Optional[torch.Tensor] = None,
-#         covariance: Optional[torch.Tensor] = None
-#     ) -> None:
-#         if mean == None or mean.numel() != dimension:
-#             mean = torch.zeros(size = (dimension,))
-#         self._mean = mean
-#
-#         if covariance == None or covariance.shape != (dimension, dimension):
-#             covariance = torch.eye(dimension)
-#         self._covariance = covariance
-#
-#         self._distribution = torch.distributions.MultivariateNormal(mean, covariance)
-#
-#     def to(self, device: torch.device):
-#
-#         self._mean = self._mean.to(device)
-#         self._covariance = self._covariance.to(device)
-#
-#         self._distribution = torch.distributions.MultivariateNormal(self._mean, self._covariance)
-#
-#     def at(self, time: float) -> Distribution:
-#         unused_variables(time)
-#         return self
-#
-#     def sample(self, num_samples: int) -> torch.Tensor:
-#         return self._distribution.sample((num_samples,))
 
 
 class InverseTransform(Distribution):
@@ -103,9 +57,6 @@ class InverseTransform(Distribution):
     def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
         return self._distribution_function.density
 
-    def cumulative_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        return self._distribution_function.cumulative
-
     def sample(self, num_samples: int) -> torch.Tensor:
 
         values = torch.rand(size = (num_samples, 1), device = self._device)
@@ -115,3 +66,44 @@ class InverseTransform(Distribution):
             function = self._distribution_function.cumulative,
             search_range = self._distribution_function.support()
         )
+
+
+class UniformSphere(Distribution):
+    """
+    A uniform distribution of points on an arbitrary-dimension unit sphere
+
+    Private Attributes
+    ------------------
+    `_dimension: int`
+        The dimension of the unit sphere
+
+    `_device: torch.device`
+        The device where all tensors are stored or created
+    """
+
+    def __init__(self, dimension: int) -> None:
+        self._dimension = dimension
+        self._device = torch.device('cpu')
+
+    def to(self, device: torch.device):
+        self._device = device
+
+    def at(self, time: float) -> Distribution:
+        unused_variables(time)
+        return self
+
+    def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
+        return lambda _: torch.exp(
+
+            torch.special.gammaln(0.5 * self._dimension)
+
+        ) / (2.0 * torch.pi ** (0.5 * self._dimension))
+
+    def sample(self, num_samples: int) -> torch.Tensor:
+
+        points = torch.randn(
+            size = (num_samples, self._dimension),
+            device = self._device
+        )
+
+        return points / (torch.norm(points, dim = -1, keepdim = True) + 1e-6)
