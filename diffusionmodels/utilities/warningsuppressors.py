@@ -6,8 +6,7 @@ Provides functionalities to suppress various warnings in IDEs.
 
 Functions
 ---------
-unused_variables
-    Suppress unused variables by explicit acknowledgements
+unused_variables    : A function to explicitly declare that variables are not used
 """
 
 

@@ -3,6 +3,10 @@ diffusionmodels.utilities
 =========================
 
 Provides miscellaneous functionalities for diffusionmodels
+
+Functions
+---------
+unused_variables    : A function to explicitly declare that variables are not used
 """
 
 

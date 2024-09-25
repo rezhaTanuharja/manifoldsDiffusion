@@ -31,6 +31,9 @@ class InverseTransform(Distribution):
     `_inversion_method: InversionMethod`
         The method to find the inverse of CDFs
 
+    `_num_times: int`
+        The number of time the distribution will be evaluated at
+
     `_device: torch.device`
         The device where all tensors are located
     """

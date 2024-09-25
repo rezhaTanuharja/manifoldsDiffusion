@@ -10,7 +10,6 @@ HeatKernel
     The solution to a heat equation with periodic boundary conditions
 """
 
-from ....utilities.warningsuppressors import unused_variables
 from .baseclass import DistributionFunction
 from typing import Dict, Callable
 import torch
@@ -78,8 +77,7 @@ class HeatKernel(DistributionFunction):
         )
 
     def to(self, device: torch.device) -> None:
-        unused_variables(device)
-        pass
+        self._time = self._time.to(device)
 
     def at(self, time: torch.Tensor) -> DistributionFunction:
         self._time = time

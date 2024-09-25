@@ -6,6 +6,7 @@ Provides functionalities to find the inverse of CDFs to sample via the inverse t
 
 Classes
 -------
+InversionMethod : The interface for all inversion methods in this package
 Bisection       : Invert CDFs using a bisection root-finder
 """
 

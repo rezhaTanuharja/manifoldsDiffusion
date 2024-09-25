@@ -1,6 +1,6 @@
 """
-dataprocessing.simpleclass
-==========================
+diffusionmodels.dataprocessing.simpleclass
+==========================================
 
 Implements various simple data processing steps
 
