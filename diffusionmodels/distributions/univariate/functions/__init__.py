@@ -13,7 +13,7 @@ Classes
 DistributionFunction    : The interface for all distribution functions in this package
 """
 
-from .baseclass import DistributionFunction
+from .interfaces import DistributionFunction
 
 from . import periodic
 

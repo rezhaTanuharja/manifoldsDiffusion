@@ -1,5 +1,17 @@
+"""
+diffusionmodels.processes.lagrangian.solvers.recorders.simpleclass
+==================================================================
+
+Classes
+-------
+SimpleRecorder          : A recorder that records every data point
+UniformRandomRecorder   : A recorder that records randomly selected data point
+StridedRecorder         : A recorder that records data with striding
+"""
+
+
 import torch
-from .baseclass import DataRecorder
+from .interfaces import DataRecorder
 from typing import Dict
 
 
@@ -24,6 +36,9 @@ class SimpleRecorder(DataRecorder):
 
     def __init__(self) -> None:
         self._device = torch.device('cpu')
+        self._records = torch.tensor([0.0,])
+        self._timestamps = torch.tensor([0.0,])
+        self._current_index = 0
 
     def to(self, device = torch.device) -> None:
         self._device = device
@@ -87,6 +102,10 @@ class UniformRandomRecorder(DataRecorder):
     def __init__(self, keep_ratio: float) -> None:
         self._device = torch.device('cpu')
         self._keep_ratio = keep_ratio
+        self._records = torch.tensor([0.0,])
+        self._timestamps = torch.tensor([0.0,])
+        self._store_index = 0
+        self._current_index = 0
 
     def to(self, device = torch.device) -> None:
         self._device = device
@@ -129,10 +148,37 @@ class UniformRandomRecorder(DataRecorder):
 
 
 class StridedRecorder(DataRecorder):
+    """
+    A recorder that stores data with striding
+
+    Private Attributes
+    ------------------
+    `_device : torch.device`
+        The device that stores the record
+
+    `_stride : int`
+        The data is stored only every 'stride' time
+
+    `_records : torch.Tensor`
+        A tensor to store data
+
+    `_timestamps : torch.Tensor`
+        The accompanying timestamps of data in record
+
+    `_store_index : int`
+        This tracks the number of times the store method has been called
+
+    `_current_index : int`
+        This tracks the number of times a data chunk has been recorded
+    """
 
     def __init__(self, stride: int) -> None:
         self._device = torch.device('cpu')
         self._stride = stride
+        self._records = torch.tensor([0.0,])
+        self._timestamps = torch.tensor([0.0,])
+        self._store_index = 0
+        self._current_index = 0
 
     def to(self, device = torch.device) -> None:
         self._device = device

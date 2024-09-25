@@ -1,22 +1,22 @@
 """
-differentialequations.simpleclass
-=================================
+diffusionmodels.processes.lagrangian.differentialequations.forward
+==================================================================
 
-Defines various simple stochastic differential equations.
+Defines various simple forward stochastic differential equations.
 
 Classes
 -------
 ExplodingVariance
-    A subclass of SDE that has no drift
+    A subclass of forward SDEs that has no drift
 """
 
 
 import torch
 
-from .baseclass import StochasticDifferentialEquation
+from .interfaces import StochasticDifferentialEquation
 
-from ..utilities import unused_variables
-from ..manifolds import Manifold
+from ....utilities import unused_variables
+from ....manifolds import Manifold
 
 
 class ExplodingVariance(StochasticDifferentialEquation):

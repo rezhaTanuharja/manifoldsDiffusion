@@ -10,7 +10,7 @@ HeatKernel
     The solution to a heat equation with periodic boundary conditions
 """
 
-from .baseclass import DistributionFunction
+from .interfaces import DistributionFunction
 from typing import Dict, Callable
 import torch
 

@@ -20,8 +20,8 @@ from typing import Any
 
 from diffusionmodels.utilities.warningsuppressors import unused_variables
 
-from .baseclass import StochasticDifferentialEquation
-from ..manifolds import Manifold
+from .interfaces import StochasticDifferentialEquation
+from ....manifolds import Manifold
 # from ..scorefunctions import DirectionCalculator
 
 

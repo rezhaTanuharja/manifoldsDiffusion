@@ -1,6 +1,6 @@
 """
-manifolds.baseclass
-===================
+manifolds.interfaces
+====================
 
 Provides the interface for all manifolds in this package
 

@@ -1,6 +1,6 @@
 """
-diffusionmodels.dataprocessing.baseclass
-========================================
+diffusionmodels.dataprocessing.interfaces
+=========================================
 
 Provides the interface for all data processing steps in this package
 

@@ -1,6 +1,6 @@
 """
-diffusionmodels.solvers.simpleclass
-===================================
+diffusionmodels.processes.lagrangian.solvers.simpleclass
+========================================================
 
 This module implements various solution samplers
 
@@ -13,9 +13,9 @@ SimpleSampler
 
 import torch
 
-from .baseclass import Solver
-from ..timeintegrators import TimeIntegrator
-from ..recorders import DataRecorder
+from .interfaces import Solver
+from .timeintegrators import TimeIntegrator
+from .recorders import DataRecorder
 
 from typing import Dict
 

@@ -1,6 +1,6 @@
 """
-distributions.baseclass
-=======================
+distributions.interfaces
+========================
 
 Provides the interface for all distributions in this package
 

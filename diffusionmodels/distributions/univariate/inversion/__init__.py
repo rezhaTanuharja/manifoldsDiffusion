@@ -10,7 +10,7 @@ InversionMethod : The interface for all inversion methods in this package
 Bisection       : Invert CDFs using a bisection root-finder
 """
 
-from .baseclass import InversionMethod
+from .interfaces import InversionMethod
 from .simpleclass import Bisection
 
 

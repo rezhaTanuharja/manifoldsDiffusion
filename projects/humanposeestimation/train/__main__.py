@@ -18,6 +18,7 @@ def main():
         return
 
 
+    #TODO: Consider another approach here
     #NOTE: this part sets the parallelization
 
     # -- initialize the process group

@@ -14,7 +14,7 @@ Bisection
 from typing import Callable, Dict
 import torch
 
-from .baseclass import InversionMethod
+from .interfaces import InversionMethod
 
 
 class Bisection(InversionMethod):

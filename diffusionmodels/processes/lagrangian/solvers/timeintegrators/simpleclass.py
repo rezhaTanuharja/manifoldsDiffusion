@@ -1,6 +1,6 @@
 """
-diffusionmodels.timeintegrators.simpleclass
-===========================================
+diffusionmodels.processes.lagrangian.solvers.timeintegrators.simpleclass
+========================================================================
 
 Defines the simple classes for time integrators
 
@@ -16,9 +16,9 @@ Heun
 
 import torch
 
-from ..utilities.warningsuppressors import unused_variables
-from ..differentialequations import StochasticDifferentialEquation
-from .baseclass import TimeIntegrator
+from .....utilities.warningsuppressors import unused_variables
+from ...differentialequations import StochasticDifferentialEquation
+from .interfaces import TimeIntegrator
 
 
 class EulerMaruyama(TimeIntegrator):

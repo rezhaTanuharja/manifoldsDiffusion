@@ -11,7 +11,7 @@ Pipeline        : A transformation that consist of a sequence of transformations
 """
 
 
-from .baseclass import Transform
+from .interfaces import Transform
 from .simpleclass import Pipeline
 
 

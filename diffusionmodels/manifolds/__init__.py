@@ -11,7 +11,7 @@ SpecialOrthogonal3  : The Lie Group of 3D rotational matrices
 """
 
 
-from .baseclass import Manifold
+from .interfaces import Manifold
 from .simpleclass import SpecialOrthogonal3
 
 

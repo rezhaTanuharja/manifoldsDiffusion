@@ -1,6 +1,6 @@
 """
-scorefunctions.baseclass
-========================
+diffusionmodels.processes.lagrangian.scorefunctions.interfaces
+==============================================================
 
 This module defines the abstract base classes for scorefunctions
 
@@ -8,9 +8,6 @@ Classes
 -------
 DirectionCalculator
     An abstract class that computes a direction using the current position
-
-RelativeDirectionCalculator
-    An abstract class that computes a direction using the current position and a reference positions
 """
 
 

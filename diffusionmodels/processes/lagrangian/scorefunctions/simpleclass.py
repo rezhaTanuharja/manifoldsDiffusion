@@ -1,18 +1,19 @@
 """
-scorefunctions.baseclass
-========================
+diffusionmodels.processes.lagrangian.scorefunctions.simpleclass
+===============================================================
 
 This module implements simple classes of scorefunctions
 
 Classes
 -------
+Geodesic        : A score function in the form of a scaled geodesic distance
 """
 
 
 import torch
-from .baseclass import Direction
+from .interfaces import Direction
 
-from ...manifolds import Manifold
+from ....manifolds import Manifold
 
 
 class Geodesic(Direction):

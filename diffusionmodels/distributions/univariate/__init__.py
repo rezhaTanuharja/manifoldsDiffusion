@@ -17,10 +17,13 @@ InverseTransform    : Distribution that can be sampled by inverting their CDFs
 from . import functions
 from . import inversion
 
+from .functions import DistributionFunction
 from .simpleclass import InverseTransform
 
 
 __all__ = [
+
+    'DistributionFunction',
 
     'functions',
     'inversion',

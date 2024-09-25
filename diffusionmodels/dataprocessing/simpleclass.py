@@ -10,7 +10,7 @@ Pipeline        : A transformation that consists of sequential smaller transform
 """
 
 
-from .baseclass import Transform
+from .interfaces import Transform
 from typing import List, Any
 
 

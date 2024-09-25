@@ -14,7 +14,7 @@ SpecialOrthogonal3
 import torch
 from typing import Tuple
 
-from .baseclass import Manifold
+from .interfaces import Manifold
 
 
 class SpecialOrthogonal3(Manifold):

@@ -6,21 +6,24 @@ A package that provides functionalities to define diffusion models in manifolds.
 
 Modules
 -------
-manifolds               : Provides manifold structures
-distributions           : Provides various distributions
 dataprocessing          : Provides functionalities to define data preprocessing steps
+distributions           : Provides various distributions
+processes               : Provides forward and reverse diffusion processes
+manifolds               : Provides manifold structures
 utilities               : Provides various useful functions
 """
 
-from . import manifolds
-from . import distributions
 from . import dataprocessing
+from . import distributions
+from . import processes
+from . import manifolds
 from . import utilities
 
 
 __all__ = [
-    'manifolds',
-    'distributions',
     'dataprocessing',
+    'distributions',
+    'processes',
+    'manifolds',
     'utilities',
 ]

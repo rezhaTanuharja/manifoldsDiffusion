@@ -1,6 +1,6 @@
 """
-distributions.functions.baseclass
-=================================
+distributions.functions.interfaces
+==================================
 
 Provides the interface for all PDFs and CDFs in this package
 

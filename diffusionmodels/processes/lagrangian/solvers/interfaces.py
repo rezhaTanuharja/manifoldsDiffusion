@@ -1,6 +1,6 @@
 """
-diffusionmodels.solvers.baseclass
-=================================
+diffusionmodels.processes.lagrangian.solvers.interfaces
+=======================================================
 
 This module provides the interface for all solvers in this package
 
@@ -16,8 +16,8 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from ..differentialequations import StochasticDifferentialEquation
-from ..timeintegrators import TimeIntegrator
-from ..recorders import DataRecorder
+from .timeintegrators import TimeIntegrator
+from .recorders import DataRecorder
 
 
 class Solver(ABC):

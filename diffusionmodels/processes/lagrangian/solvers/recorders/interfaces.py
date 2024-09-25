@@ -1,3 +1,13 @@
+"""
+diffusionmodels.processes.lagrangian.solvers.recorders.interfaces
+=================================================================
+
+Classes
+-------
+DataRecorder    : The interface for all data recorders in this package
+"""
+
+
 from abc import ABC, abstractmethod
 from typing import Dict
 

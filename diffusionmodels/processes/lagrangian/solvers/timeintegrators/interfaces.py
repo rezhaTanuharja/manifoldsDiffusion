@@ -1,6 +1,6 @@
 """
-diffusionmodels.timeintegrators.baseclass
-=========================================
+diffusionmodels.processes.lagrangian.solvers.timeintegrators.interfaces
+=======================================================================
 
 Provides the interface for all time integrators
 
@@ -13,7 +13,7 @@ TimeIntegrator
 
 from abc import ABC, abstractmethod
 from typing import Union, List
-from ..differentialequations import StochasticDifferentialEquation
+from ...differentialequations import StochasticDifferentialEquation
 
 import torch
 
