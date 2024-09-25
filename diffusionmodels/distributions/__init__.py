@@ -1,31 +1,20 @@
 """
-distributions
-=============
+diffusionmodels.distributions
+=============================
 
 Provides functionalities to define a data distribution
 
 Modules
 -------
-baseclass       : Provides the interface for all distribution in this package
-simpleclass     : Provides various simple distributions
-
-Submodules
-----------
-functions       : Provides distribution functions that include PDFs and CDFs
-inversion       : Provides methods to invert a CDF to sample with the inverse transform method
+univariate      : Implements various univariate distributions
+multivariate    : Implements various multivariate distributions
 """
 
-from . import functions
-from . import inversion
-
-from .baseclass import Distribution
-from .simpleclass import InverseTransform, UniformSphere
+from . import univariate
+from . import multivariate
 
 
 __all__ = [
-    'functions',
-    'inversion',
-    'Distribution',
-    'InverseTransform',
-    'UniformSphere',
+    'univariate',
+    'multivariate'
 ]

@@ -1,13 +1,12 @@
 """
-distributions.inversion
-=======================
+diffusionmodels.distributions.univariate.inversion
+==================================================
 
 Provides functionalities to find the inverse of CDFs to sample via the inverse transform method
 
-Modules
+Classes
 -------
-baseclass       : Provides the interface for all inversion method in this package
-simpleclass     : Implements various simple inversion methods
+Bisection       : Invert CDFs using a bisection root-finder
 """
 
 from .baseclass import InversionMethod

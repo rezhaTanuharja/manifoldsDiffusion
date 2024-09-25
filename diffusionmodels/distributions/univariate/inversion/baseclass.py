@@ -1,6 +1,6 @@
 """
-distributions.inversion.baseclass
-=================================
+diffusionmodels.distributions.univariate.inversion.baseclass
+============================================================
 
 Provides the interface for all inversion method in this package
 

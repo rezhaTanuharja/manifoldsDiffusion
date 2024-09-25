@@ -6,8 +6,8 @@ Provides the interface for all PDFs and CDFs in this package
 
 Classes
 -------
-CumulativeDistributionFunction
-    An abstract class that serves as an interface of all CDFs
+DistributionFunction
+    An abstract class that serves as an interface of all distribution functions
 """
 
 
@@ -91,13 +91,13 @@ class DistributionFunction(ABC):
 
 
     @abstractmethod
-    def at(self, time: float):
+    def at(self, time: torch.Tensor):
         """
         Access the CDF at the given time, does nothing for a time-invariant distribution
 
         Parameters
         ----------
-        `time: float`
+        `time: torch.Tensor`
             The time to evaluate the CDF
 
         Returns

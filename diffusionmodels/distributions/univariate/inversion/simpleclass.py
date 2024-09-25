@@ -1,6 +1,6 @@
 """
-distributions.inversion.simpleclass
-===================================
+diffusionmodels.distributions.univariate.inversion.simpleclass
+==============================================================
 
 Implements various simple inversion methods
 

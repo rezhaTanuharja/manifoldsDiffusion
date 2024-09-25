@@ -50,15 +50,15 @@ class Distribution(ABC):
 
 
     @abstractmethod
-    def at(self, time: float) -> None:
+    def at(self, time: torch.Tensor) -> None:
         """
         Distribution is a temporal and spatial function.
         This function fixes the time so it becomes a spatial-only function.
 
         Parameters
         ----------
-        `time: float`
-            The time to access the distribution
+        `time: torch.Tensor`
+            The time tensor to access the distribution
         """
         raise NotImplementedError("Subclasses must implement this method")
 
