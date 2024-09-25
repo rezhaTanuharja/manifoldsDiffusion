@@ -6,8 +6,8 @@ Implements various simple PDFs and CDFs
 
 Classes
 -------
-Linear
-    The CDF of a uniform distribution (useless, just to test the interface)
+Uniform
+    The distribution of a uniformly distributed data (useless, just to test the interface)
 """
 
 
@@ -19,7 +19,7 @@ from typing import Dict
 import torch
 
 
-class Linear(DistributionFunction):
+class Uniform(DistributionFunction):
     """
     The CDF for uniform distributions (mainly just for interface testing)
 
@@ -52,7 +52,7 @@ class Linear(DistributionFunction):
         unused_variables(time)
         return self
 
-    def boundaries(self) -> Dict[str, float]:
+    def support(self) -> Dict[str, float]:
         return {
             'lower_bound': self._lower_bound,
             'upper_bound': self._upper_bound,

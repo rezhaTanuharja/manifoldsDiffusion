@@ -30,26 +30,49 @@ class Distribution(ABC):
         Generate a number of random samples from the distribution
     """
 
+
     @abstractmethod
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Subclasses must implement this method")
 
+
     @abstractmethod
     def to(self, device: torch.device) -> None:
+        """
+        Move any tensor attributes to device
+
+        Parameters
+        ----------
+        `device: torch.device`
+            A device object from PyTorch
+        """
         raise NotImplementedError("Subclasses must implement this method")
+
 
     @abstractmethod
     def at(self, time: float) -> None:
+        """
+        Distribution is a temporal and spatial function.
+        This function fixes the time so it becomes a spatial-only function.
+
+        Parameters
+        ----------
+        `time: float`
+            The time to access the distribution
+        """
         raise NotImplementedError("Subclasses must implement this method")
+
 
     @abstractmethod
     def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
         raise NotImplementedError("Subclasses must implement this method")
 
+
     @abstractmethod
     def cumulative_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
         raise NotImplementedError("Subclasses must implement this method")
 
+        
     @abstractmethod
     def sample(self, num_samples: int) -> torch.Tensor:
         """

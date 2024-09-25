@@ -35,8 +35,8 @@ class DistributionFunction(ABC):
     `density(points)`
         Returns the PDF values at the given points
 
-    `boundaries()`
-        Return a dictionary containing lower and upper bound of the CDF domain
+    `support()`
+        Return a dictionary containing lower and upper bound of the function's support
     """
 
 
@@ -109,8 +109,10 @@ class DistributionFunction(ABC):
 
 
     @abstractmethod
-    def boundaries(self) -> Dict[str, float]:
+    def support(self) -> Dict[str, float]:
         """
+        Support is the range in which the functions may be nonzero
+
         Returns
         -------
         `Dict[str, float]`

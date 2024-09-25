@@ -81,7 +81,7 @@ class HeatKernel(DistributionFunction):
         self._time = time
         return self
 
-    def boundaries(self) -> Dict[str, float]:
+    def support(self) -> Dict[str, float]:
         return {
             'lower_bound': -torch.pi,
             'upper_bound':  torch.pi

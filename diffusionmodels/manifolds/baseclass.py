@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 
-#NOTE: All interfaces must be defined in the same style as this one
+# NOTE: All interfaces must be defined in the same style as this one
 
 class Manifold(ABC):
     """

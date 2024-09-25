@@ -11,13 +11,13 @@ simpleclass     : Implements various simple PDFs and CDFs
 """
 
 from .baseclass import DistributionFunction
-from .simpleclass import Linear
+from .simpleclass import Uniform
 
 from . import periodic
 
 
 __all__ = [
     'DistributionFunction',
-    'Linear',
+    'Uniform',
     'periodic',
 ]
