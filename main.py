@@ -1,174 +1,119 @@
 import diffusionmodels as dm
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import torch
 
 
-# def noiser(dataset: torch.Tensor) -> torch.Tensor:
-#
-#     axis_distribution = dm.distributions.UniformSphere(dimension = 3)
-#
-#     angle_distribution = dm.distributions.InverseTransform(
-#
-#         distribution_function = dm.distributions.functions.periodic.HeatKernel(
-#             num_waves = 10,
-#             mean_squared_displacement = lambda t: t ** 2
-#         ),
-#
-#         inversion_method = dm.distributions.inversion.Bisection(num_iterations = 5)
-#     )
-#
-#     time = torch.rand(size = (1,))
-#
-#     axis = axis_distribution.sample(num_samples = num_samples)
-#
-#     return dataset
-#
-#
-# def main():
-#
-#     if not torch.cuda.is_available():
-#         print('Requires CUDA, aborting...')
-#         return
-#     device = torch.device('cuda')
-#
-#     manifold = dm.manifolds.SpecialOrthogonal3()
-#
-#     for obj in [
-#         manifold,
-#     ]:
-#         obj.to(device)
-#
-#     data_pipeline = dm.dataprocessing.Pipeline(
-#         transforms = [
-#
-#             # move to device
-#             lambda dataset: dataset.to(device, non_blocking = True),
-#
-#             # separate joints
-#             lambda dataset: dataset.unflatten(-1, (-1, *manifold.tangent_dimension())),
-#
-#             # convert into rotational matrices
-#             lambda dataset: manifold.exp(
-#                 torch.eye(3, device = device).view(*manifold.dimension()),
-#                 dataset
-#             ),
-#
-#             # NOTE: the number of samples here is still a placeholder
-#
-#             # duplicate to process with multiple sample paths simultaneously
-#             lambda dataset: dataset.unsqueeze(0).expand(
-#                 50, *dataset.shape
-#             ).flatten(0,1),
-#
-#             # TODO: create a noiser function
-#             # it should return a dictionary with 'time', 'points', and 'labels' as keys
-#
-#         ]
-#     )
-#
-#
-#
-# if __name__ == '__main__':
-#     main()
+manifold = dm.manifolds.SpecialOrthogonal3()
 
-
-
-device = torch.device('cpu')
-
-# distribution = dm.distributions.InverseTransform(
-#
-#     distribution_function = dm.distributions.functions.periodic.HeatKernel(
-#         num_waves = 10,
-#         mean_squared_displacement = lambda t: 0.375 * t
-#     ),
-#
-#     inversion_method = dm.distributions.inversion.Bisection(num_iterations = 10)
-#
-# )
-
-num_samples = 1000
-
-# axis_distribution = dm.distributions.UniformSphere(dimension = 3)
-angle_distribution = dm.distributions.univariate.InverseTransform(
-
-    distribution_function = dm.distributions.univariate.functions.periodic.HeatKernel(
+magnitude_distribution = dm.processes.eulerian.distributions.univariate.InverseTransform(
+    distribution_function = dm.processes.eulerian.distributions.univariate.functions.periodic.HeatKernel(
         num_waves = 10,
         mean_squared_displacement = lambda t: t
     ),
-
-    inversion_method = dm.distributions.univariate.inversion.Bisection(num_iterations = 5)
-
+    inversion_method = dm.processes.eulerian.distributions.univariate.inversion.Bisection(num_iterations = 8)
 )
 
-# angles = torch.pi * torch.arange(start = 0.0, end = 1.0, step = 0.1)
-# values = angle_distribution.density_function()(angles)
+distribution_function = dm.processes.eulerian.distributions.univariate.functions.Normalizer()
+inversion_method = dm.processes.eulerian.distributions.univariate.inversion.Bisection(num_iterations = 8)
 
-values = angle_distribution.at(time = torch.tensor([10.0, 1.0, 0.2])).sample(num_samples)
+direction_distribution = dm.processes.eulerian.distributions.multivariate.UniformSphere(dimension = 3)
 
-for i in range(values.shape[0]):
+# random_vector = dm.processes.eulerian.forward.RandomVector(
+#     magnitude_distribution = magnitude_distribution,
+#     direction_distribution = direction_distribution
+# )
 
-    plt.hist(values[i])
+# random_flow = dm.processes.eulerian.forward.RandomFlow(
+#     manifold = manifold,
+#     vector_distribution = random_vector
+# )
+
+time = torch.tensor([0.0, 0.3, 50.0])
+
+# vector = random_vector.at(
+#     time = time
+# ).sample(num_samples = 5)
+
+
+# points = random_flow.at(time = time).sample(
+#     initial_value = torch.tensor([
+#         [1.0,  0.0, 0.0],
+#         [0.0,  1.0, 0.0],
+#         [0.0,  0.0, 1.0]
+#     ]),
+#     num_samples = 2000
+# )
+
+magnitudes = torch.abs(magnitude_distribution.at(time = time).sample(num_samples=2000))
+
+# angles = inversion_method.solve(magnitudes, distribution_function.cumulative, distribution_function.support())
+
+angles = torch.zeros(magnitudes.shape)
+for _ in range(12):
+    angles = magnitudes + torch.sin(angles)
+
+
+
+directions = direction_distribution.at(time = time).sample(num_samples=2000)
+
+axangle = torch.einsum('ij...,ij...->ij...', angles, directions)
+
+points = manifold.exp(torch.tensor([
+    [0.0, -1.0, 0.0],
+    [1.0,  0.0, 0.0],
+    [0.0,  0.0, 1.0]
+]), axangle)
+
+axangle = manifold.log(torch.eye(3), points)
+
+# plt.hist(angles[2])
+# plt.hist(angles[1])
+# plt.hist(angles[0])
+
+# axangle = manifold.log(torch.eye(3), points)
+#
+for i in range(time.numel()):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection = '3d')
+    x = axangle[i,:,0]
+    y = axangle[i,:,1]
+    z = axangle[i,:,2]
+    ax.scatter(x, y, z, alpha = 0.05)
+    ax.set_xlim([-3.15, 3.15])
+    ax.set_ylim([-3.15, 3.15])
+    ax.set_zlim([-3.15, 3.15])
+    ax.set_aspect('equal')
+#
+# # axs = [
+# #     fig.add_subplot(131, projection = '3d'),
+# #     fig.add_subplot(132, projection = '3d'),
+# #     fig.add_subplot(133, projection = '3d'),
+# # ]
+
+# ax2 = fig.add_subplot(111, projection = '3d')
+# x = axangle[0,:,0]
+# y = axangle[0,:,1]
+# z = axangle[0,:,2]
+# ax2.scatter(x, y, z, alpha = 0.05)
+
+#
+# for i in range(time.numel()):
+#
+#     axang = axangle[i]
+#
+#     x = axang[:, 0]
+#     y = axang[:, 1]
+#     z = axang[:, 2]
+#
+#     ax.scatter(x, y, z, alpha = 0.05)
+#     ax.set_aspect('equal')
+#     ax.set_xlim([-3.15, 3.15])
+#     ax.set_ylim([-3.15, 3.15])
+#     ax.set_zlim([-3.15, 3.15])
+    # axs[i].axes.set_ylim(left = -3.15, right = 3.15)
+    # axs[i].axes.set_zlim(left = -3.15, right = 3.15)
+    # axs[i].axes.set_ylim3d([-3.15, 3.15])
+    # axs[i].axes.set_zlim([-3.15, 3.15])
 
 plt.show()
-
-# plt.hist(angles)
-
-
-# axis_angle_distribution = dm.distributions.Separable(
-#     distributions = (axis_distribution, angle_distribution)
-# )
-
-
-# random_axis = axis_distribution.sample(num_samples = num_samples)
-
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection = '3d')
-# random_angle = 1.0 + torch.abs(angle_distribution.at(time = 1.2).sample(num_samples = num_samples))
-
-# axis_angle = torch.einsum(
-#     'i..., i... -> i...',
-#     random_axis,
-#     random_angle
-# )
-
-# axis_angle = axis_angle_distribution.sample(num_samples = num_samples)
-#
-# x = axis_angle[:, 0]
-# y = axis_angle[:, 1]
-# z = axis_angle[:, 2]
-#
-# ax.scatter(x, y, z, color = 'black')
-
-# times = [0.25 * i for i in range(10)]
-#
-# for t in times:
-#     random_angle = 1.0 + torch.abs(angle_distribution.at(time = t).sample(num_samples = num_samples))
-#
-#     axis_angle = torch.einsum(
-#         'i..., i... -> i...',
-#         random_axis,
-#         random_angle
-#     )
-#
-#     x = axis_angle[:, 0]
-#     y = axis_angle[:, 1]
-#     z = axis_angle[:, 2]
-#
-#     ax.scatter(x, y, z, color = 'black', alpha = (3.0 - t) / 6.0)
-
-# ax.set_aspect('equal')
-
-# angles = torch.pi * torch.arange(start = -1.0, end = 1.0, step = 0.01)
-# angles = angles.to(device)
-#
-# times = [1.0 * (1.0 + i) for i in range(10)]
-#
-# for t in times:
-#     values = distribution.at(time = t).density_function()(angles)
-    # plt.plot(angles.cpu(), values.cpu())
-
-    # random_variables = distribution.at(time = t).sample(num_samples = 2000)
-    # plt.hist(random_variables, alpha = 1.0 - 0.08 * t)
-
-# plt.xlim([-3.15, 3.15])
-# plt.show()

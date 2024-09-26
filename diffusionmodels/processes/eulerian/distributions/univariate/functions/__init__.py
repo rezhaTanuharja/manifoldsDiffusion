@@ -16,9 +16,11 @@ DistributionFunction    : The interface for all distribution functions in this p
 from .interfaces import DistributionFunction
 
 from . import periodic
+from .simpleclass import Normalizer
 
 
 __all__ = [
     'DistributionFunction',
     'periodic',
+    'Normalizer',
 ]

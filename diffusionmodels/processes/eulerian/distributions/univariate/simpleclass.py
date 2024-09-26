@@ -16,7 +16,7 @@ from .inversion import InversionMethod
 
 import torch
 
-from typing import Callable
+from typing import Callable, Tuple
 
 
 class InverseTransform(Distribution):
@@ -47,6 +47,9 @@ class InverseTransform(Distribution):
         self._inversion_method = inversion_method
         self._num_times = 1
         self._device = torch.device('cpu')
+
+    def dimension(self) -> Tuple[int, ...]:
+        return (1,)
 
     def to(self, device: torch.device):
         self._device = device

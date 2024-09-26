@@ -10,7 +10,7 @@ Distribution        : The interface for all distributions in this package
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Callable, Tuple
 import torch
 
 
@@ -35,6 +35,9 @@ class Distribution(ABC):
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Subclasses must implement this method")
 
+    @abstractmethod
+    def dimension(self) -> Tuple[int, ...]:
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def to(self, device: torch.device) -> None:
@@ -69,7 +72,7 @@ class Distribution(ABC):
 
 
     @abstractmethod
-    def sample(self, num_samples: int) -> torch.Tensor:
+    def sample(self, num_samples: int, *args, **kwargs) -> torch.Tensor:
         """
         Generate a number of random samples from the distribution
 

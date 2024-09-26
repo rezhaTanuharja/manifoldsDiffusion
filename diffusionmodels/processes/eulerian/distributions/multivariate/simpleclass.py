@@ -14,7 +14,7 @@ from ..interfaces import Distribution
 
 import torch
 
-from typing import Callable
+from typing import Callable, Tuple
 
 
 class UniformSphere(Distribution):
@@ -34,6 +34,10 @@ class UniformSphere(Distribution):
         self._dimension = dimension
         self._num_times = 1
         self._device = torch.device('cpu')
+
+
+    def dimension(self) -> Tuple[int, ...]:
+        return (self._dimension,)
 
     def to(self, device: torch.device):
         self._device = device

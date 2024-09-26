@@ -14,7 +14,6 @@ utilities               : Provides various useful functions
 """
 
 from . import dataprocessing
-from . import distributions
 from . import processes
 from . import manifolds
 from . import utilities
@@ -22,7 +21,6 @@ from . import utilities
 
 __all__ = [
     'dataprocessing',
-    'distributions',
     'processes',
     'manifolds',
     'utilities',
