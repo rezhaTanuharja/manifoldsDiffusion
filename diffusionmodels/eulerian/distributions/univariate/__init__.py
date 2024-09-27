@@ -2,7 +2,7 @@
 diffusionmodels.distributions.univariate
 ========================================
 
-Implements various univariate distributions
+Implements various univariate stochastic processes
 
 Modules
 -------
@@ -17,13 +17,13 @@ InverseTransform    : Distribution that can be sampled by inverting their CDFs
 from . import functions
 from . import inversion
 
-from .functions import DistributionFunction
+from .functions import CumulativeDistributionFunction
 from .simpleclass import InverseTransform
 
 
 __all__ = [
 
-    'DistributionFunction',
+    'CumulativeDistributionFunction',
 
     'functions',
     'inversion',

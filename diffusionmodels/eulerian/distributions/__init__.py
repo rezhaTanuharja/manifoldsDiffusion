@@ -10,7 +10,7 @@ univariate      : Implements various univariate distributions
 multivariate    : Implements various multivariate distributions
 """
 
-from .interfaces import Distribution
+from .interfaces import StochasticProcess
 
 from . import univariate
 from . import multivariate
@@ -18,7 +18,7 @@ from . import multivariate
 
 __all__ = [
     
-    'Distribution',
+    'StochasticProcess',
 
     'univariate',
     'multivariate'

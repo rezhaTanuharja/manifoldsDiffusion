@@ -10,14 +10,14 @@ UniformSphere   : A uniformly distributed points on arbitrary-dimensional unit s
 """
 
 
-from ..interfaces import Distribution
+from ..interfaces import StochasticProcess
 
 import torch
 
 from typing import Callable, Tuple
 
 
-class UniformSphere(Distribution):
+class UniformSphere(StochasticProcess):
     """
     A uniform distribution of points on an arbitrary-dimension unit sphere
 
@@ -42,7 +42,7 @@ class UniformSphere(Distribution):
     def to(self, device: torch.device):
         self._device = device
 
-    def at(self, time: torch.Tensor) -> Distribution:
+    def at(self, time: torch.Tensor) -> StochasticProcess:
         self._num_times = time.numel()
         return self
 

@@ -17,9 +17,9 @@ from typing import Dict
 import torch
 
 
-class DistributionFunction(ABC):
+class CumulativeDistributionFunction(ABC):
     """
-    An abstract class that serves as an interface of all CDFs
+    An abstract callable class that serves as an interface of all CDFs
 
     Methods
     -------
@@ -42,38 +42,6 @@ class DistributionFunction(ABC):
 
     @abstractmethod
     def __init__(self, *args, **kwargs):
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def cumulative(self, points: torch.Tensor) -> torch.Tensor:
-        """
-        Parameters
-        ----------
-        `points: torch.Tensor`
-            The points to evaluate the CDF
-
-        Returns
-        -------
-        `torch.Tensor`
-            The probability that a random sample is lower than or equal to point
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def density(self, points: torch.Tensor) -> torch.Tensor:
-        """
-        Parameters
-        ----------
-        `points: torch.Tensor`
-            The points to evaluate the CDF
-
-        Returns
-        -------
-        `torch.Tensor`
-            The probability density value at the given points
-        """
         raise NotImplementedError("Subclasses must implement this method")
 
 
@@ -109,9 +77,41 @@ class DistributionFunction(ABC):
 
 
     @abstractmethod
+    def __call__(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points to evaluate the CDF
+
+        Returns
+        -------
+        `torch.Tensor`
+            The probability that a random sample is lower than or equal to point
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def gradient(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points to evaluate the CDF gradient
+
+        Returns
+        -------
+        `torch.Tensor`
+            The gradient, i.e., probability density value at the given points
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
     def support(self) -> Dict[str, float]:
         """
-        Support is the range in which the functions may be nonzero
+        Support is the range in which the CDF may be nonzero
 
         Returns
         -------

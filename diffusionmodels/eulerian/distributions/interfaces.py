@@ -10,24 +10,30 @@ Distribution        : The interface for all distributions in this package
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable, Tuple
+from typing import Tuple
 import torch
 
 
-class Distribution(ABC):
+class StochasticProcess(ABC):
     """
-    The interface for all distributions in this package
+    The interface for all stochastic processes in the Eulerian module
 
     Methods
     -------
+    `dimension()`
+        Returns the dimension of the random variable
+
     `to(device)`
-        Send all tensor attributes to device
+        Send process to device
 
     `at(time)`
-        Access distribution at the given time
+        Access the process at the given time
+
+    `density(points)`
+        Compute the probability density function at the given points
 
     `sample(num_samples)`
-        Generate a number of random samples from the distribution
+        Generate a number of random samples from the process
     """
 
 
@@ -35,10 +41,18 @@ class Distribution(ABC):
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("Subclasses must implement this method")
 
+
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
+        """
+        Returns
+        -------
+        `Tuple[int, ...]`
+            The dimension of the random variable, not counting the time
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
+        
     @abstractmethod
     def to(self, device: torch.device) -> None:
         """
@@ -55,19 +69,31 @@ class Distribution(ABC):
     @abstractmethod
     def at(self, time: torch.Tensor) -> None:
         """
-        Distribution is a temporal and spatial function.
-        This function fixes the time so it becomes a spatial-only function.
+        Fixes the time so the stochastic process becomes a 'static' random variable
 
         Parameters
         ----------
         `time: torch.Tensor`
-            The time tensor to access the distribution
+            The time tensor to access the process
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
+    def density(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the probability density function at the given points
+
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points where PDF will be computed
+
+        Returns
+        -------
+        `torch.Tensor`
+            The value of the PDF at the given points
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
 

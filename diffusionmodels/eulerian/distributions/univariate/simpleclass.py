@@ -10,8 +10,8 @@ InverseTransform    : Distribution that can be sampled by inverting their CDFs
 """
 
 
-from ..interfaces import Distribution
-from .functions import DistributionFunction
+from ..interfaces import StochasticProcess
+from .functions import CumulativeDistributionFunction
 from .inversion import InversionMethod
 
 import torch
@@ -19,7 +19,7 @@ import torch
 from typing import Callable, Tuple
 
 
-class InverseTransform(Distribution):
+class InverseTransform(StochasticProcess):
     """
     A distribution defined by a CDF and sampled from using the inverse transform method
 
@@ -40,7 +40,7 @@ class InverseTransform(Distribution):
 
     def __init__(
         self,
-        distribution_function: DistributionFunction,
+        distribution_function: CumulativeDistributionFunction,
         inversion_method: InversionMethod
     ) -> None:
         self._distribution_function = distribution_function
@@ -57,13 +57,13 @@ class InverseTransform(Distribution):
         self._distribution_function.to(device)
         self._inversion_method.to(device)
 
-    def at(self, time: torch.Tensor) -> Distribution:
+    def at(self, time: torch.Tensor) -> StochasticProcess:
         self._distribution_function = self._distribution_function.at(time)
         self._num_times = time.numel()
         return self
 
     def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        return self._distribution_function.density
+        return self._distribution_function.gradient
 
     def sample(self, num_samples: int) -> torch.Tensor:
 
@@ -71,6 +71,6 @@ class InverseTransform(Distribution):
 
         return self._inversion_method.solve(
             values = values,
-            function = self._distribution_function.cumulative,
+            function = self._distribution_function,
             search_range = self._distribution_function.support()
         )

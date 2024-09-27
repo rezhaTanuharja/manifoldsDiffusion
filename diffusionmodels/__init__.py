@@ -14,14 +14,14 @@ utilities               : Provides various useful functions
 """
 
 from . import dataprocessing
-from . import processes
+from . import eulerian
 from . import manifolds
 from . import utilities
 
 
 __all__ = [
     'dataprocessing',
-    'processes',
+    'eulerian',
     'manifolds',
     'utilities',
 ]
