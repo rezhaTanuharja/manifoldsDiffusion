@@ -95,7 +95,7 @@ class Newton(InversionMethod):
 
         guess = torch.full_like(values, search_range['lower_bound'])
 
-        for i in range(self._max_iter):
+        for _ in range(self._max_iter):
 
             error = function(guess) - values
 
@@ -109,5 +109,58 @@ class Newton(InversionMethod):
                     min = 3.0 / (search_range['upper_bound'] - search_range['lower_bound'])
                 )
             )
+
+        return guess
+
+
+class Secant(InversionMethod):
+    """
+    A Newton-like root-finder but without computing gradient
+
+    Private Attributes
+    ------------------
+    `_max_iterations: int`
+        The number of maximum iteration to perform to find the roots
+
+    `_tolerance: float`
+        The accepted level of error
+
+    `_device: torch.device`
+        The device where all tensors are located
+    """
+
+    def __init__(self, max_iter: int, tolerance: float) -> None:
+        self._max_iter = max_iter
+        self._tolerance = tolerance
+        self._device = torch.device('cpu')
+
+    def to(self, device: torch.device) -> None:
+        self._device = device
+
+    def solve(
+        self,
+        values: torch.Tensor,
+        function: Callable[[torch.Tensor], torch.Tensor],
+        search_range: Dict[str, float]
+    ) -> torch.Tensor:
+
+        prev_guess = torch.full_like(values, search_range['lower_bound'])
+        guess = torch.full_like(values, 0.3 * search_range['upper_bound'] + 0.7 * search_range['lower_bound'])
+
+        for i in range(self._max_iter):
+
+            error = function(guess) - values
+
+            converged = torch.abs(error) < self._tolerance
+            if torch.all(converged):
+                break
+
+            gradient = torch.clip(
+                (function(guess) - function(prev_guess)) / (guess - prev_guess),
+                min = 0.75 / (search_range['upper_bound'] - search_range['lower_bound'])
+            )
+
+            prev_guess = guess.clone()
+            guess = guess - error / gradient
 
         return guess

@@ -11,11 +11,12 @@ Bisection       : Invert CDFs using a bisection root-finder
 """
 
 from .interfaces import InversionMethod
-from .simpleclass import Bisection, Newton
+from .simpleclass import Bisection, Newton, Secant
 
 
 __all__ = [
     'InversionMethod',
     'Bisection',
     'Newton',
+    'Secant',
 ]

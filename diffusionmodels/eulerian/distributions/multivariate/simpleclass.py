@@ -46,7 +46,7 @@ class UniformSphere(StochasticProcess):
         self._num_times = time.numel()
         return self
 
-    def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
+    def density(self) -> Callable[[torch.Tensor], torch.Tensor]:
         return lambda _: torch.exp(
 
             torch.special.gammaln(0.5 * self._dimension)
