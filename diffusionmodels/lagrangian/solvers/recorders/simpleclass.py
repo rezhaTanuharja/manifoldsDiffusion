@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.recorders.simpleclass
-==================================================================
+lagrangian.solvers.recorders.simpleclass
+========================================
 
 Classes
 -------

@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.differentialequations.interfaces
-=====================================================================
+lagrangian.differentialequations.interfaces
+===========================================
 
 Provides the interface of stochastic differential equations
 
@@ -13,7 +13,7 @@ StochasticDifferentialEquation
 from abc import ABC, abstractmethod
 import torch
 
-from ....manifolds import Manifold
+from ...manifolds import Manifold
 
 
 class StochasticDifferentialEquation(ABC):

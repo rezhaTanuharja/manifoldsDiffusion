@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.simpleclass
-========================================================
+lagrangian.solvers.simpleclass
+==============================
 
 This module implements various solution samplers
 

@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.timeintegrators
-============================================================
+lagrangian.solvers.timeintegrators
+==================================
 
 Provides functionalities to integrate SDEs with respect to time.
 

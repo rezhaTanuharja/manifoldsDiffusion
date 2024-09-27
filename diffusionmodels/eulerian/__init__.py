@@ -1,18 +1,19 @@
 """
-diffusionmodels.processes.eulerian
-==================================
+eulerian
+========
 
-An approach that deals with the evolution of data concentration
+An approach to diffusion models that deals with the evolution of data concentration
 
 Modules
 -------
+stochasticprocesses     : Provides functionalities to define stochastic processes
 """
 
 # from . import forward
-from . import distributions
+from . import stochasticprocesses
 
 
 __all__ = [
     # 'forward',
-    'distributions',
+    'stochasticprocesses',
 ]

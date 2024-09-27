@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.recorders.interfaces
-=================================================================
+lagrangian.solvers.recorders.interfaces
+=======================================
 
 Classes
 -------

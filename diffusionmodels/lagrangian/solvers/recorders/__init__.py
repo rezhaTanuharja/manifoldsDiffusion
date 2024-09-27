@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.recorders
-======================================================
+lagrangian.solvers.recorders
+============================
 
 Provides functionalities to create data recorders
 

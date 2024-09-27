@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.differentialequations
-==========================================================
+lagrangian.differentialequations
+================================
 
 Provides functionalities to define stochastic differential equations.
 

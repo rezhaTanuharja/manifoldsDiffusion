@@ -1,6 +1,6 @@
 """
-differentialequations.reversedclass
-===================================
+lagrangian.differentialequations.reversedclass
+==============================================
 
 This module implements classes of reversed differentialequations
 
@@ -21,7 +21,7 @@ from typing import Any
 from diffusionmodels.utilities.warningsuppressors import unused_variables
 
 from .interfaces import StochasticDifferentialEquation
-from ....manifolds import Manifold
+from ...manifolds import Manifold
 # from ..scorefunctions import DirectionCalculator
 
 

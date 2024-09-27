@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.timeintegrators.interfaces
-=======================================================================
+lagrangian.solvers.timeintegrators.interfaces
+=============================================
 
 Provides the interface for all time integrators
 

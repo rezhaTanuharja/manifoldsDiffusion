@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.scorefunctions.interfaces
-==============================================================
+lagrangian.scorefunctions.interfaces
+====================================
 
 This module defines the abstract base classes for scorefunctions
 

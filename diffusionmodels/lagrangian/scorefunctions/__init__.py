@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.scorefunctions
-===================================================
+lagrangian.scorefunctions
+=========================
 
 This module provides functionalities to define Stein's score functions
 

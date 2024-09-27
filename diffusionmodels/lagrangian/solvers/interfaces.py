@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers.interfaces
-=======================================================
+lagrangian.solvers.interfaces
+=============================
 
 This module provides the interface for all solvers in this package
 

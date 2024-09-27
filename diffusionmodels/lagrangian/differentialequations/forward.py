@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.differentialequations.forward
-==================================================================
+lagrangian.differentialequations.forward
+========================================
 
 Defines various simple forward stochastic differential equations.
 
@@ -15,8 +15,8 @@ import torch
 
 from .interfaces import StochasticDifferentialEquation
 
-from ....utilities import unused_variables
-from ....manifolds import Manifold
+from ...utilities import unused_variables
+from ...manifolds import Manifold
 
 
 class ExplodingVariance(StochasticDifferentialEquation):

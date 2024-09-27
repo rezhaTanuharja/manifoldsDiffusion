@@ -1,8 +1,8 @@
 """
-diffusionmodels.distributions.univariate.functions.periodic
-===========================================================
+eulerian.stochasticprocesses.univariate.functions.periodic
+==========================================================
 
-Provides solutions to PDEs with periodic boundary conditions
+Provides CDFs that are solutions to PDEs with periodic boundary conditions
 
 Classes
 -------
@@ -17,7 +17,10 @@ import torch
 
 class HeatKernel(CumulativeDistributionFunction):
     """
-    The solution to a heat equation with periodic boundary conditions
+    The solution to a heat equation with periodic boundary conditions.
+
+    The periodic domain is [-pi, pi] but due to symmetry, it is 'folded'
+    so the function support is [0, pi]
 
     Private Attributes
     ------------------

@@ -1,6 +1,6 @@
 """
-diffusionmodels.processes.lagrangian.solvers
-============================================
+lagrangian.solvers
+==================
 
 Provides functionalities to solve SDE and store a finite number of the solution
 

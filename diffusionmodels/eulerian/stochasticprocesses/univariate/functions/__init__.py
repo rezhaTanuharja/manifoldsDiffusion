@@ -1,12 +1,12 @@
 """
-diffusionmodels.distributions.univariate.functions
-==================================================
+eulerian.stochasticprocesses.univariate.functions
+=================================================
 
-Provides functionalities to define functions like PDFs and CDFs
+Provides functionalities to define CDFs
 
 Modules
 -------
-periodic    : Provide solutions of PDEs with periodic boundary conditions
+periodic    : Provide CDFs that are solutions to PDEs with periodic boundary conditions
 
 Classes
 -------

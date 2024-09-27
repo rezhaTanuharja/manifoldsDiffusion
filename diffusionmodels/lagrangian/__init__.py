@@ -1,8 +1,8 @@
 """
-diffusionmodels.processes.lagrangian
-====================================
+lagrangian
+==========
 
-An approach that deals with trajectory of each data point
+An approach to diffusion models that deals with trajectory of each data point
 
 Modules
 -------

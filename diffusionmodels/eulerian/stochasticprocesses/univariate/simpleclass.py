@@ -1,12 +1,12 @@
 """
-diffusionmodels.distributions.univariate.simpleclass
-====================================================
+eulerian.stochasticprocesses.univariate.simpleclass
+===================================================
 
-Implements various simple univariate distributions
+Implements various simple univariate stochastic processes
 
 Classes
 -------
-InverseTransform    : Distribution that can be sampled by inverting their CDFs
+InverseTransform    : A stochastic process that is defined by its CDF
 """
 
 
@@ -21,7 +21,7 @@ from typing import Callable, Tuple
 
 class InverseTransform(StochasticProcess):
     """
-    A distribution defined by a CDF and sampled from using the inverse transform method
+    A stochastic process that is defined by its CDF and sampled from using the inverse transform method
 
     Private Attributes
     ------------------

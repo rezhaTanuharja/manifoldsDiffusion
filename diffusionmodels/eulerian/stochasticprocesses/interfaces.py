@@ -1,12 +1,12 @@
 """
-distributions.interfaces
-========================
+eulerian.stochasticprocesses.interfaces
+=======================================
 
-Provides the interface for all distributions in this package
+Provides the interface for all stochastic processes in the Eulerian module
 
 Classes
 -------
-Distribution        : The interface for all distributions in this package
+StochasticProcess   : The interface for all stochastic processese in the Eulerian module
 """
 
 from abc import ABC, abstractmethod

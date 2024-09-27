@@ -1,16 +1,19 @@
 """
-diffusionmodels.distributions.univariate.inversion.simpleclass
-==============================================================
+eulerian.stochasticprocesses.univariate.inversion.simpleclass
+=============================================================
 
 Implements various simple inversion methods
 
 Classes
 -------
 Bisection
-    The inversion method via a bisection root-finder
+    An iterative root-finder via bisection
 
 Newton
-    An iterative root-finder for functions with known gradients
+    An iterative root-finder that requires computing gradients
+
+Secant
+    A Newton-like method that does not requires computing gradients
 """
 
 
@@ -22,7 +25,7 @@ from .interfaces import InversionMethod
 
 class Bisection(InversionMethod):
     """
-    An inversion method using the bisection root-finder
+    An iterative root-finder via bisection
 
     Private Attributes
     ------------------
@@ -64,7 +67,7 @@ class Bisection(InversionMethod):
 
 class Newton(InversionMethod):
     """
-    An iterative root-finder for functions with known gradients
+    An iterative root-finder that requires computing gradients
 
     Private Attributes
     ------------------
@@ -115,7 +118,7 @@ class Newton(InversionMethod):
 
 class Secant(InversionMethod):
     """
-    A Newton-like root-finder but without computing gradient
+    A Newton-like method that does not requires computing gradients
 
     Private Attributes
     ------------------
@@ -145,9 +148,12 @@ class Secant(InversionMethod):
     ) -> torch.Tensor:
 
         prev_guess = torch.full_like(values, search_range['lower_bound'])
-        guess = torch.full_like(values, 0.3 * search_range['upper_bound'] + 0.7 * search_range['lower_bound'])
 
-        for i in range(self._max_iter):
+        guess = torch.full_like(
+            values, 0.3 * search_range['upper_bound'] + 0.7 * search_range['lower_bound']
+        )
+
+        for _ in range(self._max_iter):
 
             error = function(guess) - values
 
