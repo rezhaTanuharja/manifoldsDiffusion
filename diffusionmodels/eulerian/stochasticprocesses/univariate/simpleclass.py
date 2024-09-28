@@ -62,7 +62,7 @@ class InverseTransform(StochasticProcess):
         self._num_times = time.numel()
         return self
 
-    def density_function(self) -> Callable[[torch.Tensor], torch.Tensor]:
+    def density(self) -> Callable[[torch.Tensor], torch.Tensor]:
         return self._distribution_function.gradient
 
     def sample(self, num_samples: int) -> torch.Tensor:

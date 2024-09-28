@@ -10,21 +10,21 @@ manifold = dm.manifolds.SpecialOrthogonal3()
 
 uniform_samples = torch.rand(size = (1, 1000))
 
-cdf = dm.eulerian.distributions.univariate.functions.periodic.HeatKernel(
+cdf = dm.eulerian.stochasticprocesses.univariate.functions.periodic.HeatKernel(
     num_waves = 12000,
     mean_squared_displacement = lambda t: 0.15 * t ** 4
 )
 
-inverter_1 = dm.eulerian.distributions.univariate.inversion.Bisection(
+inverter_1 = dm.eulerian.stochasticprocesses.univariate.inversion.Bisection(
     num_iterations = 10
 )
 
-inverter_2 = dm.eulerian.distributions.univariate.inversion.Newton(
+inverter_2 = dm.eulerian.stochasticprocesses.univariate.inversion.Newton(
     max_iter = 8,
     tolerance = 1e-6
 )
 
-inverter_3 = dm.eulerian.distributions.univariate.inversion.Secant(
+inverter_3 = dm.eulerian.stochasticprocesses.univariate.inversion.Secant(
     max_iter = 8,
     tolerance = 1e-6
 )

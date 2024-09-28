@@ -7,8 +7,7 @@ A package that provides functionalities to define diffusion models in manifolds.
 Modules
 -------
 dataprocessing          : Provides functionalities to define data preprocessing steps
-distributions           : Provides various distributions
-processes               : Provides forward and reverse diffusion processes
+eulerian                : For diffusion models that deals with the evolution of data concentration
 manifolds               : Provides manifold structures
 utilities               : Provides various useful functions
 """
