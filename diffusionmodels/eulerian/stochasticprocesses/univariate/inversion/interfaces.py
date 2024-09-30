@@ -53,7 +53,7 @@ class InversionMethod(ABC):
         self,
         values: torch.Tensor,
         function: Callable[[torch.Tensor], torch.Tensor],
-        search_range: Dict[str, float]
+        search_range: Dict[str, float],
     ) -> torch.Tensor:
         """
         Invert a given function to find the preimage of the given values

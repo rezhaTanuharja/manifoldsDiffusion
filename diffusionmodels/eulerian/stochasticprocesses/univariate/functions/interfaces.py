@@ -29,11 +29,11 @@ class CumulativeDistributionFunction(ABC):
     `at(time)`
         Access the CDF at the given time
 
-    `cumulative(points)`
-        Returns the CDF values at the given points
-
-    `density(points)`
+    `gradient(points)`
         Returns the PDF values at the given points
+
+    `hessian(points)`
+        Returns the gradient of PDF values at the given points
 
     `support()`
         Return a dictionary containing lower and upper bound of the function's support
@@ -104,6 +104,22 @@ class CumulativeDistributionFunction(ABC):
         -------
         `torch.Tensor`
             The gradient, i.e., probability density value at the given points
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def hessian(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points to evaluate the CDF gradient
+
+        Returns
+        -------
+        `torch.Tensor`
+            The gradient of the probability density value at the given points
         """
         raise NotImplementedError("Subclasses must implement this method")
 

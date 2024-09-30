@@ -13,12 +13,10 @@ Secant          : A Newton-like method that does not requires computing gradient
 """
 
 from .interfaces import InversionMethod
-from .simpleclass import Bisection, Newton, Secant
+from .simpleclass import Bisection
 
 
 __all__ = [
     'InversionMethod',
     'Bisection',
-    'Newton',
-    'Secant',
 ]

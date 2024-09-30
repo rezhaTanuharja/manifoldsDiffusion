@@ -17,14 +17,15 @@ from typing import List, Any
 class Pipeline(Transform):
     """
     A transformation that consists of several sequential transformations (a pipeline)
-
-    Private Attributes
-    ------------------
-    `_transforms : List[Transform]`
-        A list of transformations to perform in a single data pass
     """
 
     def __init__(self, transforms: List[Transform]) -> None:
+        """
+        Parameters
+        ----------
+        `transforms: List[Transform]`
+            A list of transformations to perform sequentially
+        """
         self._transforms = transforms
 
     def __call__(self, data: Any) -> Any:

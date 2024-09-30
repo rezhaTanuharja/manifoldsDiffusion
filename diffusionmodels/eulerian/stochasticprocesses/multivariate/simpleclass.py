@@ -20,17 +20,15 @@ from typing import Callable, Tuple
 class UniformSphere(StochasticProcess):
     """
     A uniform distribution of points on an arbitrary-dimension unit sphere
-
-    Private Attributes
-    ------------------
-    `_dimension: int`
-        The dimension of the unit sphere
-
-    `_device: torch.device`
-        The device where all tensors are stored or created
     """
 
     def __init__(self, dimension: int) -> None:
+        """
+        Parameters
+        ----------
+        `dimension: int`
+            The dimension of the unit sphere
+        """
         self._dimension = dimension
         self._num_times = 1
         self._device = torch.device('cpu')
@@ -46,12 +44,18 @@ class UniformSphere(StochasticProcess):
         self._num_times = time.numel()
         return self
 
-    def density(self) -> Callable[[torch.Tensor], torch.Tensor]:
-        return lambda _: torch.exp(
+    def density(self, points: torch.Tensor) -> torch.Tensor:
+        return torch.full_like(
+            points,
+            torch.exp(
+                torch.special.gammaln(0.5 * self._dimension)
+            ) / (2.0 * torch.pi ** (0.5 * self._dimension))
+        )
 
-            torch.special.gammaln(0.5 * self._dimension)
-
-        ) / (2.0 * torch.pi ** (0.5 * self._dimension))
+    def score_function(self, points: torch.Tensor) -> torch.Tensor:
+        return torch.zeros(
+            size = points.shape + self.dimension()
+        )
 
     def sample(self, num_samples: int) -> torch.Tensor:
 

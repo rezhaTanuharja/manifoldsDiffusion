@@ -32,6 +32,9 @@ class StochasticProcess(ABC):
     `density(points)`
         Compute the probability density function at the given points
 
+    `score_function(points)`
+        Compute the gradient of the probability density function at the given points
+
     `sample(num_samples)`
         Generate a number of random samples from the process
     """
@@ -93,6 +96,24 @@ class StochasticProcess(ABC):
         -------
         `torch.Tensor`
             The value of the PDF at the given points
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def score_function(self, points: torch.Tensor) -> torch.Tensor:
+        """
+        Compute the probability density function at the given points
+
+        Parameters
+        ----------
+        `points: torch.Tensor`
+            The points where the score will be computed
+
+        Returns
+        -------
+        `torch.Tensor`
+            The gradient of the log of PDF at the given points
         """
         raise NotImplementedError("Subclasses must implement this method")
 

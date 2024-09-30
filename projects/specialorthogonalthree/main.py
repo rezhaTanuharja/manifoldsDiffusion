@@ -11,13 +11,14 @@ manifold = manifolds.SpecialOrthogonal3()
 
 angles = sp.univariate.InverseTransform(
 
-    distribution_function = sp.univariate.functions.periodic.HeatKernel(
+    cumulative_distribution_function = sp.univariate.functions.periodic.HeatKernel(
         num_waves = 9000,
         mean_squared_displacement = lambda t: 0.15 * t ** 4
     ),
 
     inversion_method = sp.univariate.inversion.Bisection(
-        num_iterations = 10
+        num_iterations = 10,
+        pretransform = lambda points: points - torch.sin(points)
     )
 
 )

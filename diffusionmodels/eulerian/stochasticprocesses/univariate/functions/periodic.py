@@ -21,17 +21,6 @@ class HeatKernel(CumulativeDistributionFunction):
 
     The periodic domain is [-pi, pi] but due to symmetry, it is 'folded'
     so the function support is [0, pi]
-
-    Private Attributes
-    ------------------
-    `_num_waves: int`
-        The number of wave functions in the solution
-
-    `_mean_squared_displacement: Callable[[float], float]`
-        The integral of the diffusion coefficient over time, as a function
-
-    `_time: torch.Tensor`
-        Represent the time(s) at which the CDF is evaluated
     """
 
     def __init__(
@@ -39,6 +28,15 @@ class HeatKernel(CumulativeDistributionFunction):
         num_waves: int,
         mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor]
     ) -> None:
+        """
+        Parameters
+        ----------
+        `num_waves: int`
+            The number of wave functions in the solution
+
+        `mean_squared_displacement: Callable[[float], float]`
+            The integral of the diffusion coefficient over time, as a function
+        """
         self._num_waves = num_waves
         self._mean_squared_displacement = mean_squared_displacement
         self._time = torch.tensor([0.0,])
@@ -55,7 +53,7 @@ class HeatKernel(CumulativeDistributionFunction):
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
         wave_numbers = wave_numbers[None, :, *[None for _ in range(points.dim() - 1)]]
 
-        points = points - torch.sin(points)
+        # points = points - torch.sin(points)
 
         angles = wave_numbers * points.unsqueeze(1)
 
@@ -75,7 +73,7 @@ class HeatKernel(CumulativeDistributionFunction):
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
         wave_numbers = wave_numbers[None, :, *[None for _ in range(points.dim() - 1)]]
 
-        angles = wave_numbers * (points - torch.sin(points)).unsqueeze(1)
+        angles = wave_numbers * (points).unsqueeze(1)
 
         time = self._time[:, *[None for _ in range(points.dim())]]
 
@@ -88,6 +86,24 @@ class HeatKernel(CumulativeDistributionFunction):
                 temporal_components * torch.cos(angles),
                 dim = 1
             )
+        )
+
+    def hessian(self, points: torch.Tensor) -> torch.Tensor:
+
+        wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
+        wave_numbers = wave_numbers[None, :, *[None for _ in range(points.dim() - 1)]]
+
+        angles = wave_numbers * points.unsqueeze(1)
+
+        time = self._time[:, *[None for _ in range(points.dim())]]
+
+        temporal_components = 2.0 / torch.pi * torch.exp(
+            -self._mean_squared_displacement(time) * wave_numbers ** 2
+        ) * wave_numbers
+
+        return -torch.sum(
+            temporal_components * torch.sin(angles),
+            dim = 1
         )
 
     def support(self) -> Dict[str, float]:
