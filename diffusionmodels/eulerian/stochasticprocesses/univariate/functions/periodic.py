@@ -53,8 +53,6 @@ class HeatKernel(CumulativeDistributionFunction):
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
         wave_numbers = wave_numbers[None, :, *[None for _ in range(points.dim() - 1)]]
 
-        # points = points - torch.sin(points)
-
         angles = wave_numbers * points.unsqueeze(1)
 
         time = self._time[:, *[None for _ in range(points.dim())]]
@@ -81,7 +79,7 @@ class HeatKernel(CumulativeDistributionFunction):
             -self._mean_squared_displacement(time) * wave_numbers ** 2
         )
 
-        return (1 - torch.cos(points)) * (
+        return (
             1.0 / torch.pi + torch.sum(
                 temporal_components * torch.cos(angles),
                 dim = 1
