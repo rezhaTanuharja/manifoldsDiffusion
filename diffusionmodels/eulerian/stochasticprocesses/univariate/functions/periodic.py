@@ -71,7 +71,7 @@ class HeatKernel(CumulativeDistributionFunction):
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
         wave_numbers = wave_numbers[None, :, *[None for _ in range(points.dim() - 1)]]
 
-        angles = wave_numbers * (points).unsqueeze(1)
+        angles = wave_numbers * points.unsqueeze(1)
 
         time = self._time[:, *[None for _ in range(points.dim())]]
 
