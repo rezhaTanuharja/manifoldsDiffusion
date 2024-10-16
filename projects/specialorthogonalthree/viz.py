@@ -18,7 +18,7 @@ time = torch.tensor([0.0, 0.5, 1.5, 2.5])
 angles_distribution = sp.univariate.InverseTransform(
 
     cumulative_distribution_function = sp.univariate.functions.periodic.HeatKernel(
-        num_waves = 9000,
+        num_waves = 1000,
         mean_squared_displacement = lambda t: 0.15 * t ** 4
     ),
 

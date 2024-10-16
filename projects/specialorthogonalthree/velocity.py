@@ -9,7 +9,7 @@ manifold = manifolds.SpecialOrthogonal3()
 
 
 cumulative_distribution_function = sp.univariate.functions.periodic.HeatKernel(
-    num_waves = 9000,
+    num_waves = 1000,
     mean_squared_displacement = lambda t: 0.15 * t ** 4
 )
 
@@ -24,7 +24,7 @@ angles_distribution = sp.univariate.InverseTransform(
 
 )
 
-time = torch.arange(start = 0.2, end = 1.5, step = 0.10)
+time = torch.arange(start = 0.0, end = 2.2, step = 0.2)
 
 angles = angles_distribution.at(time = time).sample(num_samples = 1000)
 
@@ -38,14 +38,16 @@ hessian_values = cumulative_distribution_function.at(time = time).hessian(alpha)
 denominator_values = (1.0 - torch.cos(angles)) * cumulative_distribution_function.at(time = time).gradient(alpha)
 
 
-velocities = 0.6 * time_tensor ** 4.0 * (
+velocities = 0.6 * time_tensor ** 3.0 * (
     -hessian_values
     /
     denominator_values
 )
 
 for i in range(time.numel()):
-    # plt.scatter(angles[i], pdf_values[i], marker = 'x', alpha = 0.2)
+    # plt.scatter(alpha[i], cdf_values[i], marker = 'x', alpha = 0.2)
+    # plt.xscale('log')
+    # plt.yscale('log')
     # plt.plot(angles[0], density_values[i])
 
     speed = velocities[i, velocities[i] > 1e-8]

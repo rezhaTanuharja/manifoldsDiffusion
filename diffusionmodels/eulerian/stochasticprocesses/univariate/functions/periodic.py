@@ -40,12 +40,14 @@ class HeatKernel(CumulativeDistributionFunction):
         self._num_waves = num_waves
         self._mean_squared_displacement = mean_squared_displacement
         self._time = torch.tensor([0.0,])
+        self._device = torch.device('cuda')
 
     def to(self, device: torch.device) -> None:
+        self._device = device
         self._time = self._time.to(device)
 
     def at(self, time: torch.Tensor) -> CumulativeDistributionFunction:
-        self._time = time
+        self._time = time.to(self._device)
         return self
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
