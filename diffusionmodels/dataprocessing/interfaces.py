@@ -42,6 +42,6 @@ class Transform(ABC):
         Returns
         -------
         `Any`
-            The transformed data, not necessarily has the same type with the input
+            The transformed data, does not necessarily have the same type with the input
         """
         raise NotImplementedError("Subclasses must implement this method")
