@@ -1,6 +1,6 @@
 """
-diffusionmodels.distributions.multivariate
-==========================================
+stochasticprocesses.multivariate
+================================
 
 Implements various multivariate distributions
 

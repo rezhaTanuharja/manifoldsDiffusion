@@ -1,6 +1,6 @@
 """
-diffusionmodels.distributions.multivariate.simpleclass
-======================================================
+stochasticprocesses.multivariate.simpleclass
+============================================
 
 Implements various simple multivariate distributions
 
@@ -11,10 +11,10 @@ UniformSphere   : A uniformly distributed points on arbitrary-dimensional unit s
 
 
 from ..interfaces import StochasticProcess
+from typing import Tuple
 
 import torch
 
-from typing import Callable, Tuple
 
 
 class UniformSphere(StochasticProcess):
@@ -64,4 +64,4 @@ class UniformSphere(StochasticProcess):
             device = self._device
         )
 
-        return points / (torch.norm(points, dim = -1, keepdim = True) + 1e-6)
+        return points / torch.clip(input = torch.norm(points, dim = -1, keepdim = True), min = 1e-6)
