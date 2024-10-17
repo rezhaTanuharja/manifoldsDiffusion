@@ -19,8 +19,8 @@ class HeatKernel(CumulativeDistributionFunction):
     """
     The solution to a heat equation with periodic boundary conditions.
 
-    The periodic domain is [-pi, pi] but due to symmetry, it is 'folded'
-    so the function support is [0, pi]
+    The periodic domain is `[-pi, pi]` but due to symmetry, it is 'folded'
+    so the function support is `[0, pi]`
     """
 
     def __init__(
@@ -42,13 +42,16 @@ class HeatKernel(CumulativeDistributionFunction):
         self._time = torch.tensor([0.0,])
         self._device = torch.device('cuda')
 
+
     def to(self, device: torch.device) -> None:
         self._device = device
         self._time = self._time.to(device)
 
+
     def at(self, time: torch.Tensor) -> CumulativeDistributionFunction:
         self._time = time.to(self._device)
         return self
+
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
 
@@ -67,6 +70,7 @@ class HeatKernel(CumulativeDistributionFunction):
             temporal_components * torch.sin(angles),
             dim = 1
         )
+
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
 
@@ -88,6 +92,7 @@ class HeatKernel(CumulativeDistributionFunction):
             )
         )
 
+
     def hessian(self, points: torch.Tensor) -> torch.Tensor:
 
         wave_numbers = torch.arange(start = 1, end = self._num_waves + 1, device = points.device)
@@ -105,6 +110,7 @@ class HeatKernel(CumulativeDistributionFunction):
             temporal_components * torch.sin(angles),
             dim = 1
         )
+
 
     def support(self) -> Dict[str, float]:
         return {

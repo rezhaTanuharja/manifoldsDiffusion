@@ -1,8 +1,8 @@
 """
-diffusionmodels.dataprocessing.interfaces
-=========================================
+dataprocessing.interfaces
+=========================
 
-Provides the interface for all data processing steps in this package
+Provides the interface for all data transformation in this package
 
 Class
 -----
@@ -16,17 +16,17 @@ from typing import Any
 
 class Transform(ABC):
     """
-    A callable object class to define pipeline for data processing
+    A callable object that acts as a black-box transformation
 
     Methods
     -------
     `__call__(self, data)`
-        Transform the data and return the transformed data
+        Transform `data` into `Transform(data)`
     """
 
 
     @abstractmethod
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 

@@ -16,8 +16,6 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 
-# NOTE: All interfaces must be defined in the same style as this one
-
 class Manifold(ABC):
     """
     An abstract class that serves as an interface of all manifolds
@@ -82,42 +80,43 @@ class Manifold(ABC):
 
 
     @abstractmethod
-    def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
+    def exp(self, points: torch.Tensor, tangent_vector: torch.Tensor) -> torch.Tensor:
         """
-        Increment a point X with a tangent vector dX.
+        Increment points with tangent vectors.
+        In Euclidean geometry, simply returns `points + tangent_vector`
 
         Parameters
         ----------
-        `X : torch.Tensor`
-            A point in the manifold
+        `points : torch.Tensor`
+            The original points in the manifold
 
-        `dX : torch.Tensor`
-            A tangent vector in a tangent space on the manifold
+        `tangent_vector: torch.Tensor`
+            Vectors that live in the manifold tangent space
 
         Returns
         -------
         `torch.Tensor`
-            A point in the manifold
+            New points in the manifold
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def log(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
+    def log(self, origins: torch.Tensor, destinations: torch.Tensor) -> torch.Tensor:
         """
-        Computes a tangent vector dX such that exp(X, dX) = Y
+        Computes vectors such that `exp(origins, vectors) = destinations`
 
         Parameters
         ----------
-        `X : torch.Tensor`
-            The origin point in the manifold
+        `origins : torch.Tensor`
+            The points of origin in the manifold
 
-        `Y : torch.Tensor`
-            The destination point in the manifold
+        `destinations : torch.Tensor`
+            The points of destination in the manifold
 
         Returns
         -------
         `torch.Tensor`
-            A tangent vector on the manifold
+            Vectors that increments origins to their respective destinations
         """
         raise NotImplementedError("Subclasses must implement this method")

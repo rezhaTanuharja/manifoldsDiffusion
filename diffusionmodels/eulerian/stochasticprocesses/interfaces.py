@@ -9,6 +9,7 @@ Classes
 StochasticProcess   : The interface for all stochastic processese in the Eulerian module
 """
 
+
 from abc import ABC, abstractmethod
 from typing import Tuple
 import torch
@@ -24,7 +25,7 @@ class StochasticProcess(ABC):
         Returns the dimension of the random variable
 
     `to(device)`
-        Send process to device
+        Send the stochastic process to device
 
     `at(time)`
         Access the process at the given time
@@ -70,7 +71,7 @@ class StochasticProcess(ABC):
 
 
     @abstractmethod
-    def at(self, time: torch.Tensor) -> None:
+    def at(self, time: torch.Tensor):
         """
         Fixes the time so the stochastic process becomes a 'static' random variable
 
@@ -78,6 +79,11 @@ class StochasticProcess(ABC):
         ----------
         `time: torch.Tensor`
             The time tensor to access the process
+
+        Returns
+        -------
+        `StochasticProcess`
+            Return the same stochastic process but at the given time
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -103,7 +109,7 @@ class StochasticProcess(ABC):
     @abstractmethod
     def score_function(self, points: torch.Tensor) -> torch.Tensor:
         """
-        Compute the probability density function at the given points
+        Compute the gradient of log PDF at the given points
 
         Parameters
         ----------

@@ -1,12 +1,12 @@
 """
-distributions.functions.interfaces
-==================================
+eulerian.stochasticprocesses.univariate.functions.interfaces
+============================================================
 
 Provides the interface for all PDFs and CDFs in this package
 
 Classes
 -------
-DistributionFunction
+CumulativeDistributionFunction
     An abstract class that serves as an interface of all distribution functions
 """
 
@@ -24,7 +24,7 @@ class CumulativeDistributionFunction(ABC):
     Methods
     -------
     `to(device)`
-        Move any tensor attribute to device
+        Move the CDF instance to device
 
     `at(time)`
         Access the CDF at the given time
@@ -33,7 +33,7 @@ class CumulativeDistributionFunction(ABC):
         Returns the PDF values at the given points
 
     `hessian(points)`
-        Returns the gradient of PDF values at the given points
+        Returns the gradient of PDF at the given points
 
     `support()`
         Return a dictionary containing lower and upper bound of the function's support
@@ -48,7 +48,7 @@ class CumulativeDistributionFunction(ABC):
     @abstractmethod
     def to(self, device: torch.device) -> None:
         """
-        Move any tensor attributes to device
+        Move the CDF instance to device
 
         Parameters
         ----------
@@ -71,7 +71,7 @@ class CumulativeDistributionFunction(ABC):
         Returns
         -------
         `self`
-            The same instance of distribution after it is moved to the given time
+            The same CDF but at the given time
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -87,7 +87,7 @@ class CumulativeDistributionFunction(ABC):
         Returns
         -------
         `torch.Tensor`
-            The probability that a random sample is lower than or equal to point
+            The probabilities that random samples is lower than or equal to points
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -114,7 +114,7 @@ class CumulativeDistributionFunction(ABC):
         Parameters
         ----------
         `points: torch.Tensor`
-            The points to evaluate the CDF gradient
+            The points to evaluate the PDF gradient
 
         Returns
         -------
@@ -132,6 +132,6 @@ class CumulativeDistributionFunction(ABC):
         Returns
         -------
         `Dict[str, float]`
-            A dictionary with keys 'lower_bound' and 'upper_bound'
+            A dictionary with keys '`lower_bound`' and '`upper_bound`'
         """
         raise NotImplementedError("Subclasses must implement this method")

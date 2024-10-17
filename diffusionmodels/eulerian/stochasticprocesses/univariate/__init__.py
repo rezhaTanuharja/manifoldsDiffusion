@@ -18,7 +18,6 @@ from . import functions
 from . import inversion
 
 from .simpleclass import InverseTransform
-from .mappedclass import *
 
 
 __all__ = [

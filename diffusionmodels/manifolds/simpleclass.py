@@ -1,8 +1,8 @@
 """
 manifolds.simpleclass
-===================== 
+=====================
 
-Implements various simple classes of manifolds
+Implements various simple Riemannian geometries
 
 Classes
 -------
@@ -24,7 +24,7 @@ class SpecialOrthogonal3(Manifold):
 
     def __init__(self) -> None:
 
-        # -- the canonical basis of the tangent space at the identity element
+        # the canonical basis of the tangent space at the identity element
         self._bases = torch.Tensor([
             [
                 [ 0,  0,  0],
@@ -55,20 +55,24 @@ class SpecialOrthogonal3(Manifold):
     def tangent_dimension(self) -> Tuple[int, ...]:
         return self._tangent_dimension
 
-    def exp(self, X: torch.Tensor, dX: torch.Tensor) -> torch.Tensor:
+    def exp(
+        self,
+        rotation_matrices: torch.Tensor,
+        axis_angle_vectors: torch.Tensor
+    ) -> torch.Tensor:
 
-        # -- compute skew symmetric matrix from axis angle representation
-        skew_matrix = torch.einsum('...j, jkl -> ...kl', dX, self._bases)
+        # compute skew symmetric matrix from axis angle representation
+        skew_matrices = torch.einsum('...j, jkl -> ...kl', axis_angle_vectors, self._bases)
 
-        # -- parallel transport the curve and increment X
-        return torch.matmul(X, torch.linalg.matrix_exp(skew_matrix))
+        # parallel transport the curve and increment X
+        return torch.matmul(rotation_matrices, torch.linalg.matrix_exp(skew_matrices))
 
-    def log(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
+    def log(self, origins: torch.Tensor, destinations: torch.Tensor) -> torch.Tensor:
 
-        # -- compute trans(X)Y
-        relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', X, Y)
+        # compute inverse(destinations)origins
+        relative_rotation =  torch.einsum('...ji, ...jk -> ...ik', origins, destinations)
 
-        # -- compute geodesic distance, compensate for numerical inaccuracies
+        # compute geodesic distance, compensate for numerical inaccuracies
         angle = torch.acos(
             torch.clip(
                 0.5 * (torch.einsum('...ii -> ...', relative_rotation) - 1.0),
@@ -76,9 +80,9 @@ class SpecialOrthogonal3(Manifold):
             )
         )
 
-        # -- compute axis of rotation
+        # compute axis of rotation
         axis = torch.einsum('...ijk, ...jk -> ...i', self._bases, relative_rotation)
         axis = axis / (torch.norm(axis, dim = -1, keepdim = True) + 1e-6)
 
-        # -- return the axis-angle representation
+        # return the axis-angle representation
         return torch.einsum('..., ...i -> ...i', angle, axis)

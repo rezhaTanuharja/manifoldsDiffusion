@@ -1,6 +1,6 @@
 """
-diffusionmodels.utilities
-=========================
+utilities
+=========
 
 Provides miscellaneous functionalities for diffusionmodels
 

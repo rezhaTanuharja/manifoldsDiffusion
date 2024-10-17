@@ -8,8 +8,8 @@ Modules
 -------
 periodic    : Provide CDFs that are solutions to PDEs with periodic boundary conditions
 
-Classes
--------
+Interfaces
+----------
 CumulativeDistributionFunction
     The interface for all distribution functions in this package
 """

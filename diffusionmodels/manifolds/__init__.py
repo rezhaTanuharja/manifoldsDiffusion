@@ -1,12 +1,15 @@
 """
-diffusionmodels.manifolds
-=========================
+manifolds
+=========
 
 Provides functionalities to define manifold structures.
 
+interfaces
+----------
+Manifold            : The interface for all manifolds in this package
+
 Classes
 -------
-Manifold            : The interface for all manifolds in this package
 SpecialOrthogonal3  : The Lie Group of 3D rotational matrices
 """
 

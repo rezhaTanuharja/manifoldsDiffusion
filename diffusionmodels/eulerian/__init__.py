@@ -2,18 +2,16 @@
 eulerian
 ========
 
-An approach to diffusion models that deals with the evolution of data concentration
+An approach to diffusion that treats data points as a continuum
 
-Modules
--------
-stochasticprocesses     : Provides functionalities to define stochastic processes
+Interfaces
+----------
+stochasticprocesses     : The interface of all stochastic processes in this package
 """
 
-# from . import forward
 from . import stochasticprocesses
 
 
 __all__ = [
-    # 'forward',
     'stochasticprocesses',
 ]

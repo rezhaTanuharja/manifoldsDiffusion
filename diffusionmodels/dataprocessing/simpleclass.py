@@ -1,6 +1,6 @@
 """
-diffusionmodels.dataprocessing.simpleclass
-==========================================
+dataprocessing.simpleclass
+==========================
 
 Implements various simple data processing steps
 
@@ -16,7 +16,7 @@ from typing import List, Any
 
 class Pipeline(Transform):
     """
-    A transformation that consists of several sequential transformations (a pipeline)
+    A transformation that consists of a sequence of transformations
     """
 
     def __init__(self, transforms: List[Transform]) -> None:

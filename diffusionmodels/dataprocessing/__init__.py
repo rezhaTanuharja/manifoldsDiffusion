@@ -1,12 +1,15 @@
 """
-diffusionmodels.dataprocessing
-==============================
+dataprocessing
+==============
 
 Provides functionalities to define data processing steps
 
+Interfaces
+----------
+Transform       : A callable object that acts as a black-box transformation
+
 Classes
 -------
-Transform       : The interface for all dataprocessing transformations in this package
 Pipeline        : A transformation that consist of a sequence of transformations
 """
 
