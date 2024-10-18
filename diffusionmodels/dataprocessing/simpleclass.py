@@ -11,7 +11,7 @@ Pipeline        : A transformation that consists of sequential smaller transform
 
 
 from .interfaces import Transform
-from typing import List, Any
+from typing import List, Any, Callable
 
 
 class Pipeline(Transform):
@@ -19,7 +19,7 @@ class Pipeline(Transform):
     A transformation that consists of a sequence of transformations
     """
 
-    def __init__(self, transforms: List[Transform]) -> None:
+    def __init__(self, transforms: List[Callable[[Any], Any]]) -> None:
         """
         Parameters
         ----------
