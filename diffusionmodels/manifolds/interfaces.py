@@ -80,7 +80,7 @@ class Manifold(ABC):
 
 
     @abstractmethod
-    def exp(self, points: torch.Tensor, tangent_vector: torch.Tensor) -> torch.Tensor:
+    def exp(self, points: torch.Tensor, tangent_vectors: torch.Tensor) -> torch.Tensor:
         """
         Increment points with tangent vectors.
         In Euclidean geometry, simply returns `points + tangent_vector`
@@ -90,7 +90,7 @@ class Manifold(ABC):
         `points : torch.Tensor`
             The original points in the manifold
 
-        `tangent_vector: torch.Tensor`
+        `tangent_vectors: torch.Tensor`
             Vectors that live in the manifold tangent space
 
         Returns

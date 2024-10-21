@@ -57,15 +57,15 @@ class SpecialOrthogonal3(Manifold):
 
     def exp(
         self,
-        rotation_matrices: torch.Tensor,
-        axis_angle_vectors: torch.Tensor
+        points: torch.Tensor,
+        tangent_vectors: torch.Tensor
     ) -> torch.Tensor:
 
         # compute skew symmetric matrix from axis angle representation
-        skew_matrices = torch.einsum('...j, jkl -> ...kl', axis_angle_vectors, self._bases)
+        skew_matrices = torch.einsum('...j, jkl -> ...kl', tangent_vectors, self._bases)
 
         # parallel transport the curve and increment X
-        return torch.matmul(rotation_matrices, torch.linalg.matrix_exp(skew_matrices))
+        return torch.matmul(points, torch.linalg.matrix_exp(skew_matrices))
 
     def log(self, origins: torch.Tensor, destinations: torch.Tensor) -> torch.Tensor:
 

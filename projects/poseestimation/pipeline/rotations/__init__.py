@@ -9,8 +9,8 @@ Modules
 """
 
 
-from . import diffusers
+from . import euleriandiffuser
 
 __all__ = [
-    'diffusers',
+    'euleriandiffuser',
 ]
