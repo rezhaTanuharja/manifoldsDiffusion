@@ -1,3 +1,15 @@
+"""
+poseestimation.pipeline.images.resnet
+=====================================
+
+Generate image features using a pretrained ResNet50 model
+
+Functions
+---------
+`create_image_pipeline` :
+    create an image pipeline containing the Resnet model in a given device
+"""
+
 
 import diffusionmodels.dataprocessing as dataprocessing
 import torch

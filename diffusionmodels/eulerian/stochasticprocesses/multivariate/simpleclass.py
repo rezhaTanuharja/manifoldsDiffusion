@@ -37,7 +37,7 @@ class UniformSphere(StochasticProcess):
     def dimension(self) -> Tuple[int, ...]:
         return (self._dimension,)
 
-    def to(self, device: torch.device):
+    def to(self, device: torch.device) -> None:
         self._device = device
 
     def at(self, time: torch.Tensor) -> StochasticProcess:

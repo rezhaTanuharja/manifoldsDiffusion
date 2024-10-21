@@ -44,14 +44,7 @@ def generate_common_seed(local_rank: int) -> int:
             dtype = torch.int
         )
 
-    try:
-
-        torch.distributed.broadcast(tensor = global_seed, src = 0)
-
-    except Exception as e:
-
-        print(f"Failed to distribute a global seed: {type(e)}")
-        raise
+    torch.distributed.broadcast(tensor = global_seed, src = 0)
 
     return int(global_seed.item())
 

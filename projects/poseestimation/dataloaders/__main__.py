@@ -20,10 +20,10 @@ debug = os.getenv("DEBUG_FLAG", "0")
 
 if debug == "1":
     rank = int(os.getenv("RANK", "-1"))
-    if rank == 0:
-        debugpy.listen(("127.0.0.1", 5678))
-        debugpy.wait_for_client()
-        debugpy.breakpoint()
+    port = rank + 5678
+    debugpy.listen(("127.0.0.1", port))
+    debugpy.wait_for_client()
+    debugpy.breakpoint()
 
 
 def main(rank: int, world_size: int) -> None:
