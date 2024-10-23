@@ -15,15 +15,15 @@ import torch
 
 def add_noise(
     rotations: torch.Tensor,
-    axis_process: stochasticprocesses.StochasticProcess,
+    orientation_process: stochasticprocesses.StochasticProcess,
     angle_process: stochasticprocesses.StochasticProcess,
     manifold: manifolds.Manifold
 ):
 
-    time = torch.tensor([0.0, 0.2, 0.4])
+    time = torch.tensor([0.001, 0.2, 0.4])
 
-    directions = axis_process.at(time = time).sample(num_samples = rotations.shape[0])
-    distances = angle_process.at(time = time).sample(num_samples = rotations.shape[0])
+    orientations = orientation_process.at(time = time).sample(num_samples = rotations.shape[0])
+    angles = angle_process.at(time = time).sample(num_samples = rotations.shape[0])
 
     rotations = manifold.exp(
 
@@ -31,25 +31,30 @@ def add_noise(
 
         tangent_vectors = torch.einsum(
             'ij..., ij... -> ij...',
-            directions,
-            distances
+            orientations,
+            angles
         )
 
     )
 
-    #BUG: this speed is not scaled properly
-    speeds = angle_process.score_function(points = distances)
+    time_tensor = time.view(time.numel(), 1)
 
-    velocities = torch.einsum(
+    angular_speeds = 0.6 * time_tensor ** 3 * angle_process.score_function(
+        points = angles - torch.sin(angles)
+    ) / (
+        1.0 - torch.cos(angles)
+    )
+
+    tangent_velocities = torch.einsum(
         'ij..., ij... -> ij...',
-        directions,
-        speeds
+        orientations,
+        angular_speeds
     )
 
     return {
         'time': time,
         'rotations': rotations,
-        'velocities': velocities
+        'velocities': tangent_velocities
     }
 
 
@@ -89,10 +94,12 @@ def create_rotation_pipeline(device: torch.device) -> dataprocessing.Pipeline:
             # send tensor to the assigned computing device
             lambda rotations: rotations.to(device),
 
+            # duplicate each data to add multiple noise simultaneously
             lambda rotations: rotations.unsqueeze(0).expand(
-                3, *rotations.shape
+                5, *rotations.shape
             ).flatten(0, 1),
 
+            # compute the random new points and how to return to the original points
             lambda rotations: (
                 add_noise(rotations, axis_process, angle_process, manifold)
             )
