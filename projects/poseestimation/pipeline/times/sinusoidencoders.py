@@ -5,10 +5,11 @@ import torch
 def create_time_pipeline(
     num_samples: int,
     num_sample_duplicates: int,
+    num_wave_numbers: int,
     device: torch.device
 ) -> dataprocessing.Transform:
 
-    wave_numbers = torch.arange(start = 0.0, end = 2.0, step = 0.25)
+    wave_numbers = torch.arange(start = 0.0, end = 2.0, step = 2.0 / num_wave_numbers)
     wave_numbers = wave_numbers.view(1, wave_numbers.numel())
     wave_numbers.to(device)
 

@@ -12,6 +12,7 @@ train       : define the training procedures and loss functions
 
 from . import dataloaders
 from . import pipeline
+from . import models
 # from . import train
 
 

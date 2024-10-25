@@ -4,6 +4,7 @@ from projects.poseestimation.dataloaders import tensorflowadaptor
 from projects.poseestimation.pipeline.images import resnet
 from projects.poseestimation.pipeline.rotations import euleriandiffuser
 from projects.poseestimation.pipeline.times import sinusoidencoders
+from projects.poseestimation.models.naive import NaiveMLP
 
 
 def main(rank: int, world_size: int):
@@ -15,15 +16,16 @@ def main(rank: int, world_size: int):
         'shuffle_files': True,
     }
 
-    num_sample_duplicates = 5
-    num_timestamps = 3
+    batch_size = 4
+    num_sample_duplicates = 2
+    num_timestamps = 2
     device = torch.device('cpu')
 
     try:
 
         dataloader = tensorflowadaptor.create_local_numpy_iterator(
             dataset = dataset,
-            batch_size = 20,
+            batch_size = batch_size,
             rank = rank,
             world_size = world_size,
         )
@@ -41,9 +43,15 @@ def main(rank: int, world_size: int):
         )
 
         times_pipeline = sinusoidencoders.create_time_pipeline(
-            num_samples = 20,
+            num_samples = batch_size,
             num_sample_duplicates = num_sample_duplicates,
+            num_wave_numbers = 4,
             device = device
+        )
+
+        model = NaiveMLP(
+            num_image_features = 1000,
+            num_time_features = 8
         )
 
     except Exception as e:
@@ -57,12 +65,15 @@ def main(rank: int, world_size: int):
     labels = label_pipeline(labels)
 
 
+    rotations = labels['rotations']
     times = times_pipeline(labels['time'])
 
+    output = model(images, times, rotations)
 
-    print(images.shape)
+
+    print(output.shape)
     # print(labels.shape)
-    print(times.shape)
+    # print(times.shape)
 
 if __name__ == "__main__":
 

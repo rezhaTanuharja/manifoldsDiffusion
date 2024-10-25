@@ -1,3 +1,8 @@
 from . import naive
 
-model = naive.NaiveMLP()
+
+__all__ = [
+    'naive',
+]
+
+# model = naive.NaiveMLP()

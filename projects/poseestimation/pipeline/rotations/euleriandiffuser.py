@@ -52,6 +52,7 @@ def add_noise(
     )
 
     rotations = rotations.flatten(0, 1)
+    rotations = rotations.flatten(-2)
     tangent_velocities = tangent_velocities.flatten(0, 1)
 
     return {
