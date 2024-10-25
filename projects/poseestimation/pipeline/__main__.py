@@ -19,7 +19,7 @@ def main(rank: int, world_size: int):
     batch_size = 4
     num_sample_duplicates = 2
     num_timestamps = 2
-    device = torch.device('cpu')
+    device = torch.device('cuda')
 
     try:
 
@@ -51,8 +51,10 @@ def main(rank: int, world_size: int):
 
         model = NaiveMLP(
             num_image_features = 1000,
-            num_time_features = 8
+            num_time_features = 4
         )
+
+        model = model.to(device)
 
     except Exception as e:
 

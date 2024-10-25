@@ -11,7 +11,8 @@ def create_time_pipeline(
 
     wave_numbers = torch.arange(start = 0.0, end = 2.0, step = 2.0 / num_wave_numbers)
     wave_numbers = wave_numbers.view(1, wave_numbers.numel())
-    wave_numbers.to(device)
+    wave_numbers = wave_numbers.to(device)
+    # print(wave_numbers.device)
 
     time_pipeline = dataprocessing.Pipeline(
         transforms = [
