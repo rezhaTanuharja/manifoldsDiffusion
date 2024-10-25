@@ -3,6 +3,7 @@ import torch
 
 
 def create_time_pipeline(
+    num_samples: int,
     num_sample_duplicates: int,
     device: torch.device
 ) -> dataprocessing.Transform:
@@ -19,7 +20,7 @@ def create_time_pipeline(
             lambda times: torch.cos(times * wave_numbers),
 
             lambda times: times.unsqueeze(1).expand(
-                times.shape[0], num_sample_duplicates, times.shape[1]
+                times.shape[0], num_samples * num_sample_duplicates, times.shape[1]
             ).flatten(0, 1),
 
         ]

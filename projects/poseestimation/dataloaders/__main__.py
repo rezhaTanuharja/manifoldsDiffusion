@@ -44,8 +44,6 @@ def main(rank: int, world_size: int) -> None:
             world_size = world_size,
         )
 
-        dataloader = cast(Iterator[numpy.ndarray], dataloader)
-
     except Exception as e:
 
         print(f"Failed to generate a NumPy iterator: {type(e)}")

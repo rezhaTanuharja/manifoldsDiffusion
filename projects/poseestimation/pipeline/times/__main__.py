@@ -13,6 +13,7 @@ def main():
     )
 
     time_pipeline = sinusoidencoders.create_time_pipeline(
+        num_samples = times.numel(),
         num_sample_duplicates = 5,
         device = device
     )

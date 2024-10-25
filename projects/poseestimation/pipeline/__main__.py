@@ -1,11 +1,9 @@
 
 import torch
-from typing import cast, Iterator
 from projects.poseestimation.dataloaders import tensorflowadaptor
 from projects.poseestimation.pipeline.images import resnet
 from projects.poseestimation.pipeline.rotations import euleriandiffuser
 from projects.poseestimation.pipeline.times import sinusoidencoders
-import numpy
 
 
 def main(rank: int, world_size: int):
@@ -17,6 +15,8 @@ def main(rank: int, world_size: int):
         'shuffle_files': True,
     }
 
+    num_sample_duplicates = 5
+    num_timestamps = 3
     device = torch.device('cpu')
 
     try:
@@ -28,11 +28,23 @@ def main(rank: int, world_size: int):
             world_size = world_size,
         )
 
-        dataloader = cast(Iterator[numpy.ndarray], dataloader)
+        image_pipeline = resnet.create_image_pipeline(
+            num_sample_duplicates = num_sample_duplicates,
+            num_timestamps = num_timestamps,
+            device = device
+        )
 
-        image_pipeline = resnet.create_image_pipeline(device = device)
-        label_pipeline = euleriandiffuser.create_rotation_pipeline(device = device)
-        times_pipeline = sinusoidencoders.create_time_pipeline(device = device)
+        label_pipeline = euleriandiffuser.create_rotation_pipeline(
+            num_sample_duplicates = num_sample_duplicates,
+            num_timestamps = num_timestamps,
+            device = device
+        )
+
+        times_pipeline = sinusoidencoders.create_time_pipeline(
+            num_samples = 20,
+            num_sample_duplicates = num_sample_duplicates,
+            device = device
+        )
 
     except Exception as e:
 
