@@ -16,7 +16,11 @@ import torch
 import torchvision.models as models
 
 
-def create_image_pipeline(device: torch.device) -> dataprocessing.Pipeline:
+def create_image_pipeline(
+    num_sample_duplicates: int,
+    num_timestamps: int,
+    device: torch.device
+) -> dataprocessing.Pipeline:
 
     try:
         residual_network = models.resnet50(weights = models.ResNet50_Weights.DEFAULT)
@@ -44,7 +48,12 @@ def create_image_pipeline(device: torch.device) -> dataprocessing.Pipeline:
 
             # duplicate images to noise each sample multiple times
             lambda images: images.unsqueeze(0).expand(
-                5, *images.shape
+                num_sample_duplicates, *images.shape
+            ).flatten(0, 1),
+
+            # duplicate images to match the number of noise levels
+            lambda images: images.unsqueeze(0).expand(
+                num_timestamps, *images.shape
             ).flatten(0, 1),
 
         ]

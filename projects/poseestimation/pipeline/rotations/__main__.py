@@ -11,6 +11,8 @@ def main():
     rotations = numpy.random.random(size = (20, 3, 3))
 
     rotation_pipeline = euleriandiffuser.create_rotation_pipeline(
+        num_sample_duplicates = 5,
+        num_timestamps = 3,
         device = device
     )
 

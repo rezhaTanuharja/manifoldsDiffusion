@@ -15,14 +15,13 @@ import torch
 
 def add_noise(
     rotations: torch.Tensor,
-    orientation_process: stochasticprocesses.StochasticProcess,
+    axis_process: stochasticprocesses.StochasticProcess,
     angle_process: stochasticprocesses.StochasticProcess,
-    manifold: manifolds.Manifold
+    manifold: manifolds.Manifold,
+    time: torch.Tensor
 ):
 
-    time = torch.tensor([0.001, 0.2, 0.4])
-
-    orientations = orientation_process.at(time = time).sample(num_samples = rotations.shape[0])
+    axis = axis_process.at(time = time).sample(num_samples = rotations.shape[0])
     angles = angle_process.at(time = time).sample(num_samples = rotations.shape[0])
 
     rotations = manifold.exp(
@@ -31,7 +30,7 @@ def add_noise(
 
         tangent_vectors = torch.einsum(
             'ij..., ij... -> ij...',
-            orientations,
+            axis,
             angles
         )
 
@@ -39,7 +38,8 @@ def add_noise(
 
     time_tensor = time.view(time.numel(), 1)
 
-    angular_speeds = 0.6 * time_tensor ** 3 * angle_process.score_function(
+    #WARN: mean square displacement seems manual and error prone
+    angular_speeds = 0.6 * time_tensor ** 3 * angle_process.at(time = time).score_function(
         points = angles - torch.sin(angles)
     ) / (
         1.0 - torch.cos(angles)
@@ -47,7 +47,7 @@ def add_noise(
 
     tangent_velocities = torch.einsum(
         'ij..., ij... -> ij...',
-        orientations,
+        axis,
         angular_speeds
     )
 
@@ -58,10 +58,14 @@ def add_noise(
     }
 
 
-def create_rotation_pipeline(device: torch.device) -> dataprocessing.Pipeline:
+def create_rotation_pipeline(
+    num_sample_duplicates: int,
+    num_timestamps: int,
+    device: torch.device
+) -> dataprocessing.Transform:
 
-    axis_process = stochasticprocesses.multivariate.UniformSphere(dimension = 3)
-    axis_process.to(device)
+    orientation_process = stochasticprocesses.multivariate.UniformSphere(dimension = 3)
+    orientation_process.to(device)
 
     angle_distribution_function = univariate.functions.periodic.HeatKernel(
         num_waves = 1000,
@@ -85,6 +89,8 @@ def create_rotation_pipeline(device: torch.device) -> dataprocessing.Pipeline:
     manifold = manifolds.SpecialOrthogonal3()
     manifold.to(device)
 
+    time = 2.5 * torch.rand(size = (num_timestamps,), device = device)
+
     rotation_pipeline = dataprocessing.Pipeline(
         transforms = [
 
@@ -96,12 +102,18 @@ def create_rotation_pipeline(device: torch.device) -> dataprocessing.Pipeline:
 
             # duplicate each data to add multiple noise simultaneously
             lambda rotations: rotations.unsqueeze(0).expand(
-                5, *rotations.shape
+                num_sample_duplicates, *rotations.shape
             ).flatten(0, 1),
 
             # compute the random new points and how to return to the original points
             lambda rotations: (
-                add_noise(rotations, axis_process, angle_process, manifold)
+                add_noise(
+                    rotations = rotations,
+                    axis_process = orientation_process,
+                    angle_process = angle_process,
+                    manifold = manifold,
+                    time = time
+                )
             )
 
         ]

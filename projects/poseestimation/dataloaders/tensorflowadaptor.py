@@ -98,11 +98,12 @@ def create_local_numpy_iterator(
 
         return tensorflow_data
 
-    tensorflow_read_config = tensorflow_datasets.ReadConfig(
-        shuffle_seed = generate_common_seed(local_rank = rank)
-    )
 
     try:
+
+        tensorflow_read_config = tensorflow_datasets.ReadConfig(
+            shuffle_seed = generate_common_seed(local_rank = rank)
+        )
 
         tensorflow_data = tensorflow_datasets.load(
             **dataset,

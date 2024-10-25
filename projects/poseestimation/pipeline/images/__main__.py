@@ -17,7 +17,11 @@ def main():
     images = numpy.random.random(size = (20, 244, 244, 3))
 
     try:
-        image_pipeline = resnet.create_image_pipeline(device = device)
+        image_pipeline = resnet.create_image_pipeline(
+            num_sample_duplicates = 5,
+            num_timestamps = 3,
+            device = device
+        )
 
     except Exception as e:
         print(f"Failed to create an image pipeline: {type(e)}")
