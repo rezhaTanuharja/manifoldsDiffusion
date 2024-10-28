@@ -1,15 +1,19 @@
 
-import torch.distributed
 import torch
+from torch.nn import MSELoss
+from torch.optim.adam import Adam
+
 from projects.poseestimation.dataloaders import tensorflowadaptor
 from projects.poseestimation.pipeline.images import resnet
 from projects.poseestimation.pipeline.rotations import euleriandiffuser
 from projects.poseestimation.pipeline.times import sinusoidencoders
 from projects.poseestimation.models.naive import NaiveMLP
 
-import os
 
-def main(rank: int, world_size: int):
+def main(rank: int, world_size:int):
+
+
+    device = torch.device('cuda')
 
     dataset = {
         'name': 'symmetric_solids',
@@ -18,19 +22,17 @@ def main(rank: int, world_size: int):
         'shuffle_files': True,
     }
 
-    batch_size = 4
-    num_sample_duplicates = 2
-    num_timestamps = 2
-    device = torch.device('cuda')
+    batch_size = 20
+    num_sample_duplicates = 1
+    num_timestamps = 5
+    num_wave_numbers = 8
+
+    num_epochs = 5000
+
+
+    checkpoint_file = 'checkpoint.pth'
 
     try:
-
-        dataloader = tensorflowadaptor.create_local_numpy_iterator(
-            dataset = dataset,
-            batch_size = batch_size,
-            rank = rank,
-            world_size = world_size,
-        )
 
         image_pipeline = resnet.create_image_pipeline(
             num_sample_duplicates = num_sample_duplicates,
@@ -47,52 +49,84 @@ def main(rank: int, world_size: int):
         times_pipeline = sinusoidencoders.create_time_pipeline(
             num_samples = batch_size,
             num_sample_duplicates = num_sample_duplicates,
-            num_wave_numbers = 4,
+            num_wave_numbers = num_wave_numbers,
             device = device
         )
 
         model = NaiveMLP(
             num_image_features = 1000,
-            num_time_features = 4
+            num_time_features = num_wave_numbers
         )
 
         model = model.to(device)
+
+        criterion = MSELoss()
+        optimizer = Adam(model.parameters(), lr = 0.001)
 
     except Exception as e:
 
         print(f"Failed to generate a NumPy iterator: {type(e)}")
         raise
 
-    for i in range(10):
-
-        images, labels = next(dataloader)
-
-        images = image_pipeline(images)
-        labels = label_pipeline(labels)
 
 
-        rotations = labels['rotations']
-        times = times_pipeline(labels['time'])
+    for epoch in range(num_epochs):
 
-        output = model(images, times, rotations)
+        running_loss = 0.0
+        num_batches = 0
 
-        print(f"Iteration {i}: {output.shape}")
+        data_loader = tensorflowadaptor.create_local_numpy_iterator(
+            dataset = dataset,
+            batch_size = batch_size,
+            rank = rank,
+            world_size = world_size,
+        )
+
+        for images, labels in data_loader:
+
+            if num_batches > 360000 / batch_size:
+                break
+
+            images = image_pipeline(images)
+            labels = label_pipeline(labels)
+
+            rotations = labels['rotations']
+            times = times_pipeline(labels['time'])
+            velocities = labels['velocities']
+
+            outputs = model(images, times, rotations)
+
+            loss = criterion(outputs, velocities)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            num_batches += 1
+
+            if num_batches % 500 == 0:
+                print(f"Processed {num_batches * batch_size * num_sample_duplicates} images from epoch {epoch}")
+
+
+        print(f"Epoch {epoch}/{num_epochs}, loss: {running_loss/num_batches}")
+
+
+        if epoch % 500 == 0:
+
+            checkpoint = {
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': loss,
+            }
+
+            torch.save(checkpoint, checkpoint_file)
+
 
 if __name__ == "__main__":
 
-    local_rank = int(os.getenv('RANK', '0'))
-    world_size = int(os.getenv('WORLD_SIZE', 1))
+    local_rank = 0
+    world_size = 1
 
-    torch.distributed.init_process_group(
-        backend = "gloo",
-        rank = local_rank,
-        world_size = world_size
-    )
-
-    try:
-        main(rank = local_rank, world_size = world_size)
-
-    except Exception as e:
-        print(f"Failed to execute main: {type(e)}")
-
-    torch.distributed.destroy_process_group()
+    main(rank = local_rank, world_size = world_size)

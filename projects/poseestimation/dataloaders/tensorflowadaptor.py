@@ -11,11 +11,11 @@ Functions
 
 
 import tensorflow
+from tensorflow._api.v2.data import NumpyIterator
 import tensorflow_datasets
 import torch
 import torch.distributed
-from typing import cast, Dict, Any, Iterator
-import numpy
+from typing import cast, Dict, Any
 
 
 def generate_common_seed(local_rank: int) -> int:
@@ -56,7 +56,7 @@ def create_local_numpy_iterator(
     batch_size: int = 1,
     rank: int = 0,
     world_size: int = 1
-) -> Iterator[numpy.ndarray]:
+) -> NumpyIterator:
     """
     Create a NumPy iterator to retrieve data from a TensorFlow dataset
 
@@ -123,13 +123,13 @@ def create_local_numpy_iterator(
     tensorflow_data = tensorflow_data.skip(rank * chunk_size)
     tensorflow_data = tensorflow_data.take(chunk_size)
 
-    tensorflow_data = tensorflow_data.repeat()
+    # tensorflow_data = tensorflow_data.repeat()
     tensorflow_data = tensorflow_data.shuffle(buffer_size = 4 * batch_size)
     tensorflow_data = tensorflow_data.batch(batch_size)
     tensorflow_data = tensorflow_data.as_numpy_iterator()
 
     try:
-        tensorflow_data = cast(Iterator[numpy.ndarray], tensorflow_data)
+        tensorflow_data = cast(NumpyIterator, tensorflow_data)
 
     except Exception as e:
 

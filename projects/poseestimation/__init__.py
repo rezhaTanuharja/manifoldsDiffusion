@@ -19,5 +19,6 @@ from . import models
 __all__ = [
     'dataloaders',
     'pipeline',
+    'models',
     # 'train',
 ]

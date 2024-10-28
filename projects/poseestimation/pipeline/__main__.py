@@ -61,21 +61,21 @@ def main(rank: int, world_size: int):
         print(f"Failed to generate a NumPy iterator: {type(e)}")
         raise
 
-    images, labels = next(dataloader)
+    for images, labels in dataloader:
 
-    images = image_pipeline(images)
-    labels = label_pipeline(labels)
+        images = image_pipeline(images)
+        labels = label_pipeline(labels)
 
 
-    rotations = labels['rotations']
-    times = times_pipeline(labels['time'])
+        rotations = labels['rotations']
+        times = times_pipeline(labels['time'])
 
-    output = model(images, times, rotations)
+        output = model(images, times, rotations)
+
+        break
 
 
     print(output.shape)
-    # print(labels.shape)
-    # print(times.shape)
 
 if __name__ == "__main__":
 
