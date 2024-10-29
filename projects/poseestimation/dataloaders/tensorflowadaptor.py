@@ -10,12 +10,17 @@ Functions
 """
 
 
-import tensorflow
-from tensorflow._api.v2.data import NumpyIterator
-import tensorflow_datasets
 import torch
 import torch.distributed
-from typing import cast, Dict, Any
+
+import tensorflow
+import tensorflow_datasets
+from tensorflow._api.v2.data import NumpyIterator
+
+import diffusionmodels.dataprocessing as dataprocessing
+
+from typing import cast, Dict, Any, Iterator, List, Tuple
+import numpy
 
 
 def generate_common_seed(local_rank: int) -> int:
@@ -56,7 +61,7 @@ def create_local_numpy_iterator(
     batch_size: int = 1,
     rank: int = 0,
     world_size: int = 1
-) -> NumpyIterator:
+) -> Tuple[Iterator[List[numpy.ndarray]], int]:
     """
     Create a NumPy iterator to retrieve data from a TensorFlow dataset
 
@@ -80,6 +85,23 @@ def create_local_numpy_iterator(
         An iterator that, when called with next, produces a numpy array
     """
 
+
+    dataset_pipeline = dataprocessing.Pipeline(
+        transforms = [
+
+            lambda dataset: dataset.repeat(),
+
+            lambda dataset: dataset.shuffle(buffer_size = 4 * batch_size),
+
+            lambda dataset: dataset.batch(batch_size),
+
+            lambda dataset: dataset.as_numpy_iterator(),
+
+            lambda dataset: cast(Iterator[List[numpy.ndarray]], dataset),
+
+        ]
+    )
+
     if world_size == 1:
 
         try:
@@ -92,12 +114,9 @@ def create_local_numpy_iterator(
             print(f"Failed to load tensorflow_dataset: {type(e)}")
             raise
 
-        tensorflow_data = tensorflow_data.repeat()
-        tensorflow_data = tensorflow_data.shuffle(buffer_size = 4 * batch_size)
-        tensorflow_data = tensorflow_data.batch(batch_size)
-        tensorflow_data = tensorflow_data.as_numpy_iterator()
+        iterator_length = len(tensorflow_datasets.as_numpy(tensorflow_data)) // batch_size
 
-        return tensorflow_data
+        return dataset_pipeline(tensorflow_data), iterator_length
 
 
     try:
@@ -123,17 +142,6 @@ def create_local_numpy_iterator(
     tensorflow_data = tensorflow_data.skip(rank * chunk_size)
     tensorflow_data = tensorflow_data.take(chunk_size)
 
-    # tensorflow_data = tensorflow_data.repeat()
-    tensorflow_data = tensorflow_data.shuffle(buffer_size = 4 * batch_size)
-    tensorflow_data = tensorflow_data.batch(batch_size)
-    tensorflow_data = tensorflow_data.as_numpy_iterator()
+    iterator_length = chunk_size // batch_size
 
-    try:
-        tensorflow_data = cast(NumpyIterator, tensorflow_data)
-
-    except Exception as e:
-
-        print(f"Failed to convert tensorflow_data into NumPy iterator: {type(e)}")
-        raise
-
-    return tensorflow_data
+    return dataset_pipeline(tensorflow_data), iterator_length

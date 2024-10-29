@@ -65,7 +65,7 @@ def main(rank: int, world_size:int):
 
     except Exception as e:
 
-        print(f"Failed to generate a NumPy iterator: {type(e)}")
+        print(f"Failed to create pipelines: {type(e)}")
         raise
 
 
@@ -75,17 +75,24 @@ def main(rank: int, world_size:int):
         running_loss = 0.0
         num_batches = 0
 
-        data_loader = tensorflowadaptor.create_local_numpy_iterator(
-            dataset = dataset,
-            batch_size = batch_size,
-            rank = rank,
-            world_size = world_size,
-        )
 
-        for images, labels in data_loader:
+        try:
+            data_iterator, iterator_length = tensorflowadaptor.create_local_numpy_iterator(
+                dataset = dataset,
+                batch_size = batch_size,
+                rank = rank,
+                world_size = world_size,
+            )
 
-            if num_batches > 360000 / batch_size:
-                break
+        except Exception as e:
+
+            print(f"Failed to create a local NumPy iterator: {type(e)}")
+            raise
+
+
+        for _ in range(iterator_length):
+
+            images, labels = next(data_iterator)
 
             images = image_pipeline(images)
             labels = label_pipeline(labels)
