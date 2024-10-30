@@ -4,9 +4,9 @@ eulerian
 
 An approach to diffusion that treats data points as a continuum
 
-Interfaces
+Modules
 ----------
-stochasticprocesses     : The interface of all stochastic processes in this package
+stochasticprocess     : Provides functionalities to define stochastic processes
 """
 
 from . import stochasticprocesses

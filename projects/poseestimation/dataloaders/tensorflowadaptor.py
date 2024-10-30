@@ -15,7 +15,6 @@ import torch.distributed
 
 import tensorflow
 import tensorflow_datasets
-from tensorflow._api.v2.data import NumpyIterator
 
 import diffusionmodels.dataprocessing as dataprocessing
 
@@ -81,22 +80,27 @@ def create_local_numpy_iterator(
 
     Returns
     -------
-    `Iterator[numpy.ndarray]`
-        An iterator that, when called with next, produces a numpy array
+    `Tuple[Iterator[List[numpy.ndarray]], int]`
+        A tuple of iterator and the length of the iterator
     """
 
 
     dataset_pipeline = dataprocessing.Pipeline(
         transforms = [
 
+            # roll the dataset to have an "infinite" length
             lambda dataset: dataset.repeat(),
 
+            # local shuffling
             lambda dataset: dataset.shuffle(buffer_size = 4 * batch_size),
 
+            # perform batching
             lambda dataset: dataset.batch(batch_size),
 
+            # convert dataset into a Numpy iterator
             lambda dataset: dataset.as_numpy_iterator(),
 
+            # mainly for type checking
             lambda dataset: cast(Iterator[List[numpy.ndarray]], dataset),
 
         ]

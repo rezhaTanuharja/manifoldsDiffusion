@@ -10,7 +10,7 @@ periodic    : Provide CDFs that are solutions to PDEs with periodic boundary con
 
 Interfaces
 ----------
-CumulativeDistributionFunction
+`CumulativeDistributionFunction`
     The interface for all distribution functions in this package
 """
 

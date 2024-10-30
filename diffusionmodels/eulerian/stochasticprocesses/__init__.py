@@ -6,7 +6,7 @@ Provides functionalities to define stochastic processes
 
 Interfaces
 ----------
-stochasticprocesses     : The interface of all stochastic processes in this package
+StochasticProcess       : The interface for all stochastic processes in this package
 
 Modules
 -------

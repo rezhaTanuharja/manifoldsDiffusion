@@ -6,7 +6,7 @@ Implements various simple data processing steps
 
 Class
 -----
-Pipeline        : A transformation that consists of sequential smaller transformations
+Pipeline        : A transformation that consists of a sequence of transformations
 """
 
 
@@ -29,7 +29,7 @@ class Pipeline(Transform):
         self._transforms = transforms
 
     def __call__(self, data: Any) -> Any:
-        
+
         for transform in self._transforms:
             data = transform(data)
 

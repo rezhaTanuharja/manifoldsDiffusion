@@ -6,7 +6,7 @@ Provides the interface for all data transformation in this package
 
 Class
 -----
-Transform       : An abstract class that serves as an interface for all transformation objects
+Transform       : A callable object that acts as a black-box transformation
 """
 
 

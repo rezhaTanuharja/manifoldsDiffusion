@@ -38,7 +38,7 @@ def add_noise(
 
     time_tensor = time.view(time.numel(), 1)
 
-    #WARN: mean square displacement seems manual and error prone
+    # WARN: mean square displacement seems manual and error prone
     angular_speeds = 0.6 * time_tensor ** 3 * angle_process.at(time = time).score_function(
         points = angles - torch.sin(angles)
     ) / (
