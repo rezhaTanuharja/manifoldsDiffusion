@@ -1,0 +1,57 @@
+Bootstrap: docker
+From: fedora:40
+
+%post
+  
+
+  # -- update package manager and install essential packages for Python development
+
+  dnf -y update
+  dnf -y install git openssh-server iproute tree neovim python3.12 python3.12-pip nodejs
+
+
+  # -- install pyright to use as a language server
+
+  npm install -g pyright
+
+
+  # -- update pip and install essential libraries for deep learning
+
+  pip3 install --upgrade pip
+
+  pip3 install --no-warn-script-location numpy==2.0.2 matplotlib==3.9.2
+  pip3 install --no-warn-script-location torch==2.5.1 torchvision==0.20.1
+  pip3 install --no-warn-script-location tensorflow-cpu==2.18.0 tensorflow_datasets==4.9.7
+
+
+  # -- install debugpy to use a Python debugger
+
+  pip3 install --no-warn-script-location debugpy==1.8.7
+
+
+  dnf clean all
+
+
+%runscript
+
+  echo "========================================================================"
+  echo ""
+  echo "Welcome, this container uses an image with the following specifications:"
+  echo ""
+  echo "  Operating System: Fedora 40 with the following packages:"
+  echo ""
+  echo "    - git openssh-server iproute tree nodejs"
+  echo ""
+  echo "    - Python 3.12 with the following modules:"
+  echo ""
+  echo "      + numpy 2.0.2"
+  echo "      + matplotlib 3.9.2"
+  echo "      + torch 2.5.1 and torchvision 0.20.1"
+  echo "      + tensorflow-cpu 2.18.0 and tensorflow_datasets 4.9.7"
+  echo ""
+  echo "Author: Rezha Adrian Tanuharja -- tanuharja@ias.uni-stuttgart.de"
+  echo ""
+  echo "========================================================================"
+  echo ""
+
+  exec /bin/bash
