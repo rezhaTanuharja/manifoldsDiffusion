@@ -15,9 +15,14 @@ def main(rank: int, world_size:int):
 
     device = torch.device('cuda')
 
+    split_start = rank / world_size * 85
+    split_end = (rank + 1) / world_size * 85
+
+    split = f'train[{split_start}%:{split_end}%]'
+
     dataset = {
         'name': 'symmetric_solids',
-        'split': 'train',
+        'split': split,
         'as_supervised': True,
         'shuffle_files': True,
     }
@@ -77,11 +82,9 @@ def main(rank: int, world_size:int):
 
 
         try:
-            data_iterator, iterator_length = tensorflowadaptor.create_local_numpy_iterator(
+            data_iterator, iterator_length = tensorflowadaptor.create_numpy_iterator(
                 dataset = dataset,
                 batch_size = batch_size,
-                rank = rank,
-                world_size = world_size,
             )
 
         except Exception as e:
