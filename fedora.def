@@ -7,7 +7,7 @@ From: fedora:40
   # -- update package manager and install essential packages for Python development
 
   dnf -y update
-  dnf -y install git openssh-server iproute tree neovim python3.12 python3.12-pip nodejs
+  dnf -y install git openssh-server iproute tree tmux neovim python3.12 python3.12-pip nodejs
 
 
   # -- install pyright to use as a language server
@@ -40,7 +40,7 @@ From: fedora:40
   echo ""
   echo "  Operating System: Fedora 40 with the following packages:"
   echo ""
-  echo "    - git openssh-server iproute tree nodejs"
+  echo "    - git openssh-server iproute tree tmux neovim nodejs"
   echo ""
   echo "    - Python 3.12 with the following modules:"
   echo ""
