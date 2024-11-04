@@ -39,22 +39,17 @@ except Exception as e:
     print(f"Failed to generate a NumPy iterator: {type(e)}")
     raise
 
-traced_image_pipeline = torch.jit.trace(image_pipeline, (torch.rand((20, 244, 244, 3))))
-traced_label_pipeline = torch.jit.trace(label_pipeline, (torch.rand(20, 3, 3)))
-
-@torch.jit.script
-def scripted_image_pipeline(images: torch.Tensor):
-    return traced_image_pipeline(images)
-
-@torch.jit.script
-def scripted_label_pipeline(labels: torch.Tensor):
-    return traced_label_pipeline(labels)
 
 def main(rank: int = 0, world_size: int = 1):
 
+    split_start = rank / world_size * 85
+    split_end = (rank + 1) / world_size * 85
+
+    split = f'train[{split_start}%:{split_end}%]'
+
     dataset = {
         'name': 'symmetric_solids',
-        'split': 'train',
+        'split': split,
         'as_supervised': True,
         'shuffle_files': True,
     }
@@ -66,11 +61,9 @@ def main(rank: int = 0, world_size: int = 1):
 
     try:
 
-        data_iterator, _ = tensorflowadaptor.create_local_numpy_iterator(
+        data_iterator, _ = tensorflowadaptor.create_numpy_iterator(
             dataset = dataset,
             batch_size = batch_size,
-            rank = rank,
-            world_size = world_size,
         )
 
         times_pipeline = sinusoidencoders.create_time_pipeline(
@@ -96,8 +89,8 @@ def main(rank: int = 0, world_size: int = 1):
 
         images, labels = next(data_iterator)
 
-        images = scripted_image_pipeline(images)
-        labels = scripted_label_pipeline(labels)
+        images = image_pipeline(images)
+        labels = label_pipeline(labels)
 
 
         rotations = labels['rotations']
@@ -105,9 +98,9 @@ def main(rank: int = 0, world_size: int = 1):
 
         output = model(images, times, rotations)
 
-        # print(output.shape)
+        print(output.shape)
 
-        # break
+        break
 
 
     # print(output.shape)
