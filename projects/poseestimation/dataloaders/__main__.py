@@ -5,43 +5,30 @@ poseestimation.dataloaders.__main__
 Mainly used for debugging the dataloaders
 """
 
-#WARN: torch.distributed MUST be loaded before loading any other modules
-import torch.distributed
-
-from typing import cast, Iterator
 import tensorflowadaptor
-import numpy
 
 
-import os
-import debugpy
+def main(rank: int = 0, world_size: int = 1) -> None:
 
-debug = os.getenv("DEBUG_FLAG", "0")
+    # simulate validation = 'train[85%:]'
 
-if debug == "1":
-    rank = int(os.getenv("RANK", "-1"))
-    port = rank + 5678
-    debugpy.listen(("127.0.0.1", port))
-    debugpy.wait_for_client()
-    debugpy.breakpoint()
+    split_start = rank / world_size * 85
+    split_end = (rank + 1) / world_size * 85
 
-
-def main(rank: int, world_size: int) -> None:
+    split = f'train[{split_start}%:{split_end}%]'
 
     dataset = {
         'name': 'symmetric_solids',
-        'split': 'train',
+        'split': split,
         'as_supervised': True,
         'shuffle_files': True,
     }
 
     try:
 
-        dataloader = tensorflowadaptor.create_local_numpy_iterator(
+        data_iterator, _ = tensorflowadaptor.create_numpy_iterator(
             dataset = dataset,
             batch_size = 20,
-            rank = rank,
-            world_size = world_size,
         )
 
     except Exception as e:
@@ -49,7 +36,7 @@ def main(rank: int, world_size: int) -> None:
         print(f"Failed to generate a NumPy iterator: {type(e)}")
         raise
 
-    images, labels = next(dataloader)
+    images, labels = next(data_iterator)
 
     print(images.shape)
     print(labels.shape)
@@ -57,19 +44,9 @@ def main(rank: int, world_size: int) -> None:
 
 if __name__ == "__main__":
 
-    local_rank = int(os.getenv('RANK', '0'))
-    world_size = int(os.getenv('WORLD_SIZE', 1))
+    # simulate parallel process
 
-    torch.distributed.init_process_group(
-        backend = "gloo",
-        rank = local_rank,
-        world_size = world_size
-    )
+    local_rank = 2
+    world_size = 4
 
-    try:
-        main(rank = local_rank, world_size = world_size)
-
-    except Exception as e:
-        print(f"Failed to execute main: {type(e)}")
-
-    torch.distributed.destroy_process_group()
+    main(rank = local_rank, world_size = world_size)
