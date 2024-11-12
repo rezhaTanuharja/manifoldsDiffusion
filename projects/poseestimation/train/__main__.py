@@ -29,7 +29,7 @@ def main(rank: int, world_size:int):
 
     batch_size = 20
     num_sample_duplicates = 1
-    num_timestamps = 5
+    num_timestamps = 4
     num_wave_numbers = 8
 
     num_epochs = 5000

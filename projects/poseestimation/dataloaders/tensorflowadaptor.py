@@ -31,7 +31,8 @@ def create_numpy_iterator(
             lambda dataset: dataset.repeat(),
 
             # shuffle data
-            lambda dataset: dataset.shuffle(buffer_size = 4 * batch_size),
+            # lambda dataset: dataset.shuffle(buffer_size = 4 * batch_size),
+            lambda dataset: dataset.shuffle(buffer_size = batch_size),
 
             # retrieve a batch of data at a time
             lambda dataset: dataset.batch(batch_size),
