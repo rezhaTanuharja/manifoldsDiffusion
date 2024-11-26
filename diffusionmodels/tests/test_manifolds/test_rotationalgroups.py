@@ -7,7 +7,7 @@ Rezha Adrian Tanuharja
 
 Date
 ----
-2024-08-01
+2024-11-26
 """
 
 
@@ -213,10 +213,7 @@ class TestCPUOperations:
                 ), vectors_2
             )
 
-            print(results_1)
-
             results_2 = manifold_cpu.exp(points, vectors_1 + vectors_2)
-            print(results_2)
 
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
@@ -262,3 +259,52 @@ class TestCPUOperations:
         assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
 
 
+    def test_log_correctness(self, manifold_cpu) -> None:
+
+        starts = jnp.eye(N = 3, dtype = jnp.float32)
+        starts = starts.reshape(1, 1, 3, 3)
+        starts = starts.repeat(2, axis = 0)
+
+        ends = jnp.array([
+            [
+                [ 1.0, 0.0,                             0.0],
+                [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
+                [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
+            ], [
+                [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
+                [               0.0, 1.0,                0.0],
+                [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
+            ], [
+                [               0.5, -0.5 * jnp.sqrt(3), 0.0],
+                [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
+                [ 0.0, 0.0, 1.0],
+            ], [
+                [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
+                [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
+                [ 0.0, 0.0, 1.0],
+            ],
+        ])
+
+        try:
+            vectors = manifold_cpu.log(starts, ends)
+        except Exception as e:
+            pytest.fail(f"Unexpected exception raised: {e}")
+
+        assert vectors.shape == (2, 4, 3)
+
+        reference_vectors = jnp.array([
+            [0.25 * jnp.pi,           0.0,                0.0],
+            [          0.0, 0.75 * jnp.pi,                0.0],
+            [          0.0,           0.0,       jnp.pi / 3.0],
+            [          0.0,           0.0,-2.0 * jnp.pi / 3.0],
+        ])
+
+        for repetition in range(vectors.shape[0]):
+
+            for distinct_vector in range(vectors.shape[1]):
+
+                assert jnp.allclose(
+                    vectors[repetition, distinct_vector],
+                    reference_vectors[distinct_vector],
+                    atol = 1e-3
+                )
