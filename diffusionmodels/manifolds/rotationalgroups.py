@@ -76,13 +76,13 @@ class SpecialOrthogonal3(Manifold):
     
     def log(self, starts: jnp.ndarray, ends: jnp.ndarray) -> jnp.ndarray:
 
-        relative_rotation = jnp.matmul(starts.T, ends)
+        relative_rotation = jnp.einsum('...ji, ...jk -> ...ik', starts, ends)
 
         angle = jnp.arccos(
 
             jnp.clip(
 
-                0.5 * jnp.trace(relative_rotation) - 1.0,
+                0.5 * jnp.trace(relative_rotation, axis1 = -2, axis2 = -1) - 1.0,
 
                 # clip for numerical stability
                 min = -1.0, max = 1.0
