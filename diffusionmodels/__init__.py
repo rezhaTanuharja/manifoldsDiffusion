@@ -1,7 +1,4 @@
 """
-diffusionmodels
-===============
-
 A package that provides functionalities to define diffusion models in Riemannian geometries.
 
 Modules

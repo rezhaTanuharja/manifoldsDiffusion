@@ -1,21 +1,18 @@
 """
-utilities.warningsuppressors
-============================
-
-Provides functionalities to suppress various warnings in IDEs.
+Provides functionalities to suppress various warnings by static type checker
 
 Functions
 ---------
-unused_variables    : A function to explicitly declare that variables are not used
+`unused_variables`    : A function to explicitly declare that variables are not used
 """
 
 
-def unused_variables(*_):
+def unused_variables(*_) -> None:
     """
-    Suppress unused_variables warnings by declaring the unused_variables.
+    Suppress `unused_variables` warnings by explicit declaration
 
     Parameters
     ----------
-    An arbitrary number of variables that is intentionally unused.
+    An arbitrary number of variables that is intentionally unused
     """
     pass

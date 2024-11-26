@@ -1,18 +1,15 @@
 """
-utilities
-=========
+Provides miscellaneous functionalities for diffusionmodels.
 
-Provides miscellaneous functionalities for diffusionmodels
-
-Functions
----------
-unused_variables    : A function to explicitly declare that variables are not used
+Modules
+-------
+warningsuppressors    : Suppress various warnings by static type checker
 """
 
 
-from .warningsuppressors import unused_variables
+from . import warningsuppressors
 
 
 __all__ = [
-    'unused_variables',
+    'warningsuppressors',
 ]
