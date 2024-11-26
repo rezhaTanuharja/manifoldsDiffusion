@@ -1,12 +1,10 @@
 """
-dataprocessing.interfaces
-=========================
+Provides the interface for all data transformation in this package.
 
-Provides the interface for all data transformation in this package
-
-Class
------
-Transform       : A callable object that acts as a black-box transformation
+Classes
+-------
+`Transform`
+    A callable object that acts as a black-box transformation
 """
 
 

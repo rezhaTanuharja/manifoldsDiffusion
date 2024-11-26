@@ -1,24 +1,22 @@
 """
-dataprocessing
-==============
+Provides functionalities to define data processing steps.
 
-Provides functionalities to define data processing steps
-
-Interfaces
+interfaces
 ----------
-Transform       : A callable object that acts as a black-box transformation
+`Transform`
+    The interface for all data processor in this project
 
-Classes
+Modules
 -------
-Pipeline        : A transformation that consist of a sequence of transformations
+sequential  : define processes that consist of a sequence of transformations
 """
 
 
 from .interfaces import Transform
-from .simpleclass import Pipeline
+from . import sequential
 
 
 __all__ = [
     'Transform',
-    'Pipeline',
+    'sequential',
 ]

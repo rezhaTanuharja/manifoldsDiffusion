@@ -17,14 +17,14 @@ Date
 2024-08-01
 """
 
-# from . import dataprocessing
+from . import dataprocessing
 # from . import eulerian
 from . import manifolds
 from . import utilities
 
 
 __all__ = [
-    # 'dataprocessing',
+    'dataprocessing',
     # 'eulerian',
     'manifolds',
     'utilities',

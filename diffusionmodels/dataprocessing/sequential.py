@@ -1,12 +1,10 @@
 """
-dataprocessing.simpleclass
-==========================
+Implements various sequential data transformations.
 
-Implements various simple data processing steps
-
-Class
------
-Pipeline        : A transformation that consists of a sequence of transformations
+Classes
+-------
+`Pipeline`
+    A callable object that applies a sequence of transformations
 """
 
 
@@ -16,7 +14,7 @@ from typing import List, Any, Callable
 
 class Pipeline(Transform):
     """
-    A transformation that consists of a sequence of transformations
+    A callable object that applies a sequence of transformations
     """
 
     def __init__(self, transforms: List[Callable[[Any], Any]]) -> None:
