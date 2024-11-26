@@ -2,18 +2,20 @@
 manifolds.interfaces
 ====================
 
-Provides the interface for all manifolds in this package
+Provides the interface for all manifolds in this project
 
 Classes
 -------
 Manifold
-    An abstract class that serves as an interface of all manifolds
+    A purely abstract class that serves as an interface of all manifolds
 """
 
 
-import torch
 from abc import ABC, abstractmethod
 from typing import Tuple
+
+import jax
+import jax.numpy as jnp
 
 
 class Manifold(ABC):
@@ -23,36 +25,36 @@ class Manifold(ABC):
     Methods
     -------
     `to(device)`
-        Moves any tensor attribute to device
+        Moves all tensor attributes to the given device
 
     `dimension()`
-        Returns the tensor shape of each point in the manifold
+        Returns the shape of points on the manifold
 
     `tangent_dimension()`
-        Returns the tensor shape of each vector in the manifold tangent space
+        Returns the shape of vectors on the tangent space
 
-    `exp(X, dX)`
-        Increment a point X with a tangent vector dX
+    `exp(points, vectors)`
+        Returns the results of incrementing the points by the vectors
 
-    `log(X, Y)`
-        Calculate a tangent vector dX such that exp(X, dX) = Y
+    `log(starts, ends)`
+        Returns the vectors such that `exp(starts, vectors) = ends`
     """
 
 
     @abstractmethod
-    def __init__(self) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def to(self, device: torch.device) -> None:
+    def to(self, device: jax.Device) -> None:
         """
-        Move any tensor attributes to device
+        Moves all tensor attributes to the given device
 
         Parameters
         ----------
-        `device: torch.device`
-            A device object from PyTorch
+        `device: jax.Device`
+            A device object from Jax representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -63,60 +65,59 @@ class Manifold(ABC):
         Returns
         -------
         `Tuple[int, ...]`
-            The tensor shape of each point in the manifold
+            The shape of points on the manifold, is always a tuple
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def tangent_dimension(self) -> Tuple[int, ...]:
+    def tangent_dimension() -> Tuple[int, ...]:
         """
         Returns
         -------
         `Tuple[int, ...]`
-            The tensor shape of each vector in the manifold tangent space
+            The shape of vectors on the tangent space, is always a tuple
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def exp(self, points: torch.Tensor, tangent_vectors: torch.Tensor) -> torch.Tensor:
+    def exp(self, points: jnp.ndarray, vectors: jnp.ndarray) -> jnp.ndarray:
         """
-        Increment points with tangent vectors.
-        In Euclidean geometry, simply returns `points + tangent_vector`
+        Returns the results of incrementing the points by the vectors
 
         Parameters
         ----------
-        `points : torch.Tensor`
-            The original points in the manifold
+        `points: jax.numpy.ndarray`
+            Points on the manifold with shape `(..., *dimension)`
 
-        `tangent_vectors: torch.Tensor`
-            Vectors that live in the manifold tangent space
+        `vectors: jax.numpy.ndarray`
+            Vectors on the tangent space with shape `(..., *tangent_dimension)`
 
         Returns
         -------
-        `torch.Tensor`
-            New points in the manifold
+        `jax.numpy.ndarray`
+            Points on the manifold with shape `(..., *dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
 
     @abstractmethod
-    def log(self, origins: torch.Tensor, destinations: torch.Tensor) -> torch.Tensor:
+    def log(self, starts: jnp.ndarray, ends: jnp.ndarray) -> jnp.ndarray:
         """
-        Computes vectors such that `exp(origins, vectors) = destinations`
+        Returns the vectors such that `exp(starts, vectors) = ends`
 
         Parameters
         ----------
-        `origins : torch.Tensor`
-            The points of origin in the manifold
+        `starts: jax.numpy.ndarray`
+            Points on the manifold with shape `(..., *dimension)`
 
-        `destinations : torch.Tensor`
-            The points of destination in the manifold
+        `ends: jax.numpy.ndarray`
+            Points on the manifold with shape `(..., *dimension)`
 
         Returns
         -------
-        `torch.Tensor`
-            Vectors that increments origins to their respective destinations
+        `jax.numpy.ndarray`
+            Vectors on the tangent space with shape `(..., *tangent_dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")
