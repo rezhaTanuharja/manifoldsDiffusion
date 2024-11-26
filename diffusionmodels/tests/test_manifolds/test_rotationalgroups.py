@@ -666,10 +666,10 @@ class TestGPUOperations:
 
         for repetition in range(computed_vectors.shape[0]):
 
-            for distinct_point in range(computed_vectors.shape[1]):
+            for distinct_vector in range(computed_vectors.shape[1]):
 
                 assert jnp.allclose(
-                    computed_vectors[repetition, distinct_point],
-                    vectors[distinct_point],
+                    computed_vectors[repetition, distinct_vector],
+                    vectors[distinct_vector],
                     atol = 1e-12
                 )
