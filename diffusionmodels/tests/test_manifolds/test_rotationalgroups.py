@@ -86,18 +86,20 @@ class TestCPUOperations:
         Checks that `exp` can handle broadcast-able `points` and `vectors`
         """
         
+        # an array with shape (5, 1, 1, 3, 3)
         points = jnp.eye(N = 3, dtype = jnp.float32)
         points = points.reshape(1, 1, 1, 3, 3)
         points = points.repeat(5, axis = 0)
 
+        # an array with shape (1, 4, 3)
         vectors = jnp.array(
 
-            object = [[
+            object = [
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
-            ],],
+            ],
 
             dtype = jnp.float32
 
@@ -114,23 +116,26 @@ class TestCPUOperations:
 
     def test_log_compatibility(self, manifold_cpu) -> None:
         """
-        Checks that `log` can handle broadcast-able `points` and `vectors`
+        Checks that `log` can handle broadcast-able `starts` and `ends`
         """
         
+        # an array with shape (5, 2, 1, 3, 3)
         starts = jnp.eye(N = 3, dtype = jnp.float32)
         starts = starts.reshape(1, 1, 1, 3, 3)
-        starts = jnp.repeat(starts, 5, axis = 0)
-        starts = jnp.repeat(starts, 2, axis = 1)
-        print(starts.shape)
+        starts = starts.repeat(5, axis = 0)
+        starts = starts.repeat(2, axis = 1)
 
+        # an array with shape (4, 3, 3)
         ends = jnp.eye(N = 3, dtype = jnp.float32)
+        ends = ends.reshape(1, 3, 3)
+        ends = ends.repeat(4, axis = 0)
 
         try:
             vectors = manifold_cpu.log(starts, ends)
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
 
-        assert vectors.shape == (5, 2, 1, 3)
+        assert vectors.shape == (5, 2, 4, 3)
 
         reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
         assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
