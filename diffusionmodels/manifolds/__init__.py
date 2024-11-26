@@ -2,23 +2,23 @@
 manifolds
 =========
 
-Provides functionalities to define manifold structures.
+Provides functionalities to define data structures.
 
 interfaces
 ----------
-Manifold            : The interface for all manifolds in this package
+Manifold            : The interface for all manifolds in this project
 
-Classes
+Modules
 -------
-SpecialOrthogonal3  : The Lie Group of 3D rotational matrices
+rotationalgroups    : Groups of all orthogonal matrices with determinant 1
 """
 
 
 from .interfaces import Manifold
-from .simpleclass import SpecialOrthogonal3
+from . import rotationalgroups
 
 
 __all__ = [
     'Manifold',
-    'SpecialOrthogonal3',
+    'rotationalgroups',
 ]
