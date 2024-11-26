@@ -139,3 +139,64 @@ class TestCPUOperations:
 
         reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
         assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
+
+
+    def test_exp_correctness(self, manifold_cpu) -> None:
+
+        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = points.reshape(1, 1, 3, 3)
+        points = points.repeat(2, axis = 0)
+
+        vectors = jnp.array([
+            [       jnp.pi,           0.0,                0.0],
+            [0.25 * jnp.pi,           0.0,                0.0],
+            [          0.0, -1.0 * jnp.pi,                0.0],
+            [          0.0, 0.75 * jnp.pi,                0.0],
+            [          0.0,           0.0,       jnp.pi / 3.0],
+            [          0.0,           0.0, 4.0 * jnp.pi / 3.0],
+        ])
+
+        try:
+            new_points = manifold_cpu.exp(points, vectors)
+        except Exception as e:
+            pytest.fail(f"Unexpected exception raised: {e}")
+
+        assert new_points.shape == (2, 6, 3, 3)
+
+        reference_points = jnp.array([
+            [
+                [ 1.0, 0.0, 0.0],
+                [ 0.0,-1.0, 0.0],
+                [ 0.0, 0.0,-1.0],
+            ], [
+                [ 1.0, 0.0,                             0.0],
+                [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
+                [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
+            ], [
+                [-1.0, 0.0, 0.0],
+                [ 0.0, 1.0, 0.0],
+                [ 0.0, 0.0,-1.0],
+            ], [
+                [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
+                [               0.0, 1.0,                0.0],
+                [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
+            ], [
+                [               0.5, -0.5 * jnp.sqrt(3), 0.0],
+                [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
+                [ 0.0, 0.0, 1.0],
+            ], [
+                [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
+                [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
+                [ 0.0, 0.0, 1.0],
+            ],
+        ])
+
+        for repetition in range(new_points.shape[0]):
+
+            for distinct_point in range(new_points.shape[1]):
+
+                assert jnp.allclose(
+                    new_points[repetition, distinct_point],
+                    reference_points[distinct_point],
+                    atol = 1e-12
+                )
