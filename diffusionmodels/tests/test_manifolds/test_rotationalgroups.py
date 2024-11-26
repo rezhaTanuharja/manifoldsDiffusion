@@ -114,34 +114,10 @@ class TestCPUOperations:
         assert jnp.allclose(points, new_points, atol = 1e-12)
 
 
-    def test_log_compatibility(self, manifold_cpu) -> None:
-        """
-        Checks that `log` can handle broadcast-able `starts` and `ends`
-        """
-        
-        # an array with shape (5, 2, 1, 3, 3)
-        starts = jnp.eye(N = 3, dtype = jnp.float32)
-        starts = starts.reshape(1, 1, 1, 3, 3)
-        starts = starts.repeat(5, axis = 0)
-        starts = starts.repeat(2, axis = 1)
-
-        # an array with shape (4, 3, 3)
-        ends = jnp.eye(N = 3, dtype = jnp.float32)
-        ends = ends.reshape(1, 3, 3)
-        ends = ends.repeat(4, axis = 0)
-
-        try:
-            vectors = manifold_cpu.log(starts, ends)
-        except Exception as e:
-            pytest.fail(f"Unexpected exception raised: {e}")
-
-        assert vectors.shape == (5, 2, 4, 3)
-
-        reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
-        assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
-
-
     def test_exp_correctness(self, manifold_cpu) -> None:
+        """
+        Checks that `exp` produce the correct results
+        """
 
         points = jnp.eye(N = 3, dtype = jnp.float32)
         points = points.reshape(1, 1, 3, 3)
@@ -200,3 +176,89 @@ class TestCPUOperations:
                     reference_points[distinct_point],
                     atol = 1e-12
                 )
+
+
+    def test_exp_nested(self, manifold_cpu) -> None:
+        """
+        Checks that nesting `exp` is equivalent to summing the vectors
+        """
+
+        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = points.reshape(1, 1, 3, 3)
+        points = points.repeat(2, axis = 0)
+
+        vectors_1 = jnp.array([
+            [       jnp.pi,           0.0,                0.0],
+            [0.25 * jnp.pi,           0.0,                0.0],
+            [          0.0, -1.0 * jnp.pi,                0.0],
+            [          0.0, 0.75 * jnp.pi,                0.0],
+            [          0.0,           0.0,       jnp.pi / 3.0],
+            [          0.0,           0.0, 4.0 * jnp.pi / 3.0],
+        ])
+
+        vectors_2 = jnp.array([
+            [       jnp.pi,           0.0,                0.0],
+            [0.05 * jnp.pi,           0.0,                0.0],
+            [          0.0,  1.0 * jnp.pi,                0.0],
+            [          0.0, 0.33 * jnp.pi,                0.0],
+            [          0.0,           0.0,       jnp.pi / 2.5],
+            [          0.0,           0.0, 1.0 * jnp.pi / 3.0],
+        ])
+
+        try:
+
+            results_1 = manifold_cpu.exp(
+                manifold_cpu.exp(
+                    points, vectors_1
+                ), vectors_2
+            )
+
+            print(results_1)
+
+            results_2 = manifold_cpu.exp(points, vectors_1 + vectors_2)
+            print(results_2)
+
+        except Exception as e:
+            pytest.fail(f"Unexpected exception raised: {e}")
+
+        assert results_1.shape == (2, 6, 3, 3)
+        assert results_2.shape == (2, 6, 3, 3)
+
+        for repetition in range(results_1.shape[0]):
+
+            for distinct_point in range(results_1.shape[1]):
+
+                assert jnp.allclose(
+                    results_1[repetition, distinct_point],
+                    results_2[repetition, distinct_point],
+                    atol = 1e-3
+                )
+
+
+    def test_log_compatibility(self, manifold_cpu) -> None:
+        """
+        Checks that `log` can handle broadcast-able `starts` and `ends`
+        """
+        
+        # an array with shape (5, 2, 1, 3, 3)
+        starts = jnp.eye(N = 3, dtype = jnp.float32)
+        starts = starts.reshape(1, 1, 1, 3, 3)
+        starts = starts.repeat(5, axis = 0)
+        starts = starts.repeat(2, axis = 1)
+
+        # an array with shape (4, 3, 3)
+        ends = jnp.eye(N = 3, dtype = jnp.float32)
+        ends = ends.reshape(1, 3, 3)
+        ends = ends.repeat(4, axis = 0)
+
+        try:
+            vectors = manifold_cpu.log(starts, ends)
+        except Exception as e:
+            pytest.fail(f"Unexpected exception raised: {e}")
+
+        assert vectors.shape == (5, 2, 4, 3)
+
+        reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
+        assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
+
+
