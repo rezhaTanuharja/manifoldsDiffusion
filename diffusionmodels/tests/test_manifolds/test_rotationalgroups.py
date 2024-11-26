@@ -1,5 +1,5 @@
 """
-Provides unit test for the manifold module.
+Provides unit test for the rotationalgroups manifolds module.
 
 Author
 ------
@@ -78,7 +78,7 @@ def manifold_cpu():
 @pytest.mark.cpu
 class TestCPUOperations:
     """
-    A group of manifold tests to be performed on CPU
+    A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
 
 
