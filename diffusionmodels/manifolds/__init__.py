@@ -3,7 +3,8 @@ Provides functionalities to define data structures.
 
 interfaces
 ----------
-`Manifold`          : The interface for all manifolds in this project
+`Manifold`
+    The interface for all manifolds in this project
 
 Modules
 -------

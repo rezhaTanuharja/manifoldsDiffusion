@@ -7,17 +7,25 @@ dataprocessing      : Provides functionalities to define data preprocessing step
 eulerian            : For diffusion models that deals with the evolution of data concentration
 manifolds           : Provides manifold structures
 utilities           : Provides various useful functions
+
+Author
+------
+Rezha Adrian Tanuharja
+
+Date
+----
+2024-08-01
 """
 
-from . import dataprocessing
-from . import eulerian
+# from . import dataprocessing
+# from . import eulerian
 from . import manifolds
 from . import utilities
 
 
 __all__ = [
-    'dataprocessing',
-    'eulerian',
+    # 'dataprocessing',
+    # 'eulerian',
     'manifolds',
     'utilities',
 ]

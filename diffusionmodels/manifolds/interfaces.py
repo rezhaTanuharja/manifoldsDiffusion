@@ -1,12 +1,9 @@
 """
-manifolds.interfaces
-====================
-
-Provides the interface for all manifolds in this project
+Provides the interface for all manifolds in this project.
 
 Classes
 -------
-Manifold
+`Manifold`
     A purely abstract class that serves as an interface of all manifolds
 """
 
