@@ -1,19 +1,15 @@
-# Ignore Python bytecode files
-**/__pycache__/
+# Ignore cache directories
+**/*cache*/
 
-# Ignore environment directories
-.venv/
-.conda_env/
+# Ignore virtual environment directories
+.*env/
 
-# **/*.pth
-# *.pth
-
+# Ignore program output log
 log
 
-# Ignore editor configurations
+# Ignore configurations files
 pyrightconfig.json
+pyproject.toml
 
 # Ignore locally stored data
 downloads/
-extractedData/
-preprocessedData/
