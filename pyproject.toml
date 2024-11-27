@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+  "cpu: marks tests that check functionalities on CPU",
+  "gpu: marks tests that check functionalities on GPU",
+]
