@@ -7,9 +7,5 @@
 # Ignore program output log
 log
 
-# Ignore configurations files
-pyrightconfig.json
-pyproject.toml
-
 # Ignore locally stored data
 downloads/
