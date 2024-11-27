@@ -1,10 +1,10 @@
 """
 Provides functionalities to define data processing steps.
 
-interfaces
+Interfaces
 ----------
 `Transform`
-    The interface for all data processor in this project
+The interface for all data processor in this project
 
 Modules
 -------

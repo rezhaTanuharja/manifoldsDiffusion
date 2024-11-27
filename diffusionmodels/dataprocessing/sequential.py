@@ -4,7 +4,7 @@ Implements various sequential data transformations.
 Classes
 -------
 `Pipeline`
-    A callable object that applies a sequence of transformations
+A callable object that applies a sequence of transformations
 """
 
 
@@ -22,7 +22,7 @@ class Pipeline(Transform):
         Parameters
         ----------
         `transforms: List[Transform]`
-            A list of transformations to perform sequentially
+        A list of transformations to perform sequentially
         """
         self._transforms = transforms
 

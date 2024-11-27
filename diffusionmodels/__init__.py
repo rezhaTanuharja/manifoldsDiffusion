@@ -18,14 +18,14 @@ Date
 """
 
 from . import dataprocessing
-# from . import eulerian
+from . import stochasticprocesses
 from . import manifolds
 from . import utilities
 
 
 __all__ = [
     'dataprocessing',
-    # 'eulerian',
+    'stochasticprocesses',
     'manifolds',
     'utilities',
 ]

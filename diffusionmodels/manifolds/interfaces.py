@@ -4,7 +4,7 @@ Provides the interface for all manifolds in this project.
 Classes
 -------
 `Manifold`
-    A purely abstract class that serves as an interface of all manifolds
+A purely abstract class that serves as an interface of all manifolds
 """
 
 
@@ -22,19 +22,19 @@ class Manifold(ABC):
     Methods
     -------
     `to(device)`
-        Moves all tensor attributes to the given device
+    Moves all tensor attributes to the given device
 
     `dimension()`
-        Returns the shape of points on the manifold
+    Returns the shape of points on the manifold
 
     `tangent_dimension()`
-        Returns the shape of vectors on the tangent space
+    Returns the shape of vectors on the tangent space
 
     `exp(points, vectors)`
-        Returns the results of incrementing the points by the vectors
+    Returns the results of incrementing the points by the vectors
 
     `log(starts, ends)`
-        Returns the vectors such that `exp(starts, vectors) = ends`
+    Returns the vectors such that `exp(starts, vectors) = ends`
     """
 
 
@@ -51,7 +51,7 @@ class Manifold(ABC):
         Parameters
         ----------
         `device: jax.Device`
-            A device object from Jax representing the target hardware
+        A device object from Jax representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -62,7 +62,7 @@ class Manifold(ABC):
         Returns
         -------
         `Tuple[int, ...]`
-            The shape of points on the manifold, is always a tuple
+        The shape of points on the manifold, is always a tuple
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -73,7 +73,7 @@ class Manifold(ABC):
         Returns
         -------
         `Tuple[int, ...]`
-            The shape of vectors on the tangent space, is always a tuple
+        The shape of vectors on the tangent space, is always a tuple
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -86,15 +86,15 @@ class Manifold(ABC):
         Parameters
         ----------
         `points: jax.numpy.ndarray`
-            Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold with shape `(..., *dimension)`
 
         `vectors: jax.numpy.ndarray`
-            Vectors on the tangent space with shape `(..., *tangent_dimension)`
+        Vectors on the tangent space with shape `(..., *tangent_dimension)`
 
         Returns
         -------
         `jax.numpy.ndarray`
-            Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold with shape `(..., *dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -107,14 +107,14 @@ class Manifold(ABC):
         Parameters
         ----------
         `starts: jax.numpy.ndarray`
-            Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold with shape `(..., *dimension)`
 
         `ends: jax.numpy.ndarray`
-            Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold with shape `(..., *dimension)`
 
         Returns
         -------
         `jax.numpy.ndarray`
-            Vectors on the tangent space with shape `(..., *tangent_dimension)`
+        Vectors on the tangent space with shape `(..., *tangent_dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")

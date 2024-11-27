@@ -4,7 +4,7 @@ Provides the interface for all data transformation in this package.
 Classes
 -------
 `Transform`
-    A callable object that acts as a black-box transformation
+A callable object that acts as a black-box transformation
 """
 
 
@@ -19,7 +19,7 @@ class Transform(ABC):
     Methods
     -------
     `__call__(self, data)`
-        Transform `data` into `Transform(data)`
+    Transform `data` into `Transform(data)`
     """
 
 
@@ -35,11 +35,12 @@ class Transform(ABC):
 
         Parameters
         ----------
-        `data : Any`
+        `data: Any`
+        Data to which the transformation is applied
 
         Returns
         -------
         `Any`
-            The transformed data, does not necessarily have the same type with the input
+        The transformed data, does not necessarily have the same type with the input
         """
         raise NotImplementedError("Subclasses must implement this method")

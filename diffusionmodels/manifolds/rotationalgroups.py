@@ -4,7 +4,7 @@ Provides group structures of orthogonal matrices with determinant 1.
 Classes
 -------
 `SpecialOrthogonal3`
-    The 3-dimensional rotation matrix group
+The 3-dimensional rotation matrix group
 """
 
 
