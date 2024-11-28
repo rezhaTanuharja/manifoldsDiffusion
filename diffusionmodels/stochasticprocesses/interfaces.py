@@ -1,13 +1,10 @@
 """
-Provides the interface for all stochastic processes in this project.
+Provides the interfaces for all stochastic processes in this project.
 
 Classes
 -------
 `DensityFunction`
 A purely abstract class that serves as an interface of all density functions
-
-`CumulativeDistributionFunction`
-A purely abstract class that serves as an interface of all CDFs
 
 `StochasticProcess`
 A purely abstract class that serves as an interface of all stochastic processes
@@ -15,7 +12,7 @@ A purely abstract class that serves as an interface of all stochastic processes
 
 
 from abc import ABC, abstractmethod
-from typing import Tuple, List, Optional, Dict
+from typing import Tuple, List, Optional
 
 import jax
 import jax.numpy as jnp
@@ -104,83 +101,6 @@ class DensityFunction(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
 
-class CumulativeDistributionFunction(ABC):
-    """
-    An abstract class that serves as an interface of all CDFs
-
-    Methods
-    -------
-    `to(device)`
-    Moves all tensor attributes to the given device
-
-    `__call__(points, times)`
-    Evaluate the CDF value at the given points and times
-
-    `gradient(points, times)`
-    Evalute the PDF value at the given points and times
-    """
-
-
-    @abstractmethod
-    def __init__(self, *args, **kwargs) -> None:
-        pass
-
-
-    @abstractmethod
-    def to(self, device: jax.Device) -> None:
-        """
-        Moves all tensor attributes to the given device
-
-        Parameters
-        ----------
-        `device: jax.Device`
-        A device object from Jax representing the target hardware
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def __call__(
-        self, points: List[jnp.ndarray], times: Optional[jnp.ndarray]
-    ) -> jnp.ndarray:
-        """
-        Evaluate the CDF value at the given points and times
-
-        Parameters
-        ----------
-        `points: List[jnp.ndarray]`
-        Array with shape `(..., time_index, num_points)`.
-        The dimension `time_index` must be broadcastable to `num_times`
-
-        `times: Optional[jnp.ndarray]`
-        Array with shape `(..., num_times)` or `None`
-
-        Returns
-        -------
-        `jnp.ndarray`
-        Array with shape `(..., num_times, num_points)`
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def gradient(self) -> DensityFunction:
-        """
-        Evaluate the PDF value at the given points and times
-
-        Returns
-        -------
-        `DensityFunction`
-        Provides access to the underlying density function
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-
-    @abstractmethod
-    def support(self) -> Dict[str, float]:
-        raise NotImplementedError("Subclasses must implement this method")
-
-
 class StochasticProcess(ABC):
     """
     An abstract class that serves as an interface of all stochastic processes
@@ -265,4 +185,4 @@ class StochasticProcess(ABC):
         `jnp.ndarray`
         Array with shape `(..., num_times, num_samples)` or `(..., num_samples)`
         """
-        raise N(otImplementedError("Subclasses must implement this method")
+        raise NotImplementedError("Subclasses must implement this method")

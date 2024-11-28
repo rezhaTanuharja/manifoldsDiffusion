@@ -16,7 +16,7 @@ multivariate    : provides multi-dimensional stochastic processeses
 """
 
 
-from .interfaces import DensityFunction, CumulativeDistributionFunction, StochasticProcess
+from .interfaces import DensityFunction, StochasticProcess
 from . import univariate
 from . import multivariate
 
@@ -24,7 +24,6 @@ from . import multivariate
 __all__ = [
 
     'DensityFunction',
-    'CumulativeDistributionFunction',
     'StochasticProcess',
 
     'univariate',
