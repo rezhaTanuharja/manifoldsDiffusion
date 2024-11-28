@@ -27,6 +27,9 @@ class DensityFunction(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
+    `dimension()`
+    Returns the shape of each realization point
+
     `__call__(points, times)`
     Evaluate the density value at the given points and times
 
@@ -49,6 +52,17 @@ class DensityFunction(ABC):
         ----------
         `device: jax.Device`
         A device object from Jax representing the target hardware
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+
+    @abstractmethod
+    def dimension(self) -> Tuple[int, ...]:
+        """
+        Returns
+        -------
+        `Tuple[int, ...]`
+        The shape of each realization point, always a tuple
         """
         raise NotImplementedError("Subclasses must implement this method")
 

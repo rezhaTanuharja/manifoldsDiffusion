@@ -20,6 +20,9 @@ import numpy as np
 
 
 class InverseTransform(StochasticProcess):
+    """
+    A process defined by its CDF and sampled using the inverse transform method
+    """
 
 
     def __init__(
@@ -27,6 +30,17 @@ class InverseTransform(StochasticProcess):
         distribution: CumulativeDistributionFunction,
         root_finder: RootFinder
     ) -> None:
+        """
+        Construct an instance of InverseTransform
+
+        Parameters
+        ----------
+        `distribution: CumulativeDistributionFunction`
+        The CDF that defines the process, a callable object
+
+        `root_finder: RootFinder`
+        A numerical solver to perform inverse transform sampling
+        """
         self._distribution = distribution
         self._root_finder = root_finder
 
