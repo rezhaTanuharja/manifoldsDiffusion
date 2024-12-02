@@ -10,7 +10,6 @@ A purely abstract class that serves as an interface of all CDFs
 A purely abstract class that serves as an interface of all root-finder
 """
 
-
 from .. import DensityFunction
 
 from abc import ABC, abstractmethod
@@ -39,11 +38,9 @@ class CumulativeDistributionFunction(ABC):
     Provides the range in which CDF may have non-zero value
     """
 
-
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
         pass
-
 
     @abstractmethod
     def to(self, device: jax.Device) -> None:
@@ -57,10 +54,15 @@ class CumulativeDistributionFunction(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
     def __call__(
-        self, points: jnp.ndarray, times: jnp.ndarray = jnp.array([0.0,])
+        self,
+        points: jnp.ndarray,
+        times: jnp.ndarray = jnp.array(
+            [
+                0.0,
+            ]
+        ),
     ) -> jnp.ndarray:
         """
         Evaluate the CDF value at the given points and times
@@ -81,7 +83,6 @@ class CumulativeDistributionFunction(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
     def gradient(self) -> DensityFunction:
         """
@@ -93,7 +94,6 @@ class CumulativeDistributionFunction(ABC):
         Provides access to the underlying density function
         """
         raise NotImplementedError("Subclasses must implement this method")
-
 
     @abstractmethod
     def support(self) -> Dict[str, float]:
@@ -118,20 +118,16 @@ class RootFinder(ABC):
     Find the solution of `function(points) = target_values` inside the `interval`
     """
 
-
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
     def solve(
-
         self,
         function: Callable[[jnp.ndarray], jnp.ndarray],
         target_values: jnp.ndarray,
-        interval: Tuple[float, float]
-
+        interval: Tuple[float, float],
     ) -> jnp.ndarray:
         """
         Find the solution of `function(points) = target_values` inside the `interval`
