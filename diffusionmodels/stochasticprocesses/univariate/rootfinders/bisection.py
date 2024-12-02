@@ -1,3 +1,11 @@
+"""
+Find root using the bisection method
+
+Classes
+-------
+`Bisection`    : find root using the bisection method
+"""
+
 from .. import RootFinder
 
 import jax.numpy as jnp
@@ -8,7 +16,6 @@ from typing import Callable, Tuple
 class Bisection(RootFinder):
 
     def __init__(self, num_iterations: int):
-
         self._num_iterations = num_iterations
 
     def solve(
