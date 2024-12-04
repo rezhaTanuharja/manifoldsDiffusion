@@ -10,12 +10,10 @@ A purely abstract class that serves as an interface of all density functions
 A purely abstract class that serves as an interface of all stochastic processes
 """
 
-
 from abc import ABC, abstractmethod
-from typing import Tuple, List, Optional
+from typing import Tuple, Optional, Self
 
-import jax
-import jax.numpy as jnp
+import torch
 
 
 class DensityFunction(ABC):
@@ -27,35 +25,53 @@ class DensityFunction(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
+    `at(time)`
+    Set the time to access the density function
+
     `dimension()`
     Returns the shape of each realization point
 
-    `__call__(points, times)`
-    Evaluate the density value at the given points and times
+    `__call__(points)`
+    Evaluate the density value at the given points
 
-    `gradient(points, times)`
-    Evalute the gradient of density at the given points and times
+    `gradient(points)`
+    Evalute the gradient of density at the given points
     """
-
 
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
-    def to(self, device: jax.Device) -> None:
+    def to(self, device: torch.device) -> None:
         """
         Moves all tensor attributes to the given device
 
         Parameters
         ----------
-        `device: jax.Device`
-        A device object from Jax representing the target hardware
+        `device: torch.device`
+        A device object representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+    @abstractmethod
+    def at(self, time: torch.Tensor) -> Self:
+        """
+        Set the internal time of the density function
 
+        Parameters
+        ----------
+        `time: torch.Tensor`
+        Tensor with shape `(..., num_times)`
+
+        Returns
+        -------
+        `DensityFunction`
+        The same density function with internal time set to the given tensor
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @property
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
         """
@@ -66,51 +82,39 @@ class DensityFunction(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
-    def __call__(
-        self, points: List[jnp.ndarray], times: Optional[jnp.ndarray]
-    ) -> jnp.ndarray:
+    def __call__(self, points: torch.Tensor) -> torch.Tensor:
         """
         Evaluate the density value at the given points and times
 
         Parameters
         ----------
-        `points: List[jnp.ndarray]`
-        Array with shape `(..., time_index, num_points, *dimension)`.
+        `points: torch.Tensor`
+        Tensor with shape `(..., time_index, num_points, *dimension)`.
         The dimension `time_index` must be broadcastable to `num_times`
-
-        `times: Optional[jnp.ndarray]`
-        Array with shape `(..., num_times)` or `None`
 
         Returns
         -------
-        `jnp.ndarray`
-        Array with shape `(..., num_times, num_points)`
+        `torch.Tensor`
+        Tensor with shape `(..., num_times, num_points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
-    def gradient(
-        self, points: List[jnp.ndarray], times: Optional[jnp.ndarray]
-    ) -> jnp.ndarray:
+    def gradient(self, points: torch.Tensor) -> torch.Tensor:
         """
         Evaluate the gradient of density at the given points and times
 
         Parameters
         ----------
-        `points: List[jnp.ndarray]`
-        Array with shape `(..., time_index, num_points, *dimension)`.
+        `points: torch.Tensor`
+        Tensor with shape `(..., time_index, num_points, *dimension)`.
         The dimension `time_index` must be broadcastable to `num_times`
-
-        `times: Optional[jnp.ndarray]`
-        Array with shape `(..., num_times)` or `None`
 
         Returns
         -------
-        `jnp.ndarray`
-        Array with shape `(..., num_times, num_points, *dimension)`
+        `torch.Tensor`
+        Tensor with shape `(..., num_times, num_points, *dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -124,6 +128,9 @@ class StochasticProcess(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
+    `at(time)`
+    Set the time to access the stochastic process
+
     `dimension()`
     Returns the shape of points on the manifold
 
@@ -134,25 +141,40 @@ class StochasticProcess(ABC):
     Generate a number of random samples from the process at the given times
     """
 
-
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
-    def to(self, device: jax.Device) -> None:
+    def to(self, device: torch.device) -> None:
         """
         Moves all tensor attributes to the given device
 
         Parameters
         ----------
-        `device: jax.Device`
+        `device: torch.device`
         A device object from Jax representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+    @abstractmethod
+    def at(self, time: torch.Tensor) -> Self:
+        """
+        Set the internal time of the stochastic process
 
+        Parameters
+        ----------
+        `time: torch.Tensor`
+        Tensor with shape `(..., num_times)`
+
+        Returns
+        -------
+        `DensityFunction`
+        The same stochastic process with internal time set to the given tensor
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @property
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
         """
@@ -163,7 +185,7 @@ class StochasticProcess(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
+    @property
     @abstractmethod
     def density(self) -> DensityFunction:
         """
@@ -171,18 +193,13 @@ class StochasticProcess(ABC):
 
         Returns
         -------
-        `DensityFunction | Callable[[List[jnp.ndarray]], jnp.ndarray]`
-        A callable object with the following call args:
-            `points: List[jnp.ndarray]`
-            `times : jnp.ndarray`
+        `DensityFunction`
+        A callable object that maps `torch.Tensor` to another `torch.Tensor` with the same shape
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-
     @abstractmethod
-    def sample(
-        self, num_samples: int, times: Optional[jnp.ndarray]
-    ) -> jnp.ndarray:
+    def sample(self, num_samples: int) -> torch.Tensor:
         """
         Generate random samples from the stochastic process
 
@@ -191,12 +208,9 @@ class StochasticProcess(ABC):
         `num_samples: int`
         The number of samples to generate
 
-        `times: Optional[jnp.ndarray]`
-        Array with shape `(..., num_times)` or `None`
-
         Returns
         -------
-        `jnp.ndarray`
-        Array with shape `(..., num_times, num_samples)` or `(..., num_samples)`
+        `torch.Tensor`
+        Tensor with shape `(..., num_times, num_samples)` or `(..., num_samples)`
         """
         raise NotImplementedError("Subclasses must implement this method")
