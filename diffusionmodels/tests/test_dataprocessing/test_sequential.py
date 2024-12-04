@@ -10,10 +10,9 @@ Date
 2024-11-26
 """
 
-
 import pytest
-import jax
-import jax.numpy as jnp
+import torch
+
 
 from ...dataprocessing import Transform, sequential
 
@@ -25,7 +24,7 @@ def test_construction() -> None:
 
     try:
         pipeline = sequential.Pipeline(
-            transforms = [
+            transforms=[
                 lambda data: data,
             ]
         )
@@ -43,19 +42,15 @@ def test_nested_construction() -> None:
     try:
 
         preprocess = sequential.Pipeline(
-            transforms = [
+            transforms=[
                 lambda data: data,
             ]
         )
 
-        postprocess = sequential.Pipeline(
-            transforms = [
-                lambda data: data
-            ]
-        )
+        postprocess = sequential.Pipeline(transforms=[lambda data: data])
 
         pipeline = sequential.Pipeline(
-            transforms = [
+            transforms=[
                 preprocess,
                 postprocess,
             ]
@@ -67,15 +62,18 @@ def test_nested_construction() -> None:
     assert isinstance(pipeline, Transform)
 
 
-@pytest.fixture(scope = "class")
+@pytest.fixture(scope="class")
 def data_cpu():
 
-    return jnp.array([
-        [ 0.3,  0.1,  0.5],
-        [ 1.5,  2.2, -0.5],
-        [-0.3, -0.1,  0.5],
-        [-2.3,  0.5,  0.1],
-    ])
+    return torch.tensor(
+        [
+            [0.3, 0.1, 0.5],
+            [1.5, 2.2, -0.5],
+            [-0.3, -0.1, 0.5],
+            [-2.3, 0.5, 0.1],
+        ],
+        dtype=torch.float32,
+    )
 
 
 @pytest.mark.cpu
@@ -92,9 +90,9 @@ class TestCPUPipeline:
         try:
 
             pipeline = sequential.Pipeline(
-                transforms = [
+                transforms=[
                     lambda data: 0.5 + data,
-                    lambda data: data ** 2,
+                    lambda data: data**2,
                 ]
             )
 
@@ -105,15 +103,17 @@ class TestCPUPipeline:
 
         assert output.shape == (4, 3)
 
-        reference_output = jnp.array([
-            [0.64, 0.36, 1.00],
-            [4.00, 7.29, 0.00],
-            [0.04, 0.16, 1.00],
-            [3.24, 1.00, 0.36]
-        ])
+        reference_output = torch.tensor(
+            [
+                [0.64, 0.36, 1.00],
+                [4.00, 7.29, 0.00],
+                [0.04, 0.16, 1.00],
+                [3.24, 1.00, 0.36],
+            ],
+            dtype=torch.float32,
+        )
 
-        assert jnp.allclose(output, reference_output, atol = 1e-12)
-
+        assert torch.allclose(output, reference_output, atol=1e-12)
 
     def test_nested_pipeline(self, data_cpu) -> None:
         """
@@ -123,21 +123,21 @@ class TestCPUPipeline:
         try:
 
             preprocess = sequential.Pipeline(
-                transforms = [
-                    lambda data: jnp.sin(data),
-                    lambda data: data ** 2,
+                transforms=[
+                    lambda data: torch.sin(data),
+                    lambda data: data**2,
                 ]
             )
 
             postprocess = sequential.Pipeline(
-                transforms = [
-                    lambda data: data - jnp.mean(data, keepdims = True),
-                    lambda data: data / (jnp.std(data, keepdims = True) + 1e-6),
+                transforms=[
+                    lambda data: data - torch.mean(data),
+                    lambda data: data / (torch.std(data) + 1e-6),
                 ]
             )
 
             pipeline = sequential.Pipeline(
-                transforms = [
+                transforms=[
                     preprocess,
                     postprocess,
                 ]
@@ -149,25 +149,23 @@ class TestCPUPipeline:
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
 
-        assert jnp.allclose(staggered_output, nested_output, atol = 1e-12)
+        assert torch.allclose(staggered_output, nested_output, atol=1e-12)
 
 
-@pytest.fixture(scope = "class")
+@pytest.fixture(scope="class")
 def data_gpu():
 
-    gpu = jax.devices("gpu")[0]
+    gpu = torch.device("cuda")
 
-    data = jax.device_put(
-
-        jnp.array([
-            [ 0.3,  0.1,  0.5],
-            [ 1.5,  2.2, -0.5],
-            [-0.3, -0.1,  0.5],
-            [-2.3,  0.5,  0.1],
-        ]),
-
-        device = gpu
-
+    data = torch.tensor(
+        [
+            [0.3, 0.1, 0.5],
+            [1.5, 2.2, -0.5],
+            [-0.3, -0.1, 0.5],
+            [-2.3, 0.5, 0.1],
+        ],
+        dtype=torch.float32,
+        device=gpu,
     )
 
     return data
@@ -187,9 +185,9 @@ class TestGPUPipeline:
         try:
 
             pipeline = sequential.Pipeline(
-                transforms = [
+                transforms=[
                     lambda data: 0.5 + data,
-                    lambda data: data ** 2,
+                    lambda data: data**2,
                 ]
             )
 
@@ -200,15 +198,18 @@ class TestGPUPipeline:
 
         assert output.shape == (4, 3)
 
-        reference_output = jnp.array([
-            [0.64, 0.36, 1.00],
-            [4.00, 7.29, 0.00],
-            [0.04, 0.16, 1.00],
-            [3.24, 1.00, 0.36]
-        ])
+        reference_output = torch.tensor(
+            [
+                [0.64, 0.36, 1.00],
+                [4.00, 7.29, 0.00],
+                [0.04, 0.16, 1.00],
+                [3.24, 1.00, 0.36],
+            ],
+            dtype=torch.float32,
+            device=torch.device("cuda"),
+        )
 
-        assert jnp.allclose(output, reference_output, atol = 1e-12)
-
+        assert torch.allclose(output, reference_output, atol=1e-12)
 
     def test_nested_pipeline(self, data_gpu) -> None:
         """
@@ -218,21 +219,21 @@ class TestGPUPipeline:
         try:
 
             preprocess = sequential.Pipeline(
-                transforms = [
-                    lambda data: jnp.sin(data),
-                    lambda data: data ** 2,
+                transforms=[
+                    lambda data: torch.sin(data),
+                    lambda data: data**2,
                 ]
             )
 
             postprocess = sequential.Pipeline(
-                transforms = [
-                    lambda data: data - jnp.mean(data, keepdims = True),
-                    lambda data: data / (jnp.std(data, keepdims = True) + 1e-6),
+                transforms=[
+                    lambda data: data - torch.mean(data),
+                    lambda data: data / (torch.std(data) + 1e-6),
                 ]
             )
 
             pipeline = sequential.Pipeline(
-                transforms = [
+                transforms=[
                     preprocess,
                     postprocess,
                 ]
@@ -244,4 +245,4 @@ class TestGPUPipeline:
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
 
-        assert jnp.allclose(staggered_output, nested_output, atol = 1e-12)
+        assert torch.allclose(staggered_output, nested_output, atol=1e-12)

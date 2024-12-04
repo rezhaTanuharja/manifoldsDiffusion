@@ -28,14 +28,16 @@ class DensityFunction(ABC):
     `at(time)`
     Set the time to access the density function
 
-    `dimension()`
-    Returns the shape of each realization point
-
     `__call__(points)`
     Evaluate the density value at the given points
 
     `gradient(points)`
     Evalute the gradient of density at the given points
+
+    Properties
+    ----------
+    `dimension`
+    The tensor shape of each realization point
     """
 
     @abstractmethod
@@ -131,14 +133,16 @@ class StochasticProcess(ABC):
     `at(time)`
     Set the time to access the stochastic process
 
-    `dimension()`
-    Returns the shape of points on the manifold
-
-    `density()`
-    Provides access to the underlying density function
-
     `sample(num_samples, times)`
     Generate a number of random samples from the process at the given times
+
+    Properties
+    ----------
+    `dimension`
+    The tensor shape of each realization point
+
+    `density`
+    The underlying density function of the process
     """
 
     @abstractmethod

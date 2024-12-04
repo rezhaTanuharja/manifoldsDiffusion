@@ -7,98 +7,73 @@ Classes
 The 3-dimensional rotation matrix group
 """
 
-
 from typing import Tuple
 
 from .interfaces import Manifold
 
-import jax
-import jax.numpy as jnp
-import jax.scipy as jsp
+import torch
 
 
 class SpecialOrthogonal3(Manifold):
     """
     The 3-dimensional rotation matrix group
     """
-    
 
     def __init__(self) -> None:
-        
+
         # canonical basis of tangent space at the identity element
-        self._bases = jnp.array([
+        self._bases = torch.tensor(
             [
-                [ 0,  0,  0],
-                [ 0,  0, -1],
-                [ 0,  1,  0]
+                [[0, 0, 0], [0, 0, -1], [0, 1, 0]],
+                [[0, 0, 1], [0, 0, 0], [-1, 0, 0]],
+                [[0, -1, 0], [1, 0, 0], [0, 0, 0]],
             ],
-            [
-                [ 0,  0,  1],
-                [ 0,  0,  0],
-                [-1,  0,  0]
-            ],
-            [
-                [ 0, -1,  0],
-                [ 1,  0,  0],
-                [ 0,  0,  0]
-            ]
-        ], dtype = jnp.float32)
+            dtype=torch.float32,
+        )
 
         self._dimension = (3, 3)
         self._tangent_dimension = (3,)
 
+    def to(self, device: torch.device) -> None:
+        self._bases = self._bases.to(device)
 
-    def to(self, device: jax.Device) -> None:
-        self._bases = jax.device_put(self._bases, device = device)
-
-    
     def dimension(self) -> Tuple[int, ...]:
         return self._dimension
-
 
     def tangent_dimension(self) -> Tuple[int, ...]:
         return self._tangent_dimension
 
+    def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
 
-    def exp(self, points: jnp.ndarray, vectors: jnp.ndarray) -> jnp.ndarray:
-
-        return jnp.matmul(
-
+        return torch.matmul(
             points,
-
-            jsp.linalg.expm(
+            torch.linalg.matrix_exp(
                 # the skew matrices associated with the vectors
-                jnp.einsum('...j, jkl -> ...kl', vectors, self._bases)
-            )
-
+                torch.einsum("...j, jkl -> ...kl", vectors, self._bases)
+            ),
         )
 
-    
-    def log(self, starts: jnp.ndarray, ends: jnp.ndarray) -> jnp.ndarray:
+    def log(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
 
         # WARN: log mapping should only be used for points near each other
 
-        relative_rotation = jnp.einsum('...ji, ...jk -> ...ik', starts, ends)
+        relative_rotation = torch.einsum("...ji, ...jk -> ...ik", starts, ends)
 
-        angle = jnp.arccos(
-
-            jnp.clip(
-
-                0.5 * (jnp.trace(relative_rotation, axis1 = -2, axis2 = -1) - 1.0),
-
+        angle = torch.arccos(
+            torch.clip(
+                0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
                 # clip for numerical stability
-                min = -1.0, max = 1.0
-
+                min=-1.0,
+                max=1.0,
             )
-
         )
 
-        rotation_axis = jnp.einsum(
-            '...ijk, ...jk -> ...i', self._bases, relative_rotation
+        rotation_axis = torch.einsum(
+            "...ijk, ...jk -> ...i", self._bases, relative_rotation
         )
 
         rotation_axis = rotation_axis / (
-            jnp.linalg.norm(rotation_axis, axis = -1, keepdims = True) + 1e-8
+            torch.linalg.norm(rotation_axis, axis=-1, keepdims=True) + 1e-8
         )
 
-        return jnp.einsum('..., ...i -> ...i', angle, rotation_axis)
+        return torch.einsum("..., ...i -> ...i", angle, rotation_axis)

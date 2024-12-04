@@ -13,10 +13,9 @@ A purely abstract class that serves as an interface of all root-finder
 from .. import DensityFunction
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Callable
+from typing import Tuple, Dict, Callable, Self
 
-import jax
-import jax.numpy as jnp
+import torch
 
 
 class CumulativeDistributionFunction(ABC):
@@ -28,14 +27,20 @@ class CumulativeDistributionFunction(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
-    `__call__(points, times)`
-    Evaluate the CDF value at the given points and times
+    `at(time)`
+    Set the time to access the CDF
 
-    `gradient(points, times)`
-    Evalute the PDF value at the given points and times
+    `__call__(points)`
+    Evaluate the CDF value at the given points
 
-    `support()`
-    Provides the range in which CDF may have non-zero value
+    `gradient(points)`
+    Evalute the PDF value at the given points
+
+    Properties
+    ----------
+    `support`
+    A dict with key 'lower' and 'upper'
+    Indicate the interval in which CDF may have non-zero values
     """
 
     @abstractmethod
@@ -43,43 +48,60 @@ class CumulativeDistributionFunction(ABC):
         pass
 
     @abstractmethod
-    def to(self, device: jax.Device) -> None:
+    def to(self, device: torch.device) -> None:
         """
         Moves all tensor attributes to the given device
 
         Parameters
         ----------
-        `device: jax.Device`
+        `device: torch.device`
         A device object from Jax representing the target hardware
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def at(self, time: torch.Tensor) -> Self:
+        """
+        Set the internal time of the density function
+
+        Parameters
+        ----------
+        `time: torch.Tensor`
+        Tensor with shape `(..., num_times)`
+
+        Returns
+        -------
+        `DensityFunction`
+        The same density function with internal time set to the given tensor
         """
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def __call__(
         self,
-        points: jnp.ndarray,
-        times: jnp.ndarray = jnp.array(
+        points: torch.Tensor,
+        times: torch.Tensor = torch.tensor(
             [
                 0.0,
             ]
         ),
-    ) -> jnp.ndarray:
+    ) -> torch.Tensor:
         """
         Evaluate the CDF value at the given points and times
 
         Parameters
         ----------
-        `points: jnp.ndarray`
-        Array with shape `(..., time_index, num_points, *dimension)`.
+        `points: torch.Tensor`
+        Tensor with shape `(..., time_index, num_points, *dimension)`.
         The dimension `time_index` must be broadcastable to `num_times`
 
-        `times: jnp.ndarray = jnp.array([0.0,])`
-        Array with shape `(..., num_times)`
+        `times: torch.Tensor = jnp.array([0.0,])`
+        Tensor with shape `(..., num_times)`
 
         Returns
         -------
-        `jnp.ndarray`
-        Array with shape `(..., num_times, num_points)`
+        `torch.Tensor`
+        Tensor with shape `(..., num_times, num_points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -95,6 +117,7 @@ class CumulativeDistributionFunction(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+    @property
     @abstractmethod
     def support(self) -> Dict[str, float]:
         """
@@ -125,19 +148,19 @@ class RootFinder(ABC):
     @abstractmethod
     def solve(
         self,
-        function: Callable[[jnp.ndarray], jnp.ndarray],
-        target_values: jnp.ndarray,
+        function: Callable[[torch.Tensor], torch.Tensor],
+        target_values: torch.Tensor,
         interval: Tuple[float, float],
-    ) -> jnp.ndarray:
+    ) -> torch.Tensor:
         """
         Find the solution of `function(points) = target_values` inside the `interval`
 
         Parameters
         ----------
-        `function: Callable[[jnp.ndarray], jnp.ndarray]`
+        `function: Callable[[torch.Tensor], torch.Tensor]`
         A mapping `R ** (*input_shape) -> R ** (*output_shape)`
 
-        `target_values: jnp.ndarray`
+        `target_values: torch.Tensor`
         An array with shape `(*output_shape)`
 
         `interval: Tuple[float, float]`
@@ -145,7 +168,7 @@ class RootFinder(ABC):
 
         Returns
         -------
-        `jnp.ndarray`
+        `torch.Tensor`
         An array with shape `(*input_shape)`
         """
         raise NotImplementedError("Subclasses must implement this method")

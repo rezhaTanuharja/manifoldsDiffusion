@@ -10,10 +10,9 @@ Date
 2024-11-26
 """
 
-
 import pytest
-import jax
-import jax.numpy as jnp
+import torch
+
 
 from ...manifolds import Manifold, rotationalgroups
 
@@ -70,7 +69,7 @@ def test_get_tangent_dimension() -> None:
         assert entry == 3
 
 
-@pytest.fixture(scope = "class")
+@pytest.fixture(scope="class")
 def manifold_cpu():
     return rotationalgroups.SpecialOrthogonal3()
 
@@ -81,30 +80,32 @@ class TestCPUOperations:
     A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
 
-
     def test_exp_compatibility(self, manifold_cpu) -> None:
         """
         Checks that `exp` can handle broadcast-able `points` and `vectors`
         """
-        
+
         # an array with shape (5, 1, 1, 3, 3)
-        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = torch.eye(3, dtype=torch.float32)
         points = points.reshape(1, 1, 1, 3, 3)
-        points = points.repeat(5, axis = 0)
+        points = points.repeat(5, *(1 for _ in points.shape[1:]))
+
+        print(points.shape)
 
         # an array with shape (1, 4, 3)
-        vectors = jnp.array(
-
-            object = [
-                [0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0],
-                [0.0, 0.0, 0.0],
+        vectors = torch.tensor(
+            [
+                [
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                ],
             ],
-
-            dtype = jnp.float32
-
+            dtype=torch.float32,
         )
+
+        print(vectors.shape)
 
         try:
             new_points = manifold_cpu.exp(points, vectors)
@@ -112,26 +113,28 @@ class TestCPUOperations:
             pytest.fail(f"Unexpected exception raised: {e}")
 
         assert new_points.shape == (5, 1, 4, 3, 3)
-        assert jnp.allclose(points, new_points, atol = 1e-12)
-
+        assert torch.allclose(points, new_points, atol=1e-12)
 
     def test_exp_correctness(self, manifold_cpu) -> None:
         """
         Checks that `exp` produce the correct results
         """
 
-        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = torch.eye(3, dtype=torch.float32)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors = jnp.array([
-            [       jnp.pi,           0.0,                0.0],
-            [0.25 * jnp.pi,           0.0,                0.0],
-            [          0.0, -1.0 * jnp.pi,                0.0],
-            [          0.0, 0.75 * jnp.pi,                0.0],
-            [          0.0,           0.0,       jnp.pi / 3.0],
-            [          0.0,           0.0, 4.0 * jnp.pi / 3.0],
-        ])
+        vectors = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, -1.0 * torch.pi, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, 4.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+        )
 
         try:
             new_points = manifold_cpu.exp(points, vectors)
@@ -140,79 +143,92 @@ class TestCPUOperations:
 
         assert new_points.shape == (2, 6, 3, 3)
 
-        reference_points = jnp.array([
+        reference_points = torch.tensor(
             [
-                [ 1.0, 0.0, 0.0],
-                [ 0.0,-1.0, 0.0],
-                [ 0.0, 0.0,-1.0],
-            ], [
-                [ 1.0, 0.0,                             0.0],
-                [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
-                [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
-            ], [
-                [-1.0, 0.0, 0.0],
-                [ 0.0, 1.0, 0.0],
-                [ 0.0, 0.0,-1.0],
-            ], [
-                [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
-                [               0.0, 1.0,                0.0],
-                [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
-            ], [
-                [               0.5, -0.5 * jnp.sqrt(3), 0.0],
-                [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
-            ], [
-                [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
-                [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, -1.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ],
+                [
+                    [1.0, 0.0, 0.0],
+                    [
+                        0.0,
+                        1.0 / 2**0.5,
+                        -1.0 / 2**0.5,
+                    ],
+                    [0.0, 1.0 / 2**0.5, 1.0 / 2**0.5],
+                ],
+                [
+                    [-1.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ],
+                [
+                    [-1.0 / 2**0.5, 0.0, 1.0 / 2**0.5],
+                    [0.0, 1.0, 0.0],
+                    [-1.0 / 2**0.5, 0.0, -1.0 / 2**0.5],
+                ],
+                [
+                    [0.5, -0.5 * 3**0.5, 0.0],
+                    [0.5 * 3**0.5, 0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+                [
+                    [-0.5, 0.5 * 3**0.5, 0.0],
+                    [-0.5 * 3**0.5, -0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
             ],
-        ])
+            dtype=torch.float32,
+        )
 
         for repetition in range(new_points.shape[0]):
 
             for distinct_point in range(new_points.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    atol = 1e-12
+                    atol=1e-12,
                 )
-
 
     def test_exp_nested(self, manifold_cpu) -> None:
         """
         Checks that nesting `exp` is equivalent to summing the vectors
         """
 
-        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = torch.eye(3, dtype=torch.float32)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors_1 = jnp.array([
-            [       jnp.pi,           0.0,                0.0],
-            [0.25 * jnp.pi,           0.0,                0.0],
-            [          0.0, -1.0 * jnp.pi,                0.0],
-            [          0.0, 0.75 * jnp.pi,                0.0],
-            [          0.0,           0.0,       jnp.pi / 3.0],
-            [          0.0,           0.0, 4.0 * jnp.pi / 3.0],
-        ])
+        vectors_1 = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, -1.0 * torch.pi, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, 4.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+        )
 
-        vectors_2 = jnp.array([
-            [       jnp.pi,           0.0,                0.0],
-            [0.05 * jnp.pi,           0.0,                0.0],
-            [          0.0,  1.0 * jnp.pi,                0.0],
-            [          0.0, 0.33 * jnp.pi,                0.0],
-            [          0.0,           0.0,       jnp.pi / 2.5],
-            [          0.0,           0.0, 1.0 * jnp.pi / 3.0],
-        ])
+        vectors_2 = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.05 * torch.pi, 0.0, 0.0],
+                [0.0, 1.0 * torch.pi, 0.0],
+                [0.0, 0.33 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 2.5],
+                [0.0, 0.0, 1.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+        )
 
         try:
 
-            results_1 = manifold_cpu.exp(
-                manifold_cpu.exp(
-                    points, vectors_1
-                ), vectors_2
-            )
+            results_1 = manifold_cpu.exp(manifold_cpu.exp(points, vectors_1), vectors_2)
 
             results_2 = manifold_cpu.exp(points, vectors_1 + vectors_2)
 
@@ -226,28 +242,26 @@ class TestCPUOperations:
 
             for distinct_point in range(results_1.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     results_1[repetition, distinct_point],
                     results_2[repetition, distinct_point],
-                    atol = 1e-3
+                    atol=1e-3,
                 )
-
 
     def test_log_compatibility(self, manifold_cpu) -> None:
         """
         Checks that `log` can handle broadcast-able `starts` and `ends`
         """
-        
+
         # an array with shape (5, 2, 1, 3, 3)
-        starts = jnp.eye(N = 3, dtype = jnp.float32)
+        starts = torch.eye(3, dtype=torch.float32)
         starts = starts.reshape(1, 1, 1, 3, 3)
-        starts = starts.repeat(5, axis = 0)
-        starts = starts.repeat(2, axis = 1)
+        starts = starts.repeat(5, 2, *(1 for _ in starts.shape[2:]))
 
         # an array with shape (4, 3, 3)
-        ends = jnp.eye(N = 3, dtype = jnp.float32)
+        ends = torch.eye(3, dtype=torch.float32)
         ends = ends.reshape(1, 3, 3)
-        ends = ends.repeat(4, axis = 0)
+        ends = ends.repeat(4, *(1 for _ in ends.shape[1:]))
 
         try:
             vectors = manifold_cpu.log(starts, ends)
@@ -256,38 +270,50 @@ class TestCPUOperations:
 
         assert vectors.shape == (5, 2, 4, 3)
 
-        reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
-        assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
-
+        reference_vectors = torch.tensor(
+            [
+                [
+                    [0.0, 0.0, 0.0],
+                ],
+            ],
+            dtype=torch.float32,
+        )
+        assert torch.allclose(vectors, reference_vectors, atol=1e-12)
 
     def test_log_correctness(self, manifold_cpu) -> None:
         """
         Checks that `log` produces correct results for small angles
         """
 
-        starts = jnp.eye(N = 3, dtype = jnp.float32)
+        starts = torch.eye(3, dtype=torch.float32)
         starts = starts.reshape(1, 1, 3, 3)
-        starts = starts.repeat(2, axis = 0)
+        starts = starts.repeat(2, *(1 for _ in starts.shape[1:]))
 
-        ends = jnp.array([
+        ends = torch.tensor(
             [
-                [ 1.0, 0.0,                             0.0],
-                [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
-                [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
-            ], [
-                [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
-                [               0.0, 1.0,                0.0],
-                [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
-            ], [
-                [               0.5, -0.5 * jnp.sqrt(3), 0.0],
-                [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
-            ], [
-                [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
-                [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, 1.0 / 2**0.5, -1.0 / 2**0.5],
+                    [0.0, 1.0 / 2**0.5, 1.0 / 2**0.5],
+                ],
+                [
+                    [-1.0 / 2**0.5, 0.0, 1.0 / 2**0.5],
+                    [0.0, 1.0, 0.0],
+                    [-1.0 / 2**0.5, 0.0, -1.0 / 2**0.5],
+                ],
+                [
+                    [0.5, -0.5 * 3**0.5, 0.0],
+                    [0.5 * 3**0.5, 0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+                [
+                    [-0.5, 0.5 * 3**0.5, 0.0],
+                    [-0.5 * 3**0.5, -0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
             ],
-        ])
+            dtype=torch.float32,
+        )
 
         try:
             vectors = manifold_cpu.log(starts, ends)
@@ -296,44 +322,48 @@ class TestCPUOperations:
 
         assert vectors.shape == (2, 4, 3)
 
-        reference_vectors = jnp.array([
-            [0.25 * jnp.pi,           0.0,                0.0],
-            [          0.0, 0.75 * jnp.pi,                0.0],
-            [          0.0,           0.0,       jnp.pi / 3.0],
-            [          0.0,           0.0,-2.0 * jnp.pi / 3.0],
-        ])
+        reference_vectors = torch.tensor(
+            [
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, -2.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+        )
 
         for repetition in range(vectors.shape[0]):
 
             for distinct_vector in range(vectors.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    atol = 1e-3
+                    atol=1e-3,
                 )
-
 
     def test_exp_log_connection(self, manifold_cpu) -> None:
         """
         Checks that `log(points, exp(points, vectors)) = vectors`
         """
 
-        points = jnp.eye(N = 3, dtype = jnp.float32)
+        points = torch.eye(3, dtype=torch.float32)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors = jnp.array([
-            [0.25 * jnp.pi,           0.0,                 0.0],
-            [          0.0, 0.75 * jnp.pi,                 0.0],
-            [          0.0,           0.0,        jnp.pi / 3.0],
-            [          0.0,           0.0, -2.0 * jnp.pi / 3.0],
-        ])
+        vectors = torch.tensor(
+            [
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, -2.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+        )
 
         try:
             computed_vectors = manifold_cpu.log(
-                points,
-                manifold_cpu.exp(points, vectors)
+                points, manifold_cpu.exp(points, vectors)
             )
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
@@ -344,18 +374,18 @@ class TestCPUOperations:
 
             for distinct_point in range(computed_vectors.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    atol = 1e-12
+                    atol=1e-12,
                 )
 
 
-@pytest.fixture(scope = "class")
+@pytest.fixture(scope="class")
 def manifold_gpu():
 
     manifold = rotationalgroups.SpecialOrthogonal3()
-    manifold.to(jax.devices("gpu")[0])
+    manifold.to(torch.device("cuda"))
 
     return manifold
 
@@ -366,32 +396,28 @@ class TestGPUOperations:
     A group of manifold tests to be performed on GPU
     """
 
-
     def test_exp_compatibility(self, manifold_gpu) -> None:
         """
         Checks that `exp` can handle broadcast-able `points` and `vectors`
         """
 
-        gpu = jax.devices("gpu")[0]
-        
+        gpu = torch.device("cuda")
+
         # an array with shape (5, 1, 1, 3, 3)
-        points = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        points = torch.eye(3, dtype=torch.float32, device=gpu)
         points = points.reshape(1, 1, 1, 3, 3)
-        points = points.repeat(5, axis = 0)
+        points = points.repeat(5, *(1 for _ in points.shape[1:]))
 
         # an array with shape (1, 4, 3)
-        vectors = jnp.array(
-
-            object = [
+        vectors = torch.tensor(
+            [
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0],
             ],
-
-            dtype = jnp.float32,
-            device = gpu
-
+            dtype=torch.float32,
+            device=gpu,
         )
 
         try:
@@ -400,33 +426,30 @@ class TestGPUOperations:
             pytest.fail(f"Unexpected exception raised: {e}")
 
         assert new_points.shape == (5, 1, 4, 3, 3)
-        assert jnp.allclose(points, new_points, atol = 1e-12)
-
+        assert torch.allclose(points, new_points, atol=1e-12)
 
     def test_exp_correctness(self, manifold_gpu) -> None:
         """
         Checks that `exp` produce the correct results
         """
 
-        gpu = jax.devices("gpu")[0]
+        gpu = torch.device("cuda")
 
-        points = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        points = torch.eye(3, dtype=torch.float32, device=gpu)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors = jax.device_put(
-
-            jnp.array([
-                [       jnp.pi,           0.0,                0.0],
-                [0.25 * jnp.pi,           0.0,                0.0],
-                [          0.0, -1.0 * jnp.pi,                0.0],
-                [          0.0, 0.75 * jnp.pi,                0.0],
-                [          0.0,           0.0,       jnp.pi / 3.0],
-                [          0.0,           0.0, 4.0 * jnp.pi / 3.0], 
-            ]),
-
-            device = gpu
-
+        vectors = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, -1.0 * torch.pi, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, 4.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+            device=gpu,
         )
 
         try:
@@ -436,93 +459,93 @@ class TestGPUOperations:
 
         assert new_points.shape == (2, 6, 3, 3)
 
-        reference_points = jnp.array([
+        reference_points = torch.tensor(
             [
-                [ 1.0, 0.0, 0.0],
-                [ 0.0,-1.0, 0.0],
-                [ 0.0, 0.0,-1.0],
-            ], [
-                [ 1.0, 0.0,                             0.0],
-                [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
-                [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
-            ], [
-                [-1.0, 0.0, 0.0],
-                [ 0.0, 1.0, 0.0],
-                [ 0.0, 0.0,-1.0],
-            ], [
-                [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
-                [               0.0, 1.0,                0.0],
-                [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
-            ], [
-                [               0.5, -0.5 * jnp.sqrt(3), 0.0],
-                [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
-            ], [
-                [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
-                [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
-                [ 0.0, 0.0, 1.0],
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, -1.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ],
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, 1.0 / 2**0.5, -1.0 / 2**0.5],
+                    [0.0, 1.0 / 2**0.5, 1.0 / 2**0.5],
+                ],
+                [
+                    [-1.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ],
+                [
+                    [-1.0 / 2**0.5, 0.0, 1.0 / 2**0.5],
+                    [0.0, 1.0, 0.0],
+                    [-1.0 / 2**0.5, 0.0, -1.0 / 2**0.5],
+                ],
+                [
+                    [0.5, -0.5 * 3**0.5, 0.0],
+                    [0.5 * 3**0.5, 0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+                [
+                    [-0.5, 0.5 * 3**0.5, 0.0],
+                    [-0.5 * 3**0.5, -0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
             ],
-        ])
+            dtype=torch.float32,
+            device=gpu,
+        )
 
         for repetition in range(new_points.shape[0]):
 
             for distinct_point in range(new_points.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    atol = 1e-12
+                    atol=1e-12,
                 )
-
 
     def test_exp_nested(self, manifold_gpu) -> None:
         """
         Checks that nesting `exp` is equivalent to summing the vectors
         """
 
-        gpu = jax.devices("gpu")[0]
+        gpu = torch.device("cuda")
 
-        points = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        points = torch.eye(3, dtype=torch.float32, device=gpu)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors_1 = jax.device_put(
-
-            jnp.array([
-                [       jnp.pi,           0.0,                0.0],
-                [0.25 * jnp.pi,           0.0,                0.0],
-                [          0.0, -1.0 * jnp.pi,                0.0],
-                [          0.0, 0.75 * jnp.pi,                0.0],
-                [          0.0,           0.0,       jnp.pi / 3.0],
-                [          0.0,           0.0, 4.0 * jnp.pi / 3.0],
-            ]),
-
-            device = gpu
-
+        vectors_1 = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, -1.0 * torch.pi, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, 4.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+            device=gpu,
         )
 
-        vectors_2 = jax.device_put(
-
-            jnp.array([
-                [       jnp.pi,           0.0,                0.0],
-                [0.05 * jnp.pi,           0.0,                0.0],
-                [          0.0,  1.0 * jnp.pi,                0.0],
-                [          0.0, 0.33 * jnp.pi,                0.0],
-                [          0.0,           0.0,       jnp.pi / 2.5],
-                [          0.0,           0.0, 1.0 * jnp.pi / 3.0],
-            ]),
-
-            device = gpu
-
+        vectors_2 = torch.tensor(
+            [
+                [torch.pi, 0.0, 0.0],
+                [0.05 * torch.pi, 0.0, 0.0],
+                [0.0, 1.0 * torch.pi, 0.0],
+                [0.0, 0.33 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 2.5],
+                [0.0, 0.0, 1.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+            device=gpu,
         )
 
         try:
 
-            results_1 = manifold_gpu.exp(
-                manifold_gpu.exp(
-                    points, vectors_1
-                ), vectors_2
-            )
+            results_1 = manifold_gpu.exp(manifold_gpu.exp(points, vectors_1), vectors_2)
 
             results_2 = manifold_gpu.exp(points, vectors_1 + vectors_2)
 
@@ -536,30 +559,28 @@ class TestGPUOperations:
 
             for distinct_point in range(results_1.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     results_1[repetition, distinct_point],
                     results_2[repetition, distinct_point],
-                    atol = 1e-3
+                    atol=1e-3,
                 )
-
 
     def test_log_compatibility(self, manifold_gpu) -> None:
         """
         Checks that `log` can handle broadcast-able `starts` and `ends`
         """
 
-        gpu = jax.devices("gpu")[0]
+        gpu = torch.device("cuda")
 
         # an array with shape (5, 2, 1, 3, 3)
-        starts = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        starts = torch.eye(3, dtype=torch.float32, device=gpu)
         starts = starts.reshape(1, 1, 1, 3, 3)
-        starts = starts.repeat(5, axis = 0)
-        starts = starts.repeat(2, axis = 1)
+        starts = starts.repeat(5, 2, *(1 for _ in starts.shape[2:]))
 
         # an array with shape (4, 3, 3)
-        ends = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        ends = torch.eye(3, dtype=torch.float32, device=gpu)
         ends = ends.reshape(1, 3, 3)
-        ends = ends.repeat(4, axis = 0)
+        ends = ends.repeat(4, *(1 for _ in ends.shape[1:]))
 
         try:
             vectors = manifold_gpu.log(starts, ends)
@@ -568,42 +589,50 @@ class TestGPUOperations:
 
         assert vectors.shape == (5, 2, 4, 3)
 
-        reference_vectors = jnp.array([[[0.0, 0.0, 0.0],],])
-        assert jnp.allclose(vectors, reference_vectors, atol = 1e-12)
-
+        reference_vectors = torch.tensor(
+            [
+                [
+                    [0.0, 0.0, 0.0],
+                ],
+            ],
+            dtype=torch.float32,
+            device=gpu,
+        )
+        assert torch.allclose(vectors, reference_vectors, atol=1e-12)
 
     def test_log_correctness(self, manifold_gpu) -> None:
 
-        gpu = jax.devices("gpu")[0]
+        gpu = torch.device("cuda")
 
-        starts = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        starts = torch.eye(3, dtype=torch.float32, device=gpu)
         starts = starts.reshape(1, 1, 3, 3)
-        starts = starts.repeat(2, axis = 0)
+        starts = starts.repeat(2, *(1 for _ in starts.shape[1:]))
 
-        ends = jax.device_put(
-
-            jnp.array([
+        ends = torch.tensor(
+            [
                 [
-                    [ 1.0, 0.0,                             0.0],
-                    [ 0.0, 1.0 / jnp.sqrt(2),-1.0 / jnp.sqrt(2)],
-                    [ 0.0, 1.0 / jnp.sqrt(2), 1.0 / jnp.sqrt(2)],
-                ], [
-                    [-1.0 / jnp.sqrt(2), 0.0,  1.0 / jnp.sqrt(2)],
-                    [               0.0, 1.0,                0.0],
-                    [-1.0 / jnp.sqrt(2), 0.0, -1.0 / jnp.sqrt(2)],
-                ], [
-                    [               0.5, -0.5 * jnp.sqrt(3), 0.0],
-                    [ 0.5 * jnp.sqrt(3),                0.5, 0.0],
-                    [ 0.0, 0.0, 1.0],
-                ], [
-                    [              -0.5,  0.5 * jnp.sqrt(3), 0.0],
-                    [-0.5 * jnp.sqrt(3),               -0.5, 0.0],
-                    [ 0.0, 0.0, 1.0],
+                    [1.0, 0.0, 0.0],
+                    [0.0, 1.0 / 2**0.5, -1.0 / 2**0.5],
+                    [0.0, 1.0 / 2**0.5, 1.0 / 2**0.5],
                 ],
-            ]),
-
-            device = gpu
-
+                [
+                    [-1.0 / 2**0.5, 0.0, 1.0 / 2**0.5],
+                    [0.0, 1.0, 0.0],
+                    [-1.0 / 2**0.5, 0.0, -1.0 / 2**0.5],
+                ],
+                [
+                    [0.5, -0.5 * 3**0.5, 0.0],
+                    [0.5 * 3**0.5, 0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+                [
+                    [-0.5, 0.5 * 3**0.5, 0.0],
+                    [-0.5 * 3**0.5, -0.5, 0.0],
+                    [0.0, 0.0, 1.0],
+                ],
+            ],
+            dtype=torch.float32,
+            device=gpu,
         )
 
         try:
@@ -613,52 +642,52 @@ class TestGPUOperations:
 
         assert vectors.shape == (2, 4, 3)
 
-        reference_vectors = jnp.array([
-            [0.25 * jnp.pi,           0.0,                0.0],
-            [          0.0, 0.75 * jnp.pi,                0.0],
-            [          0.0,           0.0,       jnp.pi / 3.0],
-            [          0.0,           0.0,-2.0 * jnp.pi / 3.0],
-        ])
+        reference_vectors = torch.tensor(
+            [
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, -2.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+            device=gpu,
+        )
 
         for repetition in range(vectors.shape[0]):
 
             for distinct_vector in range(vectors.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    atol = 1e-3
+                    atol=1e-3,
                 )
-
 
     def test_exp_log_connection(self, manifold_gpu) -> None:
         """
         Checks that `log(points, exp(points, vectors)) = vectors`
         """
 
-        gpu = jax.devices("gpu")[0]
+        gpu = torch.device("cuda")
 
-        points = jnp.eye(N = 3, dtype = jnp.float32, device = gpu)
+        points = torch.eye(3, dtype=torch.float32, device=gpu)
         points = points.reshape(1, 1, 3, 3)
-        points = points.repeat(2, axis = 0)
+        points = points.repeat(2, *(1 for _ in points.shape[1:]))
 
-        vectors = jax.device_put(
-
-            jnp.array([
-                [0.25 * jnp.pi,           0.0,                 0.0],
-                [          0.0, 0.75 * jnp.pi,                 0.0],
-                [          0.0,           0.0,        jnp.pi / 3.0],
-                [          0.0,           0.0, -2.0 * jnp.pi / 3.0],
-            ]),
-
-            device = gpu
-
+        vectors = torch.tensor(
+            [
+                [0.25 * torch.pi, 0.0, 0.0],
+                [0.0, 0.75 * torch.pi, 0.0],
+                [0.0, 0.0, torch.pi / 3.0],
+                [0.0, 0.0, -2.0 * torch.pi / 3.0],
+            ],
+            dtype=torch.float32,
+            device=gpu,
         )
 
         try:
-            computed_vectors = manifold_gpu.log(
-                points, manifold_gpu.exp(points, vectors)
-            )
+            new_points = manifold_gpu.exp(points, vectors)
+            computed_vectors = manifold_gpu.log(points, new_points)
         except Exception as e:
             pytest.fail(f"Unexpected exception raised: {e}")
 
@@ -668,8 +697,8 @@ class TestGPUOperations:
 
             for distinct_vector in range(computed_vectors.shape[1]):
 
-                assert jnp.allclose(
+                assert torch.allclose(
                     computed_vectors[repetition, distinct_vector],
                     vectors[distinct_vector],
-                    atol = 1e-12
+                    atol=1e-12,
                 )

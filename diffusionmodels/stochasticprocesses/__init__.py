@@ -15,18 +15,14 @@ univariate      : provides one-dimensional stochastic processeses
 multivariate    : provides multi-dimensional stochastic processeses
 """
 
-
 from .interfaces import DensityFunction, StochasticProcess
 from . import univariate
 from . import multivariate
 
 
 __all__ = [
-
-    'DensityFunction',
-    'StochasticProcess',
-
-    'univariate',
-    'multivariate',
-
+    "DensityFunction",
+    "StochasticProcess",
+    "univariate",
+    "multivariate",
 ]

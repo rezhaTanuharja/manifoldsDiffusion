@@ -12,8 +12,7 @@ from .. import CumulativeDistributionFunction
 
 from typing import Dict
 
-import jax
-import jax.numpy as jnp
+import torch
 
 
 class Linear(CumulativeDistributionFunction):
@@ -21,22 +20,22 @@ class Linear(CumulativeDistributionFunction):
     def __init__(self, support: Dict[str, float]) -> None:
         self._support = support
 
-    def to(self, device: jax.Device) -> None:
+    def to(self, device: torch.device) -> None:
         unused_variables(device)
 
     def __call__(
         self,
-        points: jnp.ndarray,
-        times: jnp.ndarray = jnp.array(
+        points: torch.Tensor,
+        times: torch.Tensor = torch.tensor(
             [
                 0.0,
             ]
         ),
-    ) -> jnp.ndarray:
+    ) -> torch.Tensor:
 
         unused_variables(times)
 
-        return jnp.clip(
+        return torch.clip(
             (points - self._support["lower"])
             / (self._support["upper"] - self._support["lower"]),
             min=0.0,

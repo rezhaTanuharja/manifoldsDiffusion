@@ -8,7 +8,7 @@ A stochastic process defined by a CDF and sampled using inverse transform method
 """
 
 from .. import DensityFunction, StochasticProcess
-from univariate import CumulativeDistributionFunction, RootFinder
+from . import CumulativeDistributionFunction, RootFinder
 
 from typing import Tuple, Self
 

@@ -11,8 +11,8 @@ A purely abstract class that serves as an interface of all manifolds
 from abc import ABC, abstractmethod
 from typing import Tuple
 
-import jax
-import jax.numpy as jnp
+import torch
+
 
 
 class Manifold(ABC):
@@ -44,13 +44,13 @@ class Manifold(ABC):
 
 
     @abstractmethod
-    def to(self, device: jax.Device) -> None:
+    def to(self, device: torch.device) -> None:
         """
         Moves all tensor attributes to the given device
 
         Parameters
         ----------
-        `device: jax.Device`
+        `device: torch.device`
         A device object from Jax representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
@@ -79,7 +79,7 @@ class Manifold(ABC):
 
 
     @abstractmethod
-    def exp(self, points: jnp.ndarray, vectors: jnp.ndarray) -> jnp.ndarray:
+    def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
         """
         Returns the results of incrementing the points by the vectors
 
@@ -100,7 +100,7 @@ class Manifold(ABC):
 
 
     @abstractmethod
-    def log(self, starts: jnp.ndarray, ends: jnp.ndarray) -> jnp.ndarray:
+    def log(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
         """
         Returns the vectors such that `exp(starts, vectors) = ends`
 

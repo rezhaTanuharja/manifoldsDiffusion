@@ -8,7 +8,7 @@ Classes
 
 from .. import RootFinder
 
-import jax.numpy as jnp
+import torch
 
 from typing import Callable, Tuple
 
@@ -20,13 +20,13 @@ class Bisection(RootFinder):
 
     def solve(
         self,
-        function: Callable[[jnp.ndarray], jnp.ndarray],
-        target_values: jnp.ndarray,
+        function: Callable[[torch.Tensor], torch.Tensor],
+        target_values: torch.Tensor,
         interval: Tuple[float, float],
-    ) -> jnp.ndarray:
+    ) -> torch.Tensor:
 
-        lower_bound = jnp.full_like(target_values, fill_value=interval[0])
-        upper_bound = jnp.full_like(target_values, fill_value=interval[1])
+        lower_bound = torch.full_like(target_values, fill_value=interval[0])
+        upper_bound = torch.full_like(target_values, fill_value=interval[1])
 
         for _ in range(self._num_iterations):
 
@@ -34,11 +34,11 @@ class Bisection(RootFinder):
 
             function_values = function(midpoint)
 
-            lower_bound = jnp.where(
+            lower_bound = torch.where(
                 function_values < target_values, midpoint, lower_bound
             )
 
-            upper_bound = jnp.where(
+            upper_bound = torch.where(
                 function_values >= target_values, midpoint, upper_bound
             )
 

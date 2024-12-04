@@ -24,8 +24,8 @@ from . import utilities
 
 
 __all__ = [
-    'dataprocessing',
-    'stochasticprocesses',
-    'manifolds',
-    'utilities',
+    "dataprocessing",
+    "stochasticprocesses",
+    "manifolds",
+    "utilities",
 ]
