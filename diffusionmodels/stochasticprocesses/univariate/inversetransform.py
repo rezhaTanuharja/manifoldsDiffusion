@@ -7,16 +7,12 @@ Classes
 A stochastic process defined by a CDF and sampled using inverse transform method
 """
 
-
 from .. import DensityFunction, StochasticProcess
 from univariate import CumulativeDistributionFunction, RootFinder
 
-from typing import Tuple
+from typing import Tuple, Self
 
-import jax
-import jax.numpy as jnp
-
-import numpy as np
+import torch
 
 
 class InverseTransform(StochasticProcess):
@@ -24,11 +20,8 @@ class InverseTransform(StochasticProcess):
     A process defined by its CDF and sampled using the inverse transform method
     """
 
-
     def __init__(
-        self,
-        distribution: CumulativeDistributionFunction,
-        root_finder: RootFinder
+        self, distribution: CumulativeDistributionFunction, root_finder: RootFinder
     ) -> None:
         """
         Construct an instance of InverseTransform
@@ -43,38 +36,40 @@ class InverseTransform(StochasticProcess):
         """
         self._distribution = distribution
         self._root_finder = root_finder
+        self._time = torch.tensor(
+            [
+                0.0,
+            ]
+        )
 
+    def to(self, device: torch.device) -> None:
+        self._device = device
+        self._distribution.to(self._device)
+        self._time.to(self._device)
 
-    def to(self, device: jax.Device) -> None:
-        self._distribution.to(device)
-
+    def at(self, time: torch.Tensor) -> Self:
+        self._time = time
+        self._time.to(self._device)
+        return self
 
     def dimension(self) -> Tuple[int, ...]:
         return (1,)
 
-
     def density(self) -> DensityFunction:
         return self._distribution.gradient()
 
-
     def sample(
-        self, num_samples: int, times: jnp.ndarray = jnp.array([0.0,])
-    ) -> jnp.ndarray:
+        self,
+        num_samples: int,
+    ) -> torch.Tensor:
 
-        seed = np.random.randint(0, 2 ** 32 - 1)
-        key = jax.random.PRNGKey(seed)
+        target_values = torch.rand(size=(*self._time.shape, num_samples))
 
         return self._root_finder.solve(
-
-            function = lambda points: self._distribution(points, times),
-
-            target_values = jax.random.uniform(
-                key = key, shape = (times.shape[-1], num_samples)
+            function=self._distribution,
+            target_values=target_values,
+            interval=(
+                self._distribution.support["lower"],
+                self._distribution.support["upper"],
             ),
-
-            interval = (
-                self._distribution.support()['lower'],
-                self._distribution.support()['upper']
-            )
-
         )

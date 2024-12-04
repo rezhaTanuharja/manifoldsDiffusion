@@ -11,7 +11,7 @@ A purely abstract class that serves as an interface of all stochastic processes
 """
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Optional, Self
+from typing import Tuple, Self
 
 import torch
 
