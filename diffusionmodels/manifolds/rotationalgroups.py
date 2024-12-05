@@ -19,7 +19,15 @@ class SpecialOrthogonal3(Manifold):
     The 3-dimensional rotation matrix group
     """
 
-    def __init__(self) -> None:
+    def __init__(self, data_type: torch.dtype = torch.float32) -> None:
+        """
+        Construct an SO3 manifold with a given data type
+
+        Parameters
+        ----------
+        `data_type: torch.dtype`
+        The level of precision, e.g., torch.float32, torch.float64
+        """
 
         # canonical basis of tangent space at the identity element
         self._bases = torch.tensor(
@@ -28,7 +36,7 @@ class SpecialOrthogonal3(Manifold):
                 [[0, 0, 1], [0, 0, 0], [-1, 0, 0]],
                 [[0, -1, 0], [1, 0, 0], [0, 0, 0]],
             ],
-            dtype=torch.float32,
+            dtype=data_type,
         )
 
         self._dimension = (3, 3)
@@ -37,14 +45,15 @@ class SpecialOrthogonal3(Manifold):
     def to(self, device: torch.device) -> None:
         self._bases = self._bases.to(device)
 
+    @property
     def dimension(self) -> Tuple[int, ...]:
         return self._dimension
 
+    @property
     def tangent_dimension(self) -> Tuple[int, ...]:
         return self._tangent_dimension
 
     def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
-
         return torch.matmul(
             points,
             torch.linalg.matrix_exp(
@@ -53,16 +62,14 @@ class SpecialOrthogonal3(Manifold):
             ),
         )
 
+    # WARN: log mapping should only be used for points near each other
+
     def log(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
-
-        # WARN: log mapping should only be used for points near each other
-
         relative_rotation = torch.einsum("...ji, ...jk -> ...ik", starts, ends)
 
         angle = torch.arccos(
             torch.clip(
                 0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
-                # clip for numerical stability
                 min=-1.0,
                 max=1.0,
             )
