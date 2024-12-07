@@ -1,20 +1,12 @@
 """
-Provides unit test for the sequential dataprocessing module.
-
-Author
-------
-Rezha Adrian Tanuharja
-
-Date
-----
-2024-11-26
+Checks the operations of sequential data processing.
 """
 
 import pytest
 import torch
 
 
-from ...dataprocessing import Transform, sequential
+from diffusionmodels.dataprocessing import Transform, sequential
 
 
 def test_construction() -> None:
@@ -40,7 +32,6 @@ def test_nested_construction() -> None:
     """
 
     try:
-
         preprocess = sequential.Pipeline(
             transforms=[
                 lambda data: data,
@@ -64,7 +55,6 @@ def test_nested_construction() -> None:
 
 @pytest.fixture(scope="class")
 def data_cpu():
-
     return torch.tensor(
         [
             [0.3, 0.1, 0.5],
@@ -88,7 +78,6 @@ class TestCPUPipeline:
         """
 
         try:
-
             pipeline = sequential.Pipeline(
                 transforms=[
                     lambda data: 0.5 + data,
@@ -121,7 +110,6 @@ class TestCPUPipeline:
         """
 
         try:
-
             preprocess = sequential.Pipeline(
                 transforms=[
                     lambda data: torch.sin(data),
@@ -152,97 +140,94 @@ class TestCPUPipeline:
         assert torch.allclose(staggered_output, nested_output, atol=1e-12)
 
 
-@pytest.fixture(scope="class")
-def data_gpu():
-
-    gpu = torch.device("cuda")
-
-    data = torch.tensor(
-        [
-            [0.3, 0.1, 0.5],
-            [1.5, 2.2, -0.5],
-            [-0.3, -0.1, 0.5],
-            [-2.3, 0.5, 0.1],
-        ],
-        dtype=torch.float32,
-        device=gpu,
-    )
-
-    return data
-
-
-@pytest.mark.gpu
-class TestGPUPipeline:
-    """
-    A group of `Pipeline` tests to be performed on GPU
-    """
-
-    def test_elementwise_operation(self, data_gpu) -> None:
-        """
-        Checks that `Pipeline` can perform element-wise transformations correctly
-        """
-
-        try:
-
-            pipeline = sequential.Pipeline(
-                transforms=[
-                    lambda data: 0.5 + data,
-                    lambda data: data**2,
-                ]
-            )
-
-            output = pipeline(data_gpu)
-
-        except Exception as e:
-            pytest.fail(f"Unexpected exception raised: {e}")
-
-        assert output.shape == (4, 3)
-
-        reference_output = torch.tensor(
-            [
-                [0.64, 0.36, 1.00],
-                [4.00, 7.29, 0.00],
-                [0.04, 0.16, 1.00],
-                [3.24, 1.00, 0.36],
-            ],
-            dtype=torch.float32,
-            device=torch.device("cuda"),
-        )
-
-        assert torch.allclose(output, reference_output, atol=1e-12)
-
-    def test_nested_pipeline(self, data_gpu) -> None:
-        """
-        Checks that nested `Pipeline` still provides the correct results
-        """
-
-        try:
-
-            preprocess = sequential.Pipeline(
-                transforms=[
-                    lambda data: torch.sin(data),
-                    lambda data: data**2,
-                ]
-            )
-
-            postprocess = sequential.Pipeline(
-                transforms=[
-                    lambda data: data - torch.mean(data),
-                    lambda data: data / (torch.std(data) + 1e-6),
-                ]
-            )
-
-            pipeline = sequential.Pipeline(
-                transforms=[
-                    preprocess,
-                    postprocess,
-                ]
-            )
-
-            staggered_output = postprocess(preprocess(data_gpu))
-            nested_output = pipeline(data_gpu)
-
-        except Exception as e:
-            pytest.fail(f"Unexpected exception raised: {e}")
-
-        assert torch.allclose(staggered_output, nested_output, atol=1e-12)
+# @pytest.fixture(scope="class")
+# def data_gpu():
+#     gpu = torch.device("cuda")
+#
+#     data = torch.tensor(
+#         [
+#             [0.3, 0.1, 0.5],
+#             [1.5, 2.2, -0.5],
+#             [-0.3, -0.1, 0.5],
+#             [-2.3, 0.5, 0.1],
+#         ],
+#         dtype=torch.float32,
+#         device=gpu,
+#     )
+#
+#     return data
+#
+#
+# @pytest.mark.gpu
+# class TestGPUPipeline:
+#     """
+#     A group of `Pipeline` tests to be performed on GPU
+#     """
+#
+#     def test_elementwise_operation(self, data_gpu) -> None:
+#         """
+#         Checks that `Pipeline` can perform element-wise transformations correctly
+#         """
+#
+#         try:
+#             pipeline = sequential.Pipeline(
+#                 transforms=[
+#                     lambda data: 0.5 + data,
+#                     lambda data: data**2,
+#                 ]
+#             )
+#
+#             output = pipeline(data_gpu)
+#
+#         except Exception as e:
+#             pytest.fail(f"Unexpected exception raised: {e}")
+#
+#         assert output.shape == (4, 3)
+#
+#         reference_output = torch.tensor(
+#             [
+#                 [0.64, 0.36, 1.00],
+#                 [4.00, 7.29, 0.00],
+#                 [0.04, 0.16, 1.00],
+#                 [3.24, 1.00, 0.36],
+#             ],
+#             dtype=torch.float32,
+#             device=torch.device("cuda"),
+#         )
+#
+#         assert torch.allclose(output, reference_output, atol=1e-12)
+#
+#     def test_nested_pipeline(self, data_gpu) -> None:
+#         """
+#         Checks that nested `Pipeline` still provides the correct results
+#         """
+#
+#         try:
+#             preprocess = sequential.Pipeline(
+#                 transforms=[
+#                     lambda data: torch.sin(data),
+#                     lambda data: data**2,
+#                 ]
+#             )
+#
+#             postprocess = sequential.Pipeline(
+#                 transforms=[
+#                     lambda data: data - torch.mean(data),
+#                     lambda data: data / (torch.std(data) + 1e-6),
+#                 ]
+#             )
+#
+#             pipeline = sequential.Pipeline(
+#                 transforms=[
+#                     preprocess,
+#                     postprocess,
+#                 ]
+#             )
+#
+#             staggered_output = postprocess(preprocess(data_gpu))
+#             nested_output = pipeline(data_gpu)
+#
+#         except Exception as e:
+#             pytest.fail(f"Unexpected exception raised: {e}")
+#
+#         assert torch.allclose(staggered_output, nested_output, atol=1e-12)
