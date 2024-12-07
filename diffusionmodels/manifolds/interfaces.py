@@ -15,7 +15,7 @@ import torch
 
 class Manifold(ABC):
     """
-    An abstract class that serves as an interface of all manifolds
+    An abstract class that serves as an interface for all manifolds
 
     Methods
     -------

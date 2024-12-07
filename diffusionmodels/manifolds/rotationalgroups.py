@@ -39,19 +39,16 @@ class SpecialOrthogonal3(Manifold):
             dtype=data_type,
         )
 
-        self._dimension = (3, 3)
-        self._tangent_dimension = (3,)
-
     def to(self, device: torch.device) -> None:
         self._bases = self._bases.to(device)
 
     @property
     def dimension(self) -> Tuple[int, ...]:
-        return self._dimension
+        return (3, 3)
 
     @property
     def tangent_dimension(self) -> Tuple[int, ...]:
-        return self._tangent_dimension
+        return (3,)
 
     def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
         return torch.matmul(
