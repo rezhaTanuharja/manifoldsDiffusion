@@ -1,6 +1,8 @@
 # Ignore cache directories
 **/*cache*/
 
+**/*.egg-info/
+
 # Ignore virtual environment directories
 .*env/
 
