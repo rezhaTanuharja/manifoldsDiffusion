@@ -1,3 +1,7 @@
+"""
+Checks that Linear CDF behaves as expected
+"""
+
 import pytest
 import torch
 
@@ -9,6 +13,9 @@ from diffusionmodels.stochasticprocesses.univariate.interfaces import (
 
 
 def test_construction() -> None:
+    """
+    Checks that `Linear` is an instance of `CumulativeDistributionFunction`
+    """
     try:
         cdf = Linear(support={"lower": 0.0, "upper": 1.0})
     except Exception as e:
@@ -25,7 +32,14 @@ def cdf_float():
 
 
 class TestOperationsFloat:
+    """
+    Check correctness of math operations in float precision
+    """
+
     def test_function_call(self, cdf_float) -> None:
+        """
+        Checks that evaluating the cdf produces the correct results
+        """
         points = torch.tensor(
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
@@ -50,6 +64,9 @@ class TestOperationsFloat:
         assert torch.allclose(cdf_values, reference_values, rtol=1e-6)
 
     def test_gradient(self, cdf_float) -> None:
+        """
+        Checks that calling the gradient produces an instance of `DensityFunction`
+        """
         density_function = cdf_float.gradient
 
         assert isinstance(density_function, DensityFunction)
