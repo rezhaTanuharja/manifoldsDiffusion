@@ -1,3 +1,7 @@
+"""
+Checks that univariate uniform density function behaves as expected.
+"""
+
 import pytest
 import torch
 
@@ -6,6 +10,9 @@ from diffusionmodels.stochasticprocesses.univariate.uniform import Uniform
 
 
 def test_construction() -> None:
+    """
+    Checks that `Uniform` is an instance of `DensityFunction`
+    """
     try:
         density_function = Uniform(support={"lower": 0.0, "upper": 1.0})
     except Exception as e:
@@ -17,6 +24,9 @@ def test_construction() -> None:
 
 
 def test_get_dimension() -> None:
+    """
+    Checks that dimension can be accessed and produces the correct values
+    """
     try:
         density_function = Uniform(support={"lower": 0.0, "upper": 1.0})
         dimension = density_function.dimension
@@ -39,7 +49,14 @@ def density_function_float():
 
 
 class TestOperationsFloat:
+    """
+    Checks correctness of math operations with float number
+    """
+
     def test_function_call(self, density_function_float) -> None:
+        """
+        Checks that calling `Uniform` as a function produces the correct results
+        """
         points = torch.tensor(
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
@@ -70,6 +87,9 @@ class TestOperationsFloat:
         )
 
     def test_gradient_call(self, density_function_float) -> None:
+        """
+        Checks that calling the gradient function produces the right values
+        """
         points = torch.rand(size=(3, 4, 5))
 
         try:
@@ -94,7 +114,14 @@ def density_function_double():
 
 
 class TestOperationsDouble:
+    """
+    Checks correctness of math operations with double precision
+    """
+
     def test_function_call(self, density_function_double) -> None:
+        """
+        Checks that calling `Uniform` as a function produces the correct results
+        """
         points = torch.tensor(
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
@@ -125,6 +152,9 @@ class TestOperationsDouble:
         )
 
     def test_gradient_call(self, density_function_double) -> None:
+        """
+        Checks that calling the gradient function produces the right values
+        """
         points = torch.rand(size=(3, 4, 5))
 
         try:
