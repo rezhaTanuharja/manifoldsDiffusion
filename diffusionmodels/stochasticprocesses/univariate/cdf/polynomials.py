@@ -17,9 +17,24 @@ from ..uniform import Uniform
 
 
 class Linear(CumulativeDistributionFunction):
+    """
+    A class of polynomial CDF with linear function
+    """
+
     def __init__(
         self, support: Dict[str, float], data_type: torch.dtype = torch.float32
     ) -> None:
+        """
+        Construct a CDF object for a univariate uniform distribution
+
+        Parameters
+        ----------
+        `support: Dict[str, float]`
+        A dictionary with keys 'lower' and 'upper', defines the interval
+
+        `data_type: torch.dtype = torch.float32`
+        The data type of floating points
+        """
         self._density = Uniform(support=support, data_type=data_type)
         self._support = support
         self._data_type = data_type
