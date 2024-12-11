@@ -16,7 +16,7 @@ cdf                 : implements various simple `CumulativeDistributionFunction`
 rootfinders         : implements various simple `RootFinder`
 """
 
-from . import cdf, inversetransform, rootfinders
+from . import cdf, inversetransform, rootfinders, uniform
 from .interfaces import CumulativeDistributionFunction, RootFinder
 
 __all__ = [
@@ -25,4 +25,5 @@ __all__ = [
     "inversetransform",
     "cdf",
     "rootfinders",
+    "uniform",
 ]
