@@ -61,7 +61,8 @@ class TestOperationsFloat:
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
                 [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
-            ]
+            ],
+            dtype=torch.float32,
         )
 
         try:
@@ -72,12 +73,14 @@ class TestOperationsFloat:
             )
 
         assert density_values.shape == points.shape
+        assert density_values.dtype == torch.float32
 
         reference_values = torch.tensor(
             [
                 [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
                 [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
-            ]
+            ],
+            dtype=torch.float32,
         )
 
         assert torch.allclose(
@@ -90,7 +93,7 @@ class TestOperationsFloat:
         """
         Checks that calling the gradient function produces the right values
         """
-        points = torch.rand(size=(3, 4, 5))
+        points = torch.rand(size=(3, 4, 5), dtype=torch.float32)
 
         try:
             gradient_values = density_function_float.gradient(points)
@@ -100,6 +103,7 @@ class TestOperationsFloat:
             )
 
         assert gradient_values.shape == points.shape
+        assert gradient_values.dtype == torch.float32
 
         assert torch.allclose(
             gradient_values,
@@ -126,7 +130,8 @@ class TestOperationsDouble:
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
                 [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
-            ]
+            ],
+            dtype=torch.float64,
         )
 
         try:
@@ -137,12 +142,14 @@ class TestOperationsDouble:
             )
 
         assert density_values.shape == points.shape
+        assert density_values.dtype == torch.float64
 
         reference_values = torch.tensor(
             [
                 [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
                 [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
-            ]
+            ],
+            dtype=torch.float64,
         )
 
         assert torch.allclose(
@@ -155,7 +162,7 @@ class TestOperationsDouble:
         """
         Checks that calling the gradient function produces the right values
         """
-        points = torch.rand(size=(3, 4, 5))
+        points = torch.rand(size=(3, 4, 5), dtype=torch.float64)
 
         try:
             gradient_values = density_function_double.gradient(points)
@@ -165,6 +172,7 @@ class TestOperationsDouble:
             )
 
         assert gradient_values.shape == points.shape
+        assert gradient_values.dtype == torch.float64
 
         assert torch.allclose(
             gradient_values,
