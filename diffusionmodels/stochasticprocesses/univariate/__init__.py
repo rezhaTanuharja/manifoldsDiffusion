@@ -16,19 +16,13 @@ cdf                 : implements various simple `CumulativeDistributionFunction`
 rootfinders         : implements various simple `RootFinder`
 """
 
-
+from . import cdf, inversetransform, rootfinders
 from .interfaces import CumulativeDistributionFunction, RootFinder
-from . import inversetransform
-from . import cdf
-from . import rootfinders
-
 
 __all__ = [
-
-    'CumulativeDistributionFunction',
-    'RootFinder',
-
-    'inversetransform',
-    'cdf',
-    'rootfinders',
+    "CumulativeDistributionFunction",
+    "RootFinder",
+    "inversetransform",
+    "cdf",
+    "rootfinders",
 ]

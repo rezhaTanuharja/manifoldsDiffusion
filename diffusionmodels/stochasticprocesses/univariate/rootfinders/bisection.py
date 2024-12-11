@@ -6,15 +6,14 @@ Classes
 `Bisection`    : find root using the bisection method
 """
 
-from .. import RootFinder
+from typing import Callable, Tuple
 
 import torch
 
-from typing import Callable, Tuple
+from ..interfaces import RootFinder
 
 
 class Bisection(RootFinder):
-
     def __init__(self, num_iterations: int):
         self._num_iterations = num_iterations
 
@@ -24,12 +23,10 @@ class Bisection(RootFinder):
         target_values: torch.Tensor,
         interval: Tuple[float, float],
     ) -> torch.Tensor:
-
         lower_bound = torch.full_like(target_values, fill_value=interval[0])
         upper_bound = torch.full_like(target_values, fill_value=interval[1])
 
         for _ in range(self._num_iterations):
-
             midpoint = 0.5 * (lower_bound + upper_bound)
 
             function_values = function(midpoint)

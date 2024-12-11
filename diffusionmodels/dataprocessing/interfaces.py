@@ -7,7 +7,6 @@ Classes
 A callable object that acts as a black-box transformation
 """
 
-
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -22,11 +21,9 @@ class Transform(ABC):
     Transform `data` into `Transform(data)`
     """
 
-
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
         raise NotImplementedError("Subclasses must implement this method")
-
 
     @abstractmethod
     def __call__(self, data: Any) -> Any:

@@ -7,7 +7,6 @@ Classes
 A callable object that applies a sequence of transformations
 """
 
-
 from .interfaces import Transform
 from typing import List, Any, Callable
 
@@ -27,7 +26,6 @@ class Pipeline(Transform):
         self._transforms = transforms
 
     def __call__(self, data: Any) -> Any:
-
         for transform in self._transforms:
             data = transform(data)
 

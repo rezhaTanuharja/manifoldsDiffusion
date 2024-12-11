@@ -7,16 +7,15 @@ Classes
 A class of CDF with linear function
 """
 
-from ....utilities.warningsuppressors import unused_variables
-from .. import CumulativeDistributionFunction
-
 from typing import Dict
 
 import torch
 
+from ....utilities.warningsuppressors import unused_variables
+from ..interfaces import CumulativeDistributionFunction
+
 
 class Linear(CumulativeDistributionFunction):
-
     def __init__(self, support: Dict[str, float]) -> None:
         self._support = support
 
@@ -32,7 +31,6 @@ class Linear(CumulativeDistributionFunction):
             ]
         ),
     ) -> torch.Tensor:
-
         unused_variables(times)
 
         return torch.clip(

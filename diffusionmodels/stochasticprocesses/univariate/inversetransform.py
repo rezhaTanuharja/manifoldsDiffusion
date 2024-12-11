@@ -11,8 +11,8 @@ from typing import Tuple
 
 import torch
 
-from .. import DensityFunction, StochasticProcess
-from . import CumulativeDistributionFunction, RootFinder
+from ..interfaces import DensityFunction, StochasticProcess
+from .interfaces import CumulativeDistributionFunction, RootFinder
 
 
 class InverseTransform(StochasticProcess):
