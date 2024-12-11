@@ -17,11 +17,7 @@ Date
 2024-08-01
 """
 
-from . import dataprocessing
-from . import stochasticprocesses
-from . import manifolds
-from . import utilities
-
+from . import dataprocessing, manifolds, stochasticprocesses, utilities
 
 __all__ = [
     "dataprocessing",
