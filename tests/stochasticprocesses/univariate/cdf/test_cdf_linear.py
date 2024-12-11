@@ -44,7 +44,8 @@ class TestOperationsFloat:
             [
                 [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
                 [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
-            ]
+            ],
+            dtype=torch.float32,
         )
         try:
             cdf_values = cdf_float(points)
@@ -52,6 +53,7 @@ class TestOperationsFloat:
             raise AssertionError(f"Calling cdf should not raise exception but got {e}")
 
         assert cdf_values.shape == points.shape
+        assert cdf_values.dtype == torch.float32
 
         reference_values = torch.tensor(
             [
@@ -99,6 +101,7 @@ class TestOperationsDouble:
             raise AssertionError(f"Calling cdf should not raise exception but got {e}")
 
         assert cdf_values.shape == points.shape
+        assert cdf_values.dtype == torch.float64
 
         reference_values = torch.tensor(
             [
