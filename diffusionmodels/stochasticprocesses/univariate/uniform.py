@@ -26,9 +26,18 @@ class Uniform(DensityFunction):
         return (1,)
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
-        value = 1.0 / (self._upper - self._lower)
+        lower_bound = torch.full_like(points, self._lower)
+        upper_bound = torch.full_like(points, self._upper)
 
-        return torch.full_like(input=points, fill_value=value, dtype=self._data_type)
+        values = 1.0 / (upper_bound - lower_bound)
+
+        result = torch.where(
+            (points < lower_bound) | (points > upper_bound),
+            input=torch.zeros_like(points),
+            other=values,
+        )
+
+        return result
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
         return torch.zeros_like(input=points, dtype=self._data_type)

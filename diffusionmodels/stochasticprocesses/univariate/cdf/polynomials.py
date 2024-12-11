@@ -12,13 +12,17 @@ from typing import Dict
 import torch
 
 from ....utilities.warningsuppressors import unused_variables
-from ..interfaces import CumulativeDistributionFunction
+from ..interfaces import CumulativeDistributionFunction, DensityFunction
+from ..uniform import Uniform
 
 
 class Linear(CumulativeDistributionFunction):
-    def __init__(self, support: Dict[str, float]) -> None:
-        self._lower = support["lower"]
-        self._upper = support["upper"]
+    def __init__(
+        self, support: Dict[str, float], data_type: torch.dtype = torch.float32
+    ) -> None:
+        self._density = Uniform(support=support, data_type=data_type)
+        self._support = support
+        self._data_type = data_type
 
     def to(self, device: torch.device) -> None:
         unused_variables(device)
@@ -39,10 +43,16 @@ class Linear(CumulativeDistributionFunction):
         unused_variables(times)
 
         return torch.clip(
-            (points - self._lower) / (self._upper - self._lower),
+            (points - self.support["lower"])
+            / (self.support["upper"] - self.support["lower"]),
             min=0.0,
             max=1.0,
         )
 
-    # def gradient(self) -> DensityFunction:
-    #     pass
+    @property
+    def gradient(self) -> DensityFunction:
+        return self._density
+
+    @property
+    def support(self) -> Dict[str, float]:
+        return self._support

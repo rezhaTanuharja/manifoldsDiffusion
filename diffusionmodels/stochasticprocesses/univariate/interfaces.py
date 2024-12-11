@@ -105,6 +105,7 @@ class CumulativeDistributionFunction(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+    @property
     @abstractmethod
     def gradient(self) -> DensityFunction:
         """

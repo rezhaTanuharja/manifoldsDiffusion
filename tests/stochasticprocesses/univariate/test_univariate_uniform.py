@@ -40,7 +40,12 @@ def density_function_float():
 
 class TestOperationsFloat:
     def test_function_call(self, density_function_float) -> None:
-        points = torch.rand(size=(3, 4, 5))
+        points = torch.tensor(
+            [
+                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+            ]
+        )
 
         try:
             density_values = density_function_float(points)
@@ -51,9 +56,17 @@ class TestOperationsFloat:
 
         assert density_values.shape == points.shape
 
+        reference_values = torch.tensor(
+            [
+                [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+                [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
+            ]
+        )
+
         assert torch.allclose(
             density_values,
-            torch.full_like(input=points, fill_value=0.4, dtype=torch.float32),
+            reference_values,
+            rtol=1e-12,
         )
 
     def test_gradient_call(self, density_function_float) -> None:
@@ -69,7 +82,9 @@ class TestOperationsFloat:
         assert gradient_values.shape == points.shape
 
         assert torch.allclose(
-            gradient_values, torch.zeros_like(input=points, dtype=torch.float32)
+            gradient_values,
+            torch.zeros_like(input=points, dtype=torch.float32),
+            rtol=1e-12,
         )
 
 
@@ -80,7 +95,12 @@ def density_function_double():
 
 class TestOperationsDouble:
     def test_function_call(self, density_function_double) -> None:
-        points = torch.rand(size=(3, 4, 5))
+        points = torch.tensor(
+            [
+                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+            ]
+        )
 
         try:
             density_values = density_function_double(points)
@@ -91,9 +111,17 @@ class TestOperationsDouble:
 
         assert density_values.shape == points.shape
 
+        reference_values = torch.tensor(
+            [
+                [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+                [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
+            ]
+        )
+
         assert torch.allclose(
             density_values,
-            torch.full_like(input=points, fill_value=0.4, dtype=torch.float64),
+            reference_values,
+            rtol=1e-12,
         )
 
     def test_gradient_call(self, density_function_double) -> None:
@@ -109,5 +137,7 @@ class TestOperationsDouble:
         assert gradient_values.shape == points.shape
 
         assert torch.allclose(
-            gradient_values, torch.zeros_like(input=points, dtype=torch.float64)
+            gradient_values,
+            torch.zeros_like(input=points, dtype=torch.float64),
+            rtol=1e-12,
         )
