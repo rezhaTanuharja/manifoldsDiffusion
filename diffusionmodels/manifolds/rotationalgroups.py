@@ -9,9 +9,9 @@ The 3-dimensional rotation matrix group
 
 from typing import Tuple
 
-from .interfaces import Manifold
-
 import torch
+
+from .interfaces import Manifold
 
 
 class SpecialOrthogonal3(Manifold):

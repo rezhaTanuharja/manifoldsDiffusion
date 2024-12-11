@@ -10,12 +10,12 @@ A purely abstract class that serves as an interface of all CDFs
 A purely abstract class that serves as an interface of all root-finder
 """
 
-from .. import DensityFunction
-
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Callable, Self
+from typing import Callable, Dict, Tuple
 
 import torch
+
+from .. import DensityFunction
 
 
 class CumulativeDistributionFunction(ABC):
@@ -60,7 +60,7 @@ class CumulativeDistributionFunction(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
-    def at(self, time: torch.Tensor) -> Self:
+    def at(self, time: torch.Tensor):
         """
         Set the internal time of the density function
 

@@ -7,12 +7,12 @@ Classes
 A stochastic process defined by a CDF and sampled using inverse transform method
 """
 
-from .. import DensityFunction, StochasticProcess
-from . import CumulativeDistributionFunction, RootFinder
-
-from typing import Tuple, Self
+from typing import Tuple
 
 import torch
+
+from .. import DensityFunction, StochasticProcess
+from . import CumulativeDistributionFunction, RootFinder
 
 
 class InverseTransform(StochasticProcess):
@@ -47,7 +47,7 @@ class InverseTransform(StochasticProcess):
         self._distribution.to(self._device)
         self._time.to(self._device)
 
-    def at(self, time: torch.Tensor) -> Self:
+    def at(self, time: torch.Tensor):
         self._time = time
         self._time.to(self._device)
         return self
@@ -62,7 +62,6 @@ class InverseTransform(StochasticProcess):
         self,
         num_samples: int,
     ) -> torch.Tensor:
-
         target_values = torch.rand(size=(*self._time.shape, num_samples))
 
         return self._root_finder.solve(

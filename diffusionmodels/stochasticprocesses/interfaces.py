@@ -11,7 +11,7 @@ A purely abstract class that serves as an interface of all stochastic processes
 """
 
 from abc import ABC, abstractmethod
-from typing import Tuple, Self
+from typing import Tuple
 
 import torch
 
@@ -57,7 +57,7 @@ class DensityFunction(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
-    def at(self, time: torch.Tensor) -> Self:
+    def at(self, time: torch.Tensor):
         """
         Set the internal time of the density function
 
@@ -162,7 +162,7 @@ class StochasticProcess(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
-    def at(self, time: torch.Tensor) -> Self:
+    def at(self, time: torch.Tensor):
         """
         Set the internal time of the stochastic process
 
