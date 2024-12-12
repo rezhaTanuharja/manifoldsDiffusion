@@ -6,18 +6,18 @@ import pytest
 import torch
 
 from diffusionmodels.stochasticprocesses.interfaces import DensityFunction
-from diffusionmodels.stochasticprocesses.univariate.uniform import Uniform
+from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensity
 
 
 def test_construction() -> None:
     """
-    Checks that `Uniform` is an instance of `DensityFunction`
+    Checks that `UniformDensity` is an instance of `DensityFunction`
     """
     try:
-        density_function = Uniform(support={"lower": 0.0, "upper": 1.0})
+        density_function = UniformDensity(support={"lower": 0.0, "upper": 1.0})
     except Exception as e:
         raise AssertionError(
-            f"Manifold construction should not raise exception but got {e}"
+            f"Density construction should not raise exception but got {e}"
         )
 
     assert isinstance(density_function, DensityFunction)
@@ -28,7 +28,7 @@ def test_get_dimension() -> None:
     Checks that dimension can be accessed and produces the correct values
     """
     try:
-        density_function = Uniform(support={"lower": 0.0, "upper": 1.0})
+        density_function = UniformDensity(support={"lower": 0.0, "upper": 1.0})
         dimension = density_function.dimension
     except Exception as e:
         raise AssertionError(
@@ -45,7 +45,7 @@ def test_get_dimension() -> None:
 
 @pytest.fixture(scope="class")
 def density_function_float():
-    return Uniform(support={"lower": 1.5, "upper": 4.0}, data_type=torch.float32)
+    return UniformDensity(support={"lower": 1.5, "upper": 4.0}, data_type=torch.float32)
 
 
 class TestOperationsFloat:
@@ -55,7 +55,7 @@ class TestOperationsFloat:
 
     def test_function_call(self, density_function_float) -> None:
         """
-        Checks that calling `Uniform` as a function produces the correct results
+        Checks that calling `UniformDensity` as a function produces the correct results
         """
         points = torch.tensor(
             [
@@ -114,7 +114,7 @@ class TestOperationsFloat:
 
 @pytest.fixture(scope="class")
 def density_function_double():
-    return Uniform(support={"lower": 1.5, "upper": 4.0}, data_type=torch.float64)
+    return UniformDensity(support={"lower": 1.5, "upper": 4.0}, data_type=torch.float64)
 
 
 class TestOperationsDouble:
@@ -124,7 +124,7 @@ class TestOperationsDouble:
 
     def test_function_call(self, density_function_double) -> None:
         """
-        Checks that calling `Uniform` as a function produces the correct results
+        Checks that calling `UniformDensity` as a function produces the correct results
         """
         points = torch.tensor(
             [

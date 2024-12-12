@@ -11,19 +11,16 @@ A purely abstract class that serves as an interface of all root-finder
 
 Modules
 -------
-inversetransform    : implements univariate process defined by their CDFs
-cdf                 : implements various simple `CumulativeDistributionFunction`
-rootfinders         : implements various simple `RootFinder`
+uniform             : implements the univariate uniform process
+inversetransforms   : implements univariate process defined by their CDFs
 """
 
-from . import cdf, inversetransform, rootfinders, uniform
+from . import inversetransforms, uniform
 from .interfaces import CumulativeDistributionFunction, RootFinder
 
 __all__ = [
     "CumulativeDistributionFunction",
     "RootFinder",
-    "inversetransform",
-    "cdf",
-    "rootfinders",
+    "inversetransforms",
     "uniform",
 ]

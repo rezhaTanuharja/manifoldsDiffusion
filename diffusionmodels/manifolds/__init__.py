@@ -11,9 +11,8 @@ Modules
 rotationalgroups  : Groups of all orthogonal matrices with determinant 1
 """
 
-from .interfaces import Manifold
 from . import rotationalgroups
-
+from .interfaces import Manifold
 
 __all__ = [
     "Manifold",
