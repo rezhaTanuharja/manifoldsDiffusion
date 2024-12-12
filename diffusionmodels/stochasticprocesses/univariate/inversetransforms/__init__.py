@@ -27,7 +27,10 @@ class InverseTransform(StochasticProcess):
     """
 
     def __init__(
-        self, distribution: CumulativeDistributionFunction, root_finder: RootFinder
+        self,
+        distribution: CumulativeDistributionFunction,
+        root_finder: RootFinder,
+        data_type: torch.dtype = torch.float32,
     ) -> None:
         """
         Construct an instance of InverseTransform
@@ -42,10 +45,12 @@ class InverseTransform(StochasticProcess):
         """
         self._distribution = distribution
         self._root_finder = root_finder
+        self._data_type = data_type
         self._time = torch.tensor(
             [
                 0.0,
-            ]
+            ],
+            dtype=data_type,
         )
 
     def to(self, device: torch.device) -> None:
@@ -58,9 +63,11 @@ class InverseTransform(StochasticProcess):
         self._time.to(self._device)
         return self
 
+    @property
     def dimension(self) -> Tuple[int, ...]:
         return (1,)
 
+    @property
     def density(self) -> DensityFunction:
         return self._distribution.gradient
 
@@ -68,7 +75,9 @@ class InverseTransform(StochasticProcess):
         self,
         num_samples: int,
     ) -> torch.Tensor:
-        target_values = torch.rand(size=(*self._time.shape, num_samples))
+        target_values = torch.rand(
+            size=(*self._time.shape, num_samples), dtype=self._data_type
+        )
 
         return self._root_finder.solve(
             function=self._distribution,
