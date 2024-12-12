@@ -5,52 +5,46 @@ Checks that univariate uniform stochastic process behaves as expected.
 import pytest
 import torch
 
-from diffusionmodels.stochasticprocesses.interfaces import StochasticProcess
 from diffusionmodels.stochasticprocesses.univariate.uniform import Uniform
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="class")
 def uniform_process_float():
-    try:
-        process = Uniform(support={"lower": 2.0, "upper": 4.0})
-    except Exception as e:
-        print(f"Fixture raised an exception: {e}")
-        return None
-
-    return process
+    return Uniform(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32)
 
 
-def test_construction(uniform_process_float):
-    assert isinstance(uniform_process_float, StochasticProcess)
-
-
-@pytest.mark.skipif(
-    not isinstance(uniform_process_float, StochasticProcess),
-    reason="Failed to construct a uniform process",
-)
 class TestOperationsFloat:
+    """
+    Checks correctness of math operations with float number
+    """
+
     def test_get_dimension(self, uniform_process_float) -> None:
-        try:
-            dimension = uniform_process_float.dimension
-        except Exception as e:
-            assert False, f"Got an exception when accessing dimension: {e}"
+        """
+        Checks that dimension can be accessed and produces the correct values
+        """
+        dimension = uniform_process_float.dimension
 
         assert isinstance(dimension, tuple)
+
         assert len(dimension) == 1
 
         for entry in dimension:
             assert isinstance(entry, int)
-            assert entry == 1
+            assert entry == 1, f"Entry value should be 1, got {entry} instead"
 
     def test_sample(self, uniform_process_float) -> None:
-        try:
-            samples = uniform_process_float.sample(num_samples=50)
-        except Exception as e:
-            assert False, f"Got an exception when accessing dimension: {e}"
+        """
+        Checks that samples can be generated and produces the correct values
+        """
+        samples = uniform_process_float.sample(num_samples=50)
 
         assert isinstance(samples, torch.Tensor)
-        assert samples.shape == (50, 1)
+        assert samples.dtype == torch.float32
+
+        assert samples.shape == (
+            50,
+            1,
+        )
 
         assert torch.all((samples >= 2.0) & (samples < 4.0))
-
         assert torch.std(samples) > 0.0
