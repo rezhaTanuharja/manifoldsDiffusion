@@ -38,8 +38,11 @@ class Uniform(StochasticProcess):
         return self._density
 
     def sample(self, num_samples: int) -> torch.Tensor:
-        return self._support["lower"] + self._support["upper"] * torch.rand(
-            size=(num_samples, *self.dimension)
+        lower_bound = self._support["lower"]
+        upper_bound = self._support["upper"]
+
+        return lower_bound + (upper_bound - lower_bound) * torch.rand(
+            size=(num_samples, *self.dimension), dtype=self._data_type
         )
 
 
