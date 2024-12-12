@@ -63,7 +63,7 @@ def uniform_process_double():
     return Uniform(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64)
 
 
-class TestOperationsdouble:
+class TestOperationsDouble:
     """
     Checks correctness of math operations with double number
     """

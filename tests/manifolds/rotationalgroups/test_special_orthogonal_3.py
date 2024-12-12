@@ -312,7 +312,7 @@ def manifold_cpu_double():
     return SpecialOrthogonal3(data_type=torch.float64)
 
 
-class TestCPUOperationsdouble:
+class TestCPUOperationsDouble:
     """
     A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
