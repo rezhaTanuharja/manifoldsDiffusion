@@ -23,8 +23,12 @@ class Bisection(RootFinder):
         target_values: torch.Tensor,
         interval: Tuple[float, float],
     ) -> torch.Tensor:
-        lower_bound = torch.full_like(target_values, fill_value=interval[0])
-        upper_bound = torch.full_like(target_values, fill_value=interval[1])
+        lower_bound = torch.full_like(
+            target_values, fill_value=interval[0], dtype=target_values.dtype
+        )
+        upper_bound = torch.full_like(
+            target_values, fill_value=interval[1], dtype=target_values.dtype
+        )
 
         for _ in range(self._num_iterations):
             midpoint = 0.5 * (lower_bound + upper_bound)
