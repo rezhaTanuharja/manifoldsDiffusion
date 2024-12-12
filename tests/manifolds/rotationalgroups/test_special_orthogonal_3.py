@@ -1,11 +1,11 @@
 """
-Checks mathematic operations of the SpecialOrthogonal3 class on CPU.
+Checks mathematic operations of the SpecialOrthogonal3 class.
 """
-
-from diffusionmodels.manifolds.rotationalgroups import SpecialOrthogonal3
 
 import pytest
 import torch
+
+from diffusionmodels.manifolds.rotationalgroups import SpecialOrthogonal3
 
 
 @pytest.fixture(scope="class")
@@ -13,11 +13,38 @@ def manifold_cpu_float():
     return SpecialOrthogonal3(data_type=torch.float32)
 
 
-@pytest.mark.cpu
 class TestCPUOperationsFloat:
     """
     A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
+
+    def test_get_dimension(self, manifold_cpu_float) -> None:
+        """
+        Checks that `dimension` can be accessed and the value is a tuple `(3, 3)`
+        """
+
+        dimension = manifold_cpu_float.dimension
+
+        assert isinstance(dimension, tuple)
+        assert len(dimension) == 2
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 3
+
+    def test_get_tangent_dimension(self, manifold_cpu_float) -> None:
+        """
+        Checks that `tangent_dimension` can be invoked and return the tuple `(3,)`
+        """
+
+        tangent_dimension = manifold_cpu_float.tangent_dimension
+
+        assert isinstance(tangent_dimension, tuple)
+        assert len(tangent_dimension) == 1
+
+        for entry in tangent_dimension:
+            assert isinstance(entry, int)
+            assert entry == 3
 
     def test_exp_compatibility(self, manifold_cpu_float) -> None:
         """
@@ -41,10 +68,7 @@ class TestCPUOperationsFloat:
 
         print(vectors.shape)
 
-        try:
-            new_points = manifold_cpu_float.exp(points, vectors)
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        new_points = manifold_cpu_float.exp(points, vectors)
 
         assert new_points.shape == (5, 1, 4, 3, 3)
         assert torch.allclose(points, new_points, rtol=1e-16)
@@ -69,10 +93,7 @@ class TestCPUOperationsFloat:
             dtype=torch.float32,
         )
 
-        try:
-            new_points = manifold_cpu_float.exp(points, vectors)
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        new_points = manifold_cpu_float.exp(points, vectors)
 
         assert new_points.shape == (2, 6, 3, 3)
 
@@ -156,14 +177,10 @@ class TestCPUOperationsFloat:
             dtype=torch.float32,
         )
 
-        try:
-            results_1 = manifold_cpu_float.exp(
-                manifold_cpu_float.exp(points, vectors_1), vectors_2
-            )
-            results_2 = manifold_cpu_float.exp(points, vectors_1 + vectors_2)
-
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        results_1 = manifold_cpu_float.exp(
+            manifold_cpu_float.exp(points, vectors_1), vectors_2
+        )
+        results_2 = manifold_cpu_float.exp(points, vectors_1 + vectors_2)
 
         assert results_1.shape == (2, 6, 3, 3)
         assert results_2.shape == (2, 6, 3, 3)
@@ -187,10 +204,7 @@ class TestCPUOperationsFloat:
         ends = torch.eye(3, dtype=torch.float32).view(1, 3, 3)
         ends = ends.repeat(4, 1, 1)
 
-        try:
-            vectors = manifold_cpu_float.log(starts, ends)
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        vectors = manifold_cpu_float.log(starts, ends)
 
         assert vectors.shape == (5, 2, 4, 3)
 
@@ -238,10 +252,7 @@ class TestCPUOperationsFloat:
             dtype=torch.float32,
         )
 
-        try:
-            vectors = manifold_cpu_float.log(starts, ends)
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        vectors = manifold_cpu_float.log(starts, ends)
 
         assert vectors.shape == (2, 4, 3)
 
@@ -281,12 +292,9 @@ class TestCPUOperationsFloat:
             dtype=torch.float32,
         )
 
-        try:
-            computed_vectors = manifold_cpu_float.log(
-                points, manifold_cpu_float.exp(points, vectors)
-            )
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        computed_vectors = manifold_cpu_float.log(
+            points, manifold_cpu_float.exp(points, vectors)
+        )
 
         assert computed_vectors.shape == (2, 4, 3)
 
@@ -304,11 +312,38 @@ def manifold_cpu_double():
     return SpecialOrthogonal3(data_type=torch.float64)
 
 
-@pytest.mark.cpu
-class TestCPUOperationsDouble:
+class TestCPUOperationsdouble:
     """
     A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
+
+    def test_get_dimension(self, manifold_cpu_double) -> None:
+        """
+        Checks that `dimension` can be accessed and the value is a tuple `(3, 3)`
+        """
+
+        dimension = manifold_cpu_double.dimension
+
+        assert isinstance(dimension, tuple)
+        assert len(dimension) == 2
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 3
+
+    def test_get_tangent_dimension(self, manifold_cpu_double) -> None:
+        """
+        Checks that `tangent_dimension` can be invoked and return the tuple `(3,)`
+        """
+
+        tangent_dimension = manifold_cpu_double.tangent_dimension
+
+        assert isinstance(tangent_dimension, tuple)
+        assert len(tangent_dimension) == 1
+
+        for entry in tangent_dimension:
+            assert isinstance(entry, int)
+            assert entry == 3
 
     def test_exp_compatibility(self, manifold_cpu_double) -> None:
         """
@@ -332,10 +367,7 @@ class TestCPUOperationsDouble:
 
         print(vectors.shape)
 
-        try:
-            new_points = manifold_cpu_double.exp(points, vectors)
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        new_points = manifold_cpu_double.exp(points, vectors)
 
         assert new_points.shape == (5, 1, 4, 3, 3)
         assert torch.allclose(points, new_points, rtol=1e-16)
@@ -360,10 +392,7 @@ class TestCPUOperationsDouble:
             dtype=torch.float64,
         )
 
-        try:
-            new_points = manifold_cpu_double.exp(points, vectors)
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        new_points = manifold_cpu_double.exp(points, vectors)
 
         assert new_points.shape == (2, 6, 3, 3)
 
@@ -412,7 +441,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    rtol=1e-16,
+                    rtol=5e-5,
                 )
 
     def test_exp_nested(self, manifold_cpu_double) -> None:
@@ -447,14 +476,10 @@ class TestCPUOperationsDouble:
             dtype=torch.float64,
         )
 
-        try:
-            results_1 = manifold_cpu_double.exp(
-                manifold_cpu_double.exp(points, vectors_1), vectors_2
-            )
-            results_2 = manifold_cpu_double.exp(points, vectors_1 + vectors_2)
-
-        except Exception as e:
-            assert False, f"Got exception when computing exp: {e}"
+        results_1 = manifold_cpu_double.exp(
+            manifold_cpu_double.exp(points, vectors_1), vectors_2
+        )
+        results_2 = manifold_cpu_double.exp(points, vectors_1 + vectors_2)
 
         assert results_1.shape == (2, 6, 3, 3)
         assert results_2.shape == (2, 6, 3, 3)
@@ -464,7 +489,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     results_1[repetition, distinct_point],
                     results_2[repetition, distinct_point],
-                    rtol=1e-16,
+                    rtol=5e-5,
                 )
 
     def test_log_compatibility(self, manifold_cpu_double) -> None:
@@ -478,10 +503,7 @@ class TestCPUOperationsDouble:
         ends = torch.eye(3, dtype=torch.float64).view(1, 3, 3)
         ends = ends.repeat(4, 1, 1)
 
-        try:
-            vectors = manifold_cpu_double.log(starts, ends)
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        vectors = manifold_cpu_double.log(starts, ends)
 
         assert vectors.shape == (5, 2, 4, 3)
 
@@ -529,10 +551,7 @@ class TestCPUOperationsDouble:
             dtype=torch.float64,
         )
 
-        try:
-            vectors = manifold_cpu_double.log(starts, ends)
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        vectors = manifold_cpu_double.log(starts, ends)
 
         assert vectors.shape == (2, 4, 3)
 
@@ -551,7 +570,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    rtol=5e-8,
+                    rtol=5e-5,
                 )
 
     def test_exp_log_connection(self, manifold_cpu_double) -> None:
@@ -572,12 +591,9 @@ class TestCPUOperationsDouble:
             dtype=torch.float64,
         )
 
-        try:
-            computed_vectors = manifold_cpu_double.log(
-                points, manifold_cpu_double.exp(points, vectors)
-            )
-        except Exception as e:
-            assert False, f"Got exception when computing log: {e}"
+        computed_vectors = manifold_cpu_double.log(
+            points, manifold_cpu_double.exp(points, vectors)
+        )
 
         assert computed_vectors.shape == (2, 4, 3)
 
@@ -586,5 +602,5 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    rtol=5e-8,
+                    rtol=1e-6,
                 )

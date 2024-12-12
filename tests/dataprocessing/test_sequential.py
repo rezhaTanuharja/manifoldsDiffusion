@@ -5,7 +5,6 @@ Checks the operations of sequential data processing.
 import pytest
 import torch
 
-
 from diffusionmodels.dataprocessing import Transform, sequential
 
 
@@ -66,7 +65,6 @@ def data_cpu():
     )
 
 
-@pytest.mark.cpu
 class TestCPUPipeline:
     """
     A group of `Pipeline` tests to be performed on CPU
@@ -158,7 +156,6 @@ class TestCPUPipeline:
 #     return data
 #
 #
-# @pytest.mark.gpu
 # class TestGPUPipeline:
 #     """
 #     A group of `Pipeline` tests to be performed on GPU
