@@ -34,7 +34,7 @@ class TestOperationsFloat:
 
     def test_function_call(self, density_function_float) -> None:
         """
-        Checks that calling `UniformDensity` as a function produces the correct results
+        Checks that calling `UniformDensityDensity` as a function produces the correct results
         """
         points = torch.tensor(
             [
@@ -93,7 +93,7 @@ class TestOperationsDouble:
 
     def test_function_call(self, density_function_double) -> None:
         """
-        Checks that calling `UniformDensity` as a function produces the correct results
+        Checks that calling `UniformDensityDensity` as a function produces the correct results
         """
         points = torch.tensor(
             [
