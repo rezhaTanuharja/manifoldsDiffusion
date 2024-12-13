@@ -52,6 +52,7 @@ class InverseTransform(StochasticProcess):
             ],
             dtype=data_type,
         )
+        self._device = torch.device("cpu")
 
     def to(self, device: torch.device) -> None:
         self._device = device
