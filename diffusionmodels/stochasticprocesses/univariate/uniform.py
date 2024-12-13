@@ -11,7 +11,6 @@ from typing import Dict, Tuple
 
 import torch
 
-from ...utilities.warningsuppressors import unused_variables
 from ..interfaces import DensityFunction, StochasticProcess
 
 
@@ -22,12 +21,23 @@ class Uniform(StochasticProcess):
         self._support = support
         self._data_type = data_type
         self._density = UniformDensity(support, data_type)
+        self._time = torch.tensor(
+            [
+                0.0,
+            ],
+            dtype=data_type,
+        )
+        self._device = torch.device("cpu")
 
     def to(self, device: torch.device) -> None:
+        self._device = device
         self._density.to(device)
 
     def at(self, time: torch.Tensor):
+        self._time = time
+        self._time.to(self._device)
         self._density.at(time)
+        return self
 
     @property
     def dimension(self) -> Tuple[int, ...]:
@@ -42,7 +52,8 @@ class Uniform(StochasticProcess):
         upper_bound = self._support["upper"]
 
         return lower_bound + (upper_bound - lower_bound) * torch.rand(
-            size=(num_samples, *self.dimension), dtype=self._data_type
+            size=(*self._time.shape, num_samples, *self.dimension),
+            dtype=self._data_type,
         )
 
 
@@ -68,12 +79,21 @@ class UniformDensity(DensityFunction):
         self._data_type = data_type
         self._lower = support["lower"]
         self._upper = support["upper"]
+        self._time = torch.tensor(
+            [
+                0.0,
+            ],
+            dtype=data_type,
+        )
+        self._device = torch.device("cpu")
 
     def to(self, device: torch.device) -> None:
-        unused_variables(device)
+        self._device = device
+        self._time.to(device)
 
     def at(self, time: torch.Tensor):
-        unused_variables(time)
+        self._time = time
+        self._time.to(self._device)
         return self
 
     @property
@@ -92,7 +112,15 @@ class UniformDensity(DensityFunction):
             other=values,
         )
 
+        result = result.unsqueeze(0)
+        result = result.repeat((*self._time.shape, *(1 for _ in result.shape[1:])))
+
         return result
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
-        return torch.zeros_like(input=points, dtype=self._data_type)
+        result = torch.zeros_like(input=points, dtype=self._data_type)
+
+        result = result.unsqueeze(0)
+        result = result.repeat((*self._time.shape, *(1 for _ in result.shape[1:])))
+
+        return result

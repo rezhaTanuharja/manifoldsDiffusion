@@ -45,6 +45,7 @@ class TestOperationsFloat:
         assert samples.dtype == torch.float32
 
         assert samples.shape == (
+            1,
             50,
             1,
         )
@@ -53,6 +54,37 @@ class TestOperationsFloat:
         assert torch.std(samples) > 0.0
 
     def test_gradient(self, uniform_process_float) -> None:
+        density = uniform_process_float.density
+
+        assert isinstance(density, UniformDensity)
+
+    def test_change_time(self, uniform_process_float):
+        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float32)
+
+        dimension = uniform_process_float.at(time).dimension
+
+        assert isinstance(dimension, tuple)
+
+        assert len(dimension) == 1
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 1, f"Entry value should be 1, got {entry} instead"
+
+        samples = uniform_process_float.sample(num_samples=50)
+
+        assert isinstance(samples, torch.Tensor)
+        assert samples.dtype == torch.float32
+
+        assert samples.shape == (
+            3,
+            50,
+            1,
+        )
+
+        assert torch.all((samples >= 2.0) & (samples < 4.0))
+        assert torch.std(samples) > 0.0
+
         density = uniform_process_float.density
 
         assert isinstance(density, UniformDensity)
@@ -92,6 +124,7 @@ class TestOperationsDouble:
         assert samples.dtype == torch.float64
 
         assert samples.shape == (
+            1,
             50,
             1,
         )
@@ -100,6 +133,37 @@ class TestOperationsDouble:
         assert torch.std(samples) > 0.0
 
     def test_gradient(self, uniform_process_double) -> None:
+        density = uniform_process_double.density
+
+        assert isinstance(density, UniformDensity)
+
+    def test_change_time(self, uniform_process_double):
+        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float64)
+
+        dimension = uniform_process_double.at(time).dimension
+
+        assert isinstance(dimension, tuple)
+
+        assert len(dimension) == 1
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 1, f"Entry value should be 1, got {entry} instead"
+
+        samples = uniform_process_double.sample(num_samples=50)
+
+        assert isinstance(samples, torch.Tensor)
+        assert samples.dtype == torch.float64
+
+        assert samples.shape == (
+            3,
+            50,
+            1,
+        )
+
+        assert torch.all((samples >= 2.0) & (samples < 4.0))
+        assert torch.std(samples) > 0.0
+
         density = uniform_process_double.density
 
         assert isinstance(density, UniformDensity)

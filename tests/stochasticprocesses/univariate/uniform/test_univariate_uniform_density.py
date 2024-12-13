@@ -46,7 +46,7 @@ class TestOperationsFloat:
 
         density_values = density_function_float(points)
 
-        assert density_values.shape == points.shape
+        assert density_values.shape == (1, *points.shape)
         assert density_values.dtype == torch.float32
 
         reference_values = torch.tensor(
@@ -71,7 +71,59 @@ class TestOperationsFloat:
 
         gradient_values = density_function_float.gradient(points)
 
-        assert gradient_values.shape == points.shape
+        assert gradient_values.shape == (1, *points.shape)
+        assert gradient_values.dtype == torch.float32
+
+        assert torch.allclose(
+            gradient_values,
+            torch.zeros_like(input=points, dtype=torch.float32),
+            rtol=1e-12,
+        )
+
+    def test_change_time(self, density_function_float):
+        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float32)
+
+        dimension = density_function_float.at(time).dimension
+
+        assert isinstance(dimension, tuple)
+        assert len(dimension) == 1
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 1
+
+        points = torch.tensor(
+            [
+                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+            ],
+            dtype=torch.float32,
+        )
+
+        density_values = density_function_float(points)
+
+        assert density_values.shape == (3, *points.shape)
+        assert density_values.dtype == torch.float32
+
+        reference_values = torch.tensor(
+            [
+                [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+                [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
+            ],
+            dtype=torch.float32,
+        )
+
+        assert torch.allclose(
+            density_values,
+            reference_values,
+            rtol=1e-12,
+        )
+
+        points = torch.rand(size=(3, 4, 5), dtype=torch.float32)
+
+        gradient_values = density_function_float.gradient(points)
+
+        assert gradient_values.shape == (3, *points.shape)
         assert gradient_values.dtype == torch.float32
 
         assert torch.allclose(
@@ -105,7 +157,7 @@ class TestOperationsDouble:
 
         density_values = density_function_double(points)
 
-        assert density_values.shape == points.shape
+        assert density_values.shape == (1, *points.shape)
         assert density_values.dtype == torch.float64
 
         reference_values = torch.tensor(
@@ -130,7 +182,59 @@ class TestOperationsDouble:
 
         gradient_values = density_function_double.gradient(points)
 
-        assert gradient_values.shape == points.shape
+        assert gradient_values.shape == (1, *points.shape)
+        assert gradient_values.dtype == torch.float64
+
+        assert torch.allclose(
+            gradient_values,
+            torch.zeros_like(input=points, dtype=torch.float64),
+            rtol=1e-12,
+        )
+
+    def test_change_time(self, density_function_double):
+        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float64)
+
+        dimension = density_function_double.at(time).dimension
+
+        assert isinstance(dimension, tuple)
+        assert len(dimension) == 1
+
+        for entry in dimension:
+            assert isinstance(entry, int)
+            assert entry == 1
+
+        points = torch.tensor(
+            [
+                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+            ],
+            dtype=torch.float64,
+        )
+
+        density_values = density_function_double(points)
+
+        assert density_values.shape == (3, *points.shape)
+        assert density_values.dtype == torch.float64
+
+        reference_values = torch.tensor(
+            [
+                [0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4],
+                [0.0, 0.0, 0.0, 0.0, 0.4, 0.0, 0.4, 0.4, 0.4],
+            ],
+            dtype=torch.float64,
+        )
+
+        assert torch.allclose(
+            density_values,
+            reference_values,
+            rtol=1e-12,
+        )
+
+        points = torch.rand(size=(3, 4, 5), dtype=torch.float64)
+
+        gradient_values = density_function_double.gradient(points)
+
+        assert gradient_values.shape == (3, *points.shape)
         assert gradient_values.dtype == torch.float64
 
         assert torch.allclose(
