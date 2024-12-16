@@ -142,7 +142,7 @@ class TestCPUOperationsFloat:
                 assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    rtol=5e-5,
+                    rtol=5e-7,
                 )
 
     def test_exp_nested(self, manifold_cpu_float) -> None:
@@ -271,7 +271,7 @@ class TestCPUOperationsFloat:
                 assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    rtol=5e-5,
+                    rtol=1e-7,
                 )
 
     def test_exp_log_connection(self, manifold_cpu_float) -> None:
@@ -303,7 +303,7 @@ class TestCPUOperationsFloat:
                 assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    rtol=1e-6,
+                    rtol=5e-7,
                 )
 
 
@@ -441,7 +441,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    rtol=5e-5,
+                    rtol=1e-16,
                 )
 
     def test_exp_nested(self, manifold_cpu_double) -> None:
@@ -489,7 +489,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     results_1[repetition, distinct_point],
                     results_2[repetition, distinct_point],
-                    rtol=5e-5,
+                    rtol=1e-16,
                 )
 
     def test_log_compatibility(self, manifold_cpu_double) -> None:
@@ -570,7 +570,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    rtol=5e-5,
+                    rtol=1e-8,
                 )
 
     def test_exp_log_connection(self, manifold_cpu_double) -> None:
@@ -602,7 +602,7 @@ class TestCPUOperationsDouble:
                 assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    rtol=1e-6,
+                    rtol=1e-8,
                 )
 
 
@@ -750,7 +750,7 @@ class TestGPUOperationsFloat:
                 assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    rtol=5e-5,
+                    rtol=5e-7,
                 )
 
     def test_exp_nested(self, manifold_gpu_float) -> None:
@@ -892,7 +892,7 @@ class TestGPUOperationsFloat:
                 assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    rtol=5e-5,
+                    rtol=1e-7,
                 )
 
     def test_exp_log_connection(self, manifold_gpu_float) -> None:
@@ -927,7 +927,7 @@ class TestGPUOperationsFloat:
                 assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    rtol=1e-6,
+                    rtol=5e-7,
                 )
 
 
@@ -1075,7 +1075,7 @@ class TestGPUOperationsdouble:
                 assert torch.allclose(
                     new_points[repetition, distinct_point],
                     reference_points[distinct_point],
-                    rtol=5e-5,
+                    rtol=1e-16,
                 )
 
     def test_exp_nested(self, manifold_gpu_double) -> None:
@@ -1127,7 +1127,7 @@ class TestGPUOperationsdouble:
                 assert torch.allclose(
                     results_1[repetition, distinct_point],
                     results_2[repetition, distinct_point],
-                    rtol=5e-5,
+                    rtol=1e-16,
                 )
 
     def test_log_compatibility(self, manifold_gpu_double) -> None:
@@ -1217,7 +1217,7 @@ class TestGPUOperationsdouble:
                 assert torch.allclose(
                     vectors[repetition, distinct_vector],
                     reference_vectors[distinct_vector],
-                    rtol=5e-5,
+                    rtol=1e-8,
                 )
 
     def test_exp_log_connection(self, manifold_gpu_double) -> None:
@@ -1252,5 +1252,5 @@ class TestGPUOperationsdouble:
                 assert torch.allclose(
                     computed_vectors[repetition, distinct_point],
                     vectors[distinct_point],
-                    rtol=1e-6,
+                    rtol=1e-8,
                 )
