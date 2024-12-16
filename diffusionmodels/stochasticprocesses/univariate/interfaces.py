@@ -27,17 +27,14 @@ class CumulativeDistributionFunction(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
-    `at(time)`
-    Set the time to access the CDF
-
-    `__call__(points)`
-    Evaluate the CDF value at the given points
-
-    `gradient(points)`
-    Evalute the PDF value at the given points
+    `__call__(points, times)`
+    Evaluate the CDF value at the given points and times
 
     Properties
     ----------
+    `gradient`
+    An instance of `DensityFunction`
+
     `support`
     A dict with key 'lower' and 'upper'
     Indicate the interval in which CDF may have non-zero values
@@ -60,31 +57,10 @@ class CumulativeDistributionFunction(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
-    def at(self, time: torch.Tensor):
-        """
-        Set the internal time of the density function
-
-        Parameters
-        ----------
-        `time: torch.Tensor`
-        Tensor with shape `(..., num_times)`
-
-        Returns
-        -------
-        `DensityFunction`
-        The same density function with internal time set to the given tensor
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
-    @abstractmethod
     def __call__(
         self,
         points: torch.Tensor,
-        times: torch.Tensor = torch.tensor(
-            [
-                0.0,
-            ]
-        ),
+        times: torch.Tensor,
     ) -> torch.Tensor:
         """
         Evaluate the CDF value at the given points and times
@@ -92,10 +68,9 @@ class CumulativeDistributionFunction(ABC):
         Parameters
         ----------
         `points: torch.Tensor`
-        Tensor with shape `(..., time_index, num_points, *dimension)`.
-        The dimension `time_index` must be broadcastable to `num_times`
+        Tensor with shape `(..., num_times, num_points, *dimension)`.
 
-        `times: torch.Tensor = jnp.array([0.0,])`
+        `times: torch.Tensor`
         Tensor with shape `(..., num_times)`
 
         Returns
