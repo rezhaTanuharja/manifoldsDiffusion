@@ -6,14 +6,16 @@ import pytest
 import torch
 
 from diffusionmodels.stochasticprocesses.univariate.uniform import (
-    Uniform,
-    UniformDensity,
+    ConstantUniform,
+    ConstantUniformDensity,
 )
 
 
 @pytest.fixture(scope="class")
 def uniform_process_float():
-    return Uniform(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32)
+    return ConstantUniform(
+        support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32
+    )
 
 
 class TestOperationsFloat:
@@ -56,7 +58,7 @@ class TestOperationsFloat:
     def test_gradient(self, uniform_process_float) -> None:
         density = uniform_process_float.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
     def test_change_time(self, uniform_process_float):
         time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float32)
@@ -87,12 +89,14 @@ class TestOperationsFloat:
 
         density = uniform_process_float.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
 
 @pytest.fixture(scope="class")
 def uniform_process_double():
-    return Uniform(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64)
+    return ConstantUniform(
+        support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64
+    )
 
 
 class TestOperationsDouble:
@@ -135,7 +139,7 @@ class TestOperationsDouble:
     def test_gradient(self, uniform_process_double) -> None:
         density = uniform_process_double.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
     def test_change_time(self, uniform_process_double):
         time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float64)
@@ -166,4 +170,4 @@ class TestOperationsDouble:
 
         density = uniform_process_double.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)

@@ -12,8 +12,8 @@ from typing import Dict
 import torch
 
 from .....utilities.warningsuppressors import unused_variables
-from ...interfaces import CumulativeDistributionFunction, DensityFunction
-from ...uniform import UniformDensity
+from ...uniform import ConstantUniformDensity
+from ..interfaces import CumulativeDistributionFunction, DensityFunction
 
 
 class ConstantLinear(CumulativeDistributionFunction):
@@ -35,7 +35,7 @@ class ConstantLinear(CumulativeDistributionFunction):
         `data_type: torch.dtype = torch.float32`
         The data type of floating points
         """
-        self._density = UniformDensity(support=support, data_type=data_type)
+        self._density = ConstantUniformDensity(support=support, data_type=data_type)
         self._support = support
         self._data_type = data_type
 

@@ -8,7 +8,9 @@ import torch
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polynomials import (
     ConstantLinear,
 )
-from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensity
+from diffusionmodels.stochasticprocesses.univariate.uniform import (
+    ConstantUniformDensity,
+)
 
 
 @pytest.fixture(scope="class")
@@ -63,7 +65,7 @@ class TestOperationsFloat:
         """
         density_function = cdf_float.gradient
 
-        assert isinstance(density_function, UniformDensity)
+        assert isinstance(density_function, ConstantUniformDensity)
 
 
 @pytest.fixture(scope="class")
@@ -118,4 +120,4 @@ class TestOperationsdouble:
         """
         density_function = cdf_double.gradient
 
-        assert isinstance(density_function, UniformDensity)
+        assert isinstance(density_function, ConstantUniformDensity)

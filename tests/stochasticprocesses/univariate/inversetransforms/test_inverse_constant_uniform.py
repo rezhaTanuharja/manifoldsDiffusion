@@ -10,7 +10,9 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polyno
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.rootfinders.bisection import (
     Bisection,
 )
-from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensity
+from diffusionmodels.stochasticprocesses.univariate.uniform import (
+    ConstantUniformDensity,
+)
 
 
 @pytest.fixture(scope="class")
@@ -48,7 +50,7 @@ class TestOperationsFloat:
     def test_density(self, process_float):
         density = process_float.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
     def test_change_time(self, process_float):
         time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float32)
@@ -73,7 +75,7 @@ class TestOperationsFloat:
 
         density = process_float.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
 
 @pytest.fixture(scope="class")
@@ -112,7 +114,7 @@ class TestOperationsDouble:
     def test_density(self, process_double):
         density = process_double.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)
 
     def test_change_time(self, process_double):
         time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float64)
@@ -137,4 +139,4 @@ class TestOperationsDouble:
 
         density = process_double.density
 
-        assert isinstance(density, UniformDensity)
+        assert isinstance(density, ConstantUniformDensity)

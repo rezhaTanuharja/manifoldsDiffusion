@@ -15,7 +15,7 @@ from typing import Callable, Dict, Tuple
 
 import torch
 
-from ..interfaces import DensityFunction
+from ...interfaces import DensityFunction
 
 
 class CumulativeDistributionFunction(ABC):

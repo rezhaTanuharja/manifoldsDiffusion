@@ -10,7 +10,7 @@ from typing import Callable, Tuple
 
 import torch
 
-from ...interfaces import RootFinder
+from ..interfaces import RootFinder
 
 
 class Bisection(RootFinder):

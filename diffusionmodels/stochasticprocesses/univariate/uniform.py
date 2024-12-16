@@ -3,8 +3,11 @@ Implements the univariate uniform probability density function.
 
 Classes
 -------
-`UniformDensity`
-A uniform probability density function defined on an interval
+`ConstantUniform`
+A uniformly distributed stochastic process with a fixed interval
+
+`ConstantUniformDensity`
+A uniform probability density function with a fixed interval
 """
 
 from typing import Dict, Tuple
@@ -14,13 +17,13 @@ import torch
 from ..interfaces import DensityFunction, StochasticProcess
 
 
-class Uniform(StochasticProcess):
+class ConstantUniform(StochasticProcess):
     def __init__(
         self, support: Dict[str, float], data_type: torch.dtype = torch.float32
     ) -> None:
         self._support = support
         self._data_type = data_type
-        self._density = UniformDensity(support, data_type)
+        self._density = ConstantUniformDensity(support, data_type)
         self._time = torch.tensor(
             [
                 0.0,
@@ -57,7 +60,7 @@ class Uniform(StochasticProcess):
         )
 
 
-class UniformDensity(DensityFunction):
+class ConstantUniformDensity(DensityFunction):
     """
     A uniform probability density function defined on an interval
     """

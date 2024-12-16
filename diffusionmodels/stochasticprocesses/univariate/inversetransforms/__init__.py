@@ -17,8 +17,8 @@ from typing import Tuple
 import torch
 
 from ...interfaces import DensityFunction, StochasticProcess
-from ..interfaces import CumulativeDistributionFunction, RootFinder
 from . import cdf, rootfinders
+from .interfaces import CumulativeDistributionFunction, RootFinder
 
 
 class InverseTransform(StochasticProcess):
@@ -90,4 +90,10 @@ class InverseTransform(StochasticProcess):
         )
 
 
-__all__ = ["cdf", "rootfinders", "InverseTransform"]
+__all__ = [
+    "cdf",
+    "rootfinders",
+    "InverseTransform",
+    "CumulativeDistributionFunction",
+    "RootFinder",
+]

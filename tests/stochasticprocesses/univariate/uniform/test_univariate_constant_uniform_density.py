@@ -5,12 +5,14 @@ Checks that univariate uniform density function behaves as expected.
 import pytest
 import torch
 
-from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensity
+from diffusionmodels.stochasticprocesses.univariate.uniform import (
+    ConstantUniformDensity,
+)
 
 
 @pytest.fixture(scope="class")
 def density_function_float():
-    return UniformDensity(support={"lower": 1.5, "upper": 4.0})
+    return ConstantUniformDensity(support={"lower": 1.5, "upper": 4.0})
 
 
 class TestOperationsFloat:
@@ -135,7 +137,9 @@ class TestOperationsFloat:
 
 @pytest.fixture(scope="class")
 def density_function_double():
-    return UniformDensity(support={"lower": 1.5, "upper": 4.0}, data_type=torch.float64)
+    return ConstantUniformDensity(
+        support={"lower": 1.5, "upper": 4.0}, data_type=torch.float64
+    )
 
 
 class TestOperationsDouble:
