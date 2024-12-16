@@ -5,7 +5,7 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms import (
     InverseTransform,
 )
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polynomials import (
-    Linear,
+    ConstantLinear,
 )
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.rootfinders.bisection import (
     Bisection,
@@ -16,7 +16,7 @@ from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensit
 @pytest.fixture(scope="class")
 def process_float():
     return InverseTransform(
-        distribution=Linear(
+        distribution=ConstantLinear(
             support={"lower": 0.0, "upper": 1.0}, data_type=torch.float32
         ),
         root_finder=Bisection(num_iterations=5),
@@ -79,7 +79,7 @@ class TestOperationsFloat:
 @pytest.fixture(scope="class")
 def process_double():
     return InverseTransform(
-        distribution=Linear(
+        distribution=ConstantLinear(
             support={"lower": 0.0, "upper": 1.0}, data_type=torch.float64
         ),
         root_finder=Bisection(num_iterations=5),

@@ -15,7 +15,7 @@ uniform             : implements the univariate uniform process
 inversetransforms   : implements univariate process defined by their CDFs
 """
 
-from . import inversetransforms, uniform
+from . import inversetransforms, periodic, uniform
 from .interfaces import CumulativeDistributionFunction, RootFinder
 
 __all__ = [
@@ -23,4 +23,5 @@ __all__ = [
     "RootFinder",
     "inversetransforms",
     "uniform",
+    "periodic",
 ]

@@ -1,5 +1,5 @@
 """
-Implements univariate process defined by their CDFs
+Implements univariate process defined by their CDFs.
 
 Classes
 -------
@@ -81,7 +81,7 @@ class InverseTransform(StochasticProcess):
         )
 
         return self._root_finder.solve(
-            function=self._distribution,
+            function=lambda points: self._distribution(points, self._time),
             target_values=target_values,
             interval=(
                 self._distribution.support["lower"],

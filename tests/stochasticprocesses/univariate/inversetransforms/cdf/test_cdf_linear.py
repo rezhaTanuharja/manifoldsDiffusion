@@ -1,19 +1,19 @@
 """
-Checks that Linear CDF behaves as expected
+Checks that ConstantLinear CDF behaves as expected
 """
 
 import pytest
 import torch
 
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polynomials import (
-    Linear,
+    ConstantLinear,
 )
 from diffusionmodels.stochasticprocesses.univariate.uniform import UniformDensity
 
 
 @pytest.fixture(scope="class")
 def cdf_float():
-    return Linear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32)
+    return ConstantLinear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32)
 
 
 class TestOperationsFloat:
@@ -27,12 +27,22 @@ class TestOperationsFloat:
         """
         points = torch.tensor(
             [
-                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
-                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+                [
+                    [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                    [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+                ],
             ],
             dtype=torch.float32,
         )
-        cdf_values = cdf_float(points)
+
+        times = torch.tensor(
+            [
+                0.0,
+            ],
+            dtype=torch.float32,
+        )
+
+        cdf_values = cdf_float(points, times)
 
         assert cdf_values.shape == points.shape
         assert cdf_values.dtype == torch.float32
@@ -58,7 +68,7 @@ class TestOperationsFloat:
 
 @pytest.fixture(scope="class")
 def cdf_double():
-    return Linear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64)
+    return ConstantLinear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64)
 
 
 class TestOperationsdouble:
@@ -72,12 +82,22 @@ class TestOperationsdouble:
         """
         points = torch.tensor(
             [
-                [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
-                [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+                [
+                    [1.8, 2.0, 2.4, 2.8, 3.2, 3.3, 3.7, 3.9, 4.0],
+                    [0.9, 0.7, 0.3, -0.2, 3.4, 5.3, 2.2, 2.1, 2.0],
+                ],
             ],
             dtype=torch.float64,
         )
-        cdf_values = cdf_double(points)
+
+        times = torch.tensor(
+            [
+                0.0,
+            ],
+            dtype=torch.float64,
+        )
+
+        cdf_values = cdf_double(points, times)
 
         assert cdf_values.shape == points.shape
         assert cdf_values.dtype == torch.float64
