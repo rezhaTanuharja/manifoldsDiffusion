@@ -3,7 +3,7 @@ Implements various `CumulativeDistributionFunction` in the form of polynomials.
 
 Classes
 -------
-`Linear`
+`ConstantLinear`
 A class of CDF with linear function
 """
 
@@ -16,7 +16,7 @@ from ...interfaces import CumulativeDistributionFunction, DensityFunction
 from ...uniform import UniformDensity
 
 
-class Linear(CumulativeDistributionFunction):
+class ConstantLinear(CumulativeDistributionFunction):
     """
     A class of polynomial CDF with linear function
     """
@@ -42,18 +42,10 @@ class Linear(CumulativeDistributionFunction):
     def to(self, device: torch.device) -> None:
         unused_variables(device)
 
-    def at(self, time: torch.Tensor):
-        unused_variables(time)
-        return self
-
     def __call__(
         self,
         points: torch.Tensor,
-        times: torch.Tensor = torch.tensor(
-            [
-                0.0,
-            ]
-        ),
+        times: torch.Tensor,
     ) -> torch.Tensor:
         unused_variables(times)
 
