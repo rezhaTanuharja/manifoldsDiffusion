@@ -1,3 +1,15 @@
+"""
+Implements various CDFs based on Cesaro higher order summation.
+
+Classes
+-------
+`CesaroSumDensity`
+The Cesaro higher order summation of the Dirichlet kernel
+
+`CesaroSum`
+The spatial integral of `CesaroSumDensity`
+"""
+
 from typing import Callable, Dict
 
 import torch

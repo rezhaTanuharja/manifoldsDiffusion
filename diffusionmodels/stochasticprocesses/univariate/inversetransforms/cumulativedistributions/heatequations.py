@@ -1,3 +1,12 @@
+"""
+Implements various CDFs based on the solutions of heat equations.
+
+Classes
+-------
+`PeriodicHeatKernel`
+The fundamental solution of heat diffusion in a periodic domain
+"""
+
 from typing import Callable
 
 import torch
@@ -7,7 +16,7 @@ from ....interfaces import DensityFunction
 
 class PeriodicHeatKernel(DensityFunction):
     """
-    The fundamental solution to the heat equation in a periodic domain.
+    The fundamental solution of heat diffusion in a periodic domain.
     The domain is `[-pi, pi]` but folded to be `[0, pi]` due to symmetry.
     """
 

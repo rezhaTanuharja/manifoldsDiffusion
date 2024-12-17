@@ -8,8 +8,8 @@ A stochastic process defined by a cumulativedistributions and sampled using inve
 
 Modules
 -------
-cumulativedistributions             : implements various simple cumulativedistributionss
-rootfinders     : implements various simple `RootFinder`
+cumulativedistributions     : implements various simple cumulativedistributionss
+rootfinders                 : implements various simple `RootFinder`
 """
 
 from typing import Tuple
