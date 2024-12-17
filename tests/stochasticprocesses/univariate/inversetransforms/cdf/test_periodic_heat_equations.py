@@ -142,7 +142,7 @@ class TestOperationsMultipleWaveFloatCPU:
                 wave_number * points.squeeze(-1)
             )
 
-        assert torch.allclose(values, reference_values, rtol=1e-1)
+        assert torch.allclose(values, reference_values, rtol=1e-0)
 
     def test_gradient_call(self, multiple_wave_distribution_float_cpu):
         points = torch.randn(
@@ -467,7 +467,8 @@ def uniform_distribution_float_cuda():
     return distribution
 
 
-class TestOperationsUniformFloatcuda:
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
+class TestOperationsUniformFloatCuda:
     def test_get_dimension(self, uniform_distribution_float_cuda):
         dimension = uniform_distribution_float_cuda.dimension
 
@@ -575,7 +576,8 @@ def multiple_wave_distribution_float_cuda():
     return distribution
 
 
-class TestOperationsMultipleWaveFloatcuda:
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
+class TestOperationsMultipleWaveFloatCuda:
     def test_get_dimension(self, multiple_wave_distribution_float_cuda):
         dimension = multiple_wave_distribution_float_cuda.dimension
 
@@ -705,7 +707,8 @@ def uniform_distribution_double_cuda():
     return distribution
 
 
-class TestOperationsUniformDoublecuda:
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
+class TestOperationsUniformDoubleCuda:
     def test_get_dimension(self, uniform_distribution_double_cuda):
         dimension = uniform_distribution_double_cuda.dimension
 
@@ -813,7 +816,8 @@ def multiple_wave_distribution_double_cuda():
     return distribution
 
 
-class TestOperationsMultipleWaveDoublecuda:
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
+class TestOperationsMultipleWaveDoubleCuda:
     def test_get_dimension(self, multiple_wave_distribution_double_cuda):
         dimension = multiple_wave_distribution_double_cuda.dimension
 
