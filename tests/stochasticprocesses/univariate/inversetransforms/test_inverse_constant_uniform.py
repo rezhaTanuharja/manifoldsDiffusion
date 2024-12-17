@@ -4,7 +4,7 @@ import torch
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms import (
     InverseTransform,
 )
-from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polynomials import (
+from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulativedistributions.polynomials import (
     ConstantLinear,
 )
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms.rootfinders.bisection import (

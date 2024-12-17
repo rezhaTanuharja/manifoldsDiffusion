@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.cesarosums import (
+from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulativedistributions.cesarosums import (
     CesaroSum,
     CesaroSumDensity,
 )

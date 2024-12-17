@@ -15,10 +15,9 @@ uniform             : implements the univariate uniform process
 inversetransforms   : implements univariate process defined by their CDFs
 """
 
-from . import inversetransforms, periodic, uniform
+from . import inversetransforms, uniform
 
 __all__ = [
     "inversetransforms",
     "uniform",
-    "periodic",
 ]

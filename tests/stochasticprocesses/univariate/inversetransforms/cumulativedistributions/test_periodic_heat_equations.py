@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.heatequations import (
+from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulativedistributions.heatequations import (
     PeriodicHeatKernel,
 )
 

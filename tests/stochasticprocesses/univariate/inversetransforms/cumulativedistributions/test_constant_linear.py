@@ -1,11 +1,11 @@
 """
-Checks that ConstantLinear CDF behaves as expected
+Checks that ConstantLinear cumulativedistributions behaves as expected
 """
 
 import pytest
 import torch
 
-from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cdf.polynomials import (
+from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulativedistributions.polynomials import (
     ConstantLinear,
 )
 from diffusionmodels.stochasticprocesses.univariate.uniform import (
@@ -14,7 +14,7 @@ from diffusionmodels.stochasticprocesses.univariate.uniform import (
 
 
 @pytest.fixture(scope="class")
-def cdf_float():
+def cumulativedistributions_float():
     return ConstantLinear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float32)
 
 
@@ -23,9 +23,9 @@ class TestOperationsFloat:
     Check correctness of math operations in float precision
     """
 
-    def test_function_call(self, cdf_float) -> None:
+    def test_function_call(self, cumulativedistributions_float) -> None:
         """
-        Checks that evaluating the cdf produces the correct results
+        Checks that evaluating the cumulativedistributions produces the correct results
         """
         points = torch.tensor(
             [
@@ -44,10 +44,10 @@ class TestOperationsFloat:
             dtype=torch.float32,
         )
 
-        cdf_values = cdf_float(points, times)
+        cumulativedistributions_values = cumulativedistributions_float(points, times)
 
-        assert cdf_values.shape == points.shape
-        assert cdf_values.dtype == torch.float32
+        assert cumulativedistributions_values.shape == points.shape
+        assert cumulativedistributions_values.dtype == torch.float32
 
         reference_values = torch.tensor(
             [
@@ -57,19 +57,21 @@ class TestOperationsFloat:
             dtype=torch.float32,
         )
 
-        assert torch.allclose(cdf_values, reference_values, rtol=1e-6)
+        assert torch.allclose(
+            cumulativedistributions_values, reference_values, rtol=1e-6
+        )
 
-    def test_gradient(self, cdf_float) -> None:
+    def test_gradient(self, cumulativedistributions_float) -> None:
         """
         Checks that calling the gradient produces an instance of `UniformDensity`
         """
-        density_function = cdf_float.gradient
+        density_function = cumulativedistributions_float.gradient
 
         assert isinstance(density_function, ConstantUniformDensity)
 
 
 @pytest.fixture(scope="class")
-def cdf_double():
+def cumulativedistributions_double():
     return ConstantLinear(support={"lower": 2.0, "upper": 4.0}, data_type=torch.float64)
 
 
@@ -78,9 +80,9 @@ class TestOperationsdouble:
     Check correctness of math operations in double precision
     """
 
-    def test_function_call(self, cdf_double) -> None:
+    def test_function_call(self, cumulativedistributions_double) -> None:
         """
-        Checks that evaluating the cdf produces the correct results
+        Checks that evaluating the cumulativedistributions produces the correct results
         """
         points = torch.tensor(
             [
@@ -99,10 +101,10 @@ class TestOperationsdouble:
             dtype=torch.float64,
         )
 
-        cdf_values = cdf_double(points, times)
+        cumulativedistributions_values = cumulativedistributions_double(points, times)
 
-        assert cdf_values.shape == points.shape
-        assert cdf_values.dtype == torch.float64
+        assert cumulativedistributions_values.shape == points.shape
+        assert cumulativedistributions_values.dtype == torch.float64
 
         reference_values = torch.tensor(
             [
@@ -112,12 +114,14 @@ class TestOperationsdouble:
             dtype=torch.float64,
         )
 
-        assert torch.allclose(cdf_values, reference_values, rtol=1e-6)
+        assert torch.allclose(
+            cumulativedistributions_values, reference_values, rtol=1e-6
+        )
 
-    def test_gradient(self, cdf_double) -> None:
+    def test_gradient(self, cumulativedistributions_double) -> None:
         """
         Checks that calling the gradient produces an instance of `UniformDensity`
         """
-        density_function = cdf_double.gradient
+        density_function = cumulativedistributions_double.gradient
 
         assert isinstance(density_function, ConstantUniformDensity)

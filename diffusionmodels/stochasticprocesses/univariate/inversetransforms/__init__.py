@@ -1,14 +1,14 @@
 """
-Implements univariate process defined by their CDFs.
+Implements univariate process defined by their cumulativedistributionss.
 
 Classes
 -------
 `InverseTransform`
-A stochastic process defined by a CDF and sampled using inverse transform method
+A stochastic process defined by a cumulativedistributions and sampled using inverse transform method
 
 Modules
 -------
-cdf             : implements various simple CDFs
+cumulativedistributions             : implements various simple cumulativedistributionss
 rootfinders     : implements various simple `RootFinder`
 """
 
@@ -17,13 +17,13 @@ from typing import Tuple
 import torch
 
 from ...interfaces import DensityFunction, StochasticProcess
-from . import cdf, rootfinders
+from . import cumulativedistributions, rootfinders
 from .interfaces import CumulativeDistributionFunction, RootFinder
 
 
 class InverseTransform(StochasticProcess):
     """
-    A process defined by its CDF and sampled using the inverse transform method
+    A process defined by its cumulativedistributions and sampled using the inverse transform method
     """
 
     def __init__(
@@ -38,7 +38,7 @@ class InverseTransform(StochasticProcess):
         Parameters
         ----------
         `distribution: CumulativeDistributionFunction`
-        The CDF that defines the process, a callable object
+        The cumulativedistributions that defines the process, a callable object
 
         `root_finder: RootFinder`
         A numerical solver to perform inverse transform sampling
@@ -91,7 +91,7 @@ class InverseTransform(StochasticProcess):
 
 
 __all__ = [
-    "cdf",
+    "cumulativedistributions",
     "rootfinders",
     "InverseTransform",
     "CumulativeDistributionFunction",
