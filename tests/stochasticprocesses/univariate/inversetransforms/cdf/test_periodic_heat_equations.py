@@ -40,7 +40,7 @@ class TestOperationsUniformFloatCPU:
             device=torch.device("cpu"),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
     #
     def test_gradient_call(self, uniform_distribution_float_cpu):
@@ -61,7 +61,7 @@ class TestOperationsUniformFloatCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
     def test_change_time(self, uniform_distribution_float_cpu):
@@ -88,7 +88,7 @@ class TestOperationsUniformFloatCPU:
             device=torch.device("cpu"),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
         gradient = uniform_distribution_float_cpu.gradient(points)
 
@@ -104,7 +104,7 @@ class TestOperationsUniformFloatCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
 
@@ -142,7 +142,7 @@ class TestOperationsMultipleWaveFloatCPU:
                 wave_number * points.squeeze(-1)
             )
 
-        assert torch.allclose(values, reference_values, rtol=1e-0)
+        assert torch.allclose(values, reference_values, atol=1e-5)
 
     def test_gradient_call(self, multiple_wave_distribution_float_cpu):
         points = torch.randn(
@@ -169,32 +169,32 @@ class TestOperationsMultipleWaveFloatCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=5e-0,
+            atol=1e-3,
         )
 
     def test_change_time(self, multiple_wave_distribution_float_cpu):
-        time = torch.arange(16, device=torch.device("cpu"))
+        time = torch.arange(128, device=torch.device("cpu"))
         distribution = multiple_wave_distribution_float_cpu.at(time)
 
         points = torch.randn(
-            size=(16, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
         )
         values = distribution(points)
 
         assert isinstance(values, torch.Tensor)
         assert values.dtype == torch.float32
         assert values.device == torch.device("cpu")
-        assert values.shape == (16, 256)
+        assert values.shape == (128, 256)
 
         reference_values = (
             1.0
             / torch.pi
             * torch.ones(
-                size=(16, 256), dtype=torch.float32, device=torch.device("cpu")
+                size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
             )
         )
 
-        for time_index in range(16):
+        for time_index in range(128):
             for wave_number in range(1, 65):
                 reference_values[time_index] = reference_values[
                     time_index
@@ -202,20 +202,20 @@ class TestOperationsMultipleWaveFloatCPU:
                     -time[time_index] * wave_number**2
                 ) * torch.cos(wave_number * points[time_index].squeeze(-1))
 
-        assert torch.allclose(values, reference_values, rtol=1e-1)
+        assert torch.allclose(values, reference_values, atol=1e-3)
 
         gradient = distribution.gradient(points)
 
         assert isinstance(gradient, torch.Tensor)
         assert gradient.dtype == torch.float32
         assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (16, 256)
+        assert gradient.shape == (128, 256)
 
         reference_values = torch.zeros(
-            size=(16, 256), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
 
-        for time_index in range(16):
+        for time_index in range(128):
             for wave_number in range(1, 65):
                 reference_values[time_index] = reference_values[
                     time_index
@@ -228,7 +228,7 @@ class TestOperationsMultipleWaveFloatCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-1,
+            atol=1e-1,
         )
 
 
@@ -266,7 +266,7 @@ class TestOperationsUniformDoubleCPU:
             device=torch.device("cpu"),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
     #
     def test_gradient_call(self, uniform_distribution_double_cpu):
@@ -287,7 +287,7 @@ class TestOperationsUniformDoubleCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
     def test_change_time(self, uniform_distribution_double_cpu):
@@ -314,7 +314,7 @@ class TestOperationsUniformDoubleCPU:
             device=torch.device("cpu"),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
         gradient = uniform_distribution_double_cpu.gradient(points)
 
@@ -330,7 +330,7 @@ class TestOperationsUniformDoubleCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
 
@@ -368,7 +368,7 @@ class TestOperationsMultipleWaveDoubleCPU:
                 wave_number * points.squeeze(-1)
             )
 
-        assert torch.allclose(values, reference_values, rtol=1e-2)
+        assert torch.allclose(values, reference_values, atol=1e-3)
 
     def test_gradient_call(self, multiple_wave_distribution_double_cpu):
         points = torch.randn(
@@ -395,32 +395,32 @@ class TestOperationsMultipleWaveDoubleCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-3,
+            atol=1e-3,
         )
 
     def test_change_time(self, multiple_wave_distribution_double_cpu):
-        time = torch.arange(16)
+        time = torch.arange(128)
         distribution = multiple_wave_distribution_double_cpu.at(time)
 
         points = torch.randn(
-            size=(16, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
         )
         values = distribution(points)
 
         assert isinstance(values, torch.Tensor)
         assert values.dtype == torch.float64
         assert values.device == torch.device("cpu")
-        assert values.shape == (16, 256)
+        assert values.shape == (128, 256)
 
         reference_values = (
             1.0
             / torch.pi
             * torch.ones(
-                size=(16, 256), dtype=torch.float64, device=torch.device("cpu")
+                size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
             )
         )
 
-        for time_index in range(16):
+        for time_index in range(128):
             for wave_number in range(1, 65):
                 reference_values[time_index] = reference_values[
                     time_index
@@ -428,20 +428,20 @@ class TestOperationsMultipleWaveDoubleCPU:
                     -time[time_index] * wave_number**2
                 ) * torch.cos(wave_number * points[time_index].squeeze(-1))
 
-        assert torch.allclose(values, reference_values, rtol=5e-3)
+        assert torch.allclose(values, reference_values, atol=5e-3)
 
         gradient = distribution.gradient(points)
 
         assert isinstance(gradient, torch.Tensor)
         assert gradient.dtype == torch.float64
         assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (16, 256)
+        assert gradient.shape == (128, 256)
 
         reference_values = torch.zeros(
-            size=(16, 256), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
 
-        for time_index in range(16):
+        for time_index in range(128):
             for wave_number in range(1, 65):
                 reference_values[time_index] = reference_values[
                     time_index
@@ -454,7 +454,7 @@ class TestOperationsMultipleWaveDoubleCPU:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-3,
+            atol=1e-3,
         )
 
 
@@ -497,7 +497,7 @@ class TestOperationsUniformFloatCuda:
             device=torch.device("cuda", 0),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
     #
     def test_gradient_call(self, uniform_distribution_float_cuda):
@@ -518,7 +518,7 @@ class TestOperationsUniformFloatCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
     def test_change_time(self, uniform_distribution_float_cuda):
@@ -547,7 +547,7 @@ class TestOperationsUniformFloatCuda:
             device=torch.device("cuda", 0),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
         gradient = uniform_distribution_float_cuda.gradient(points)
 
@@ -563,7 +563,7 @@ class TestOperationsUniformFloatCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
 
@@ -608,7 +608,7 @@ class TestOperationsMultipleWaveFloatCuda:
                 wave_number * points.squeeze(-1)
             )
 
-        assert torch.allclose(values, reference_values, rtol=1e-0)
+        assert torch.allclose(values, reference_values, atol=1e-3)
 
     def test_gradient_call(self, multiple_wave_distribution_float_cuda):
         points = torch.randn(
@@ -635,7 +635,7 @@ class TestOperationsMultipleWaveFloatCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=5e-0,
+            atol=1e-3,
         )
 
     def test_change_time(self, multiple_wave_distribution_float_cuda):
@@ -668,7 +668,7 @@ class TestOperationsMultipleWaveFloatCuda:
                     -time[time_index] * wave_number**2
                 ) * torch.cos(wave_number * points[time_index].squeeze(-1))
 
-        assert torch.allclose(values, reference_values, rtol=1e-1)
+        assert torch.allclose(values, reference_values, atol=1e-3)
 
         gradient = distribution.gradient(points)
 
@@ -694,7 +694,7 @@ class TestOperationsMultipleWaveFloatCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-1,
+            atol=1e-3,
         )
 
 
@@ -737,7 +737,7 @@ class TestOperationsUniformDoubleCuda:
             device=torch.device("cuda", 0),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
     #
     def test_gradient_call(self, uniform_distribution_double_cuda):
@@ -758,7 +758,7 @@ class TestOperationsUniformDoubleCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
     def test_change_time(self, uniform_distribution_double_cuda):
@@ -787,7 +787,7 @@ class TestOperationsUniformDoubleCuda:
             device=torch.device("cuda", 0),
         )
 
-        assert torch.allclose(values, reference_values, rtol=1e-16)
+        assert torch.allclose(values, reference_values, atol=1e-16)
 
         gradient = uniform_distribution_double_cuda.gradient(points)
 
@@ -803,7 +803,7 @@ class TestOperationsUniformDoubleCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-16,
+            atol=1e-16,
         )
 
 
@@ -848,7 +848,7 @@ class TestOperationsMultipleWaveDoubleCuda:
                 wave_number * points.squeeze(-1)
             )
 
-        assert torch.allclose(values, reference_values, rtol=5e-3)
+        assert torch.allclose(values, reference_values, atol=1e-6)
 
     def test_gradient_call(self, multiple_wave_distribution_double_cuda):
         points = torch.randn(
@@ -875,7 +875,7 @@ class TestOperationsMultipleWaveDoubleCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-3,
+            atol=1e-6,
         )
 
     def test_change_time(self, multiple_wave_distribution_double_cuda):
@@ -908,7 +908,7 @@ class TestOperationsMultipleWaveDoubleCuda:
                     -time[time_index] * wave_number**2
                 ) * torch.cos(wave_number * points[time_index].squeeze(-1))
 
-        assert torch.allclose(values, reference_values, rtol=5e-3)
+        assert torch.allclose(values, reference_values, atol=1e-6)
 
         gradient = distribution.gradient(points)
 
@@ -934,5 +934,5 @@ class TestOperationsMultipleWaveDoubleCuda:
         assert torch.allclose(
             gradient,
             reference_values,
-            rtol=1e-3,
+            atol=1e-5,
         )
