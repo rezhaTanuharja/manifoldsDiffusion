@@ -6,12 +6,31 @@ from ....interfaces import DensityFunction
 
 
 class PeriodicHeatKernel(DensityFunction):
+    """
+    The fundamental solution to the heat equation in a periodic domain.
+    The domain is `[-pi, pi]` but folded to be `[0, pi]` due to symmetry.
+    """
+
     def __init__(
         self,
         num_waves: int,
         mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor],
         data_type: torch.dtype = torch.float32,
     ) -> None:
+        """
+        Construct a periodic heat kernel density function.
+
+        Parameters
+        ----------
+        `num_waves: int`
+        The number of cosine functions to approximate the solution
+
+        `mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor]`
+        A function representing the integral of the diffusion coefficient over time
+
+        `data_type: torch.dtype = torch.float32`
+        The tensor data type for input and output
+        """
         assert num_waves >= 0
 
         self._num_waves = num_waves
