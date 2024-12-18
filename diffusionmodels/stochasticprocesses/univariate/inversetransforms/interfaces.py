@@ -68,7 +68,7 @@ class CumulativeDistributionFunction(ABC):
         Parameters
         ----------
         `points: torch.Tensor`
-        Tensor with shape `(..., num_times, num_points, *dimension)`.
+        Tensor with shape `(..., num_times, num_points)`.
 
         `times: torch.Tensor`
         Tensor with shape `(..., num_times)`

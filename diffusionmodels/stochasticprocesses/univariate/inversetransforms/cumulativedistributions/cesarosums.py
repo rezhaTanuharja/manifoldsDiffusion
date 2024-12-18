@@ -51,18 +51,18 @@ class CesaroSumDensity(DensityFunction):
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
         if self._num_waves == 0:
             return torch.full_like(
-                self._time.unsqueeze(-1) + points.squeeze(-1), fill_value=1.0 / torch.pi
+                self._time.unsqueeze(-1) + points, fill_value=1.0 / torch.pi
             )
 
         wave_numbers = torch.arange(
             1, self._num_waves + 1, dtype=self._data_type, device=self._device
         )
         wave_numbers = wave_numbers.reshape(
-            *(1 for _ in points.shape[:-1]),
+            *(1 for _ in points.shape),
             wave_numbers.numel(),
         )
 
-        angles = wave_numbers * points
+        angles = wave_numbers * points.unsqueeze(-1)
 
         time = self._time.unsqueeze(-1).unsqueeze(-1)
 
@@ -80,23 +80,23 @@ class CesaroSumDensity(DensityFunction):
                     torch.binomial(
                         torch.tensor(
                             [
-                                self._num_waves - 2,
-                            ],
-                            dtype=self._data_type,
-                        )
-                        .repeat((self._num_waves,))
-                        .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
-                        wave_numbers,
-                    )
-                    / torch.binomial(
-                        torch.tensor(
-                            [
                                 self._num_waves,
                             ],
                             dtype=self._data_type,
                         )
                         .repeat((self._num_waves,))
-                        .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
+                        .reshape((*(1 for _ in points.shape), self._num_waves)),
+                        wave_numbers,
+                    )
+                    / torch.binomial(
+                        torch.tensor(
+                            [
+                                self._num_waves + 2,
+                            ],
+                            dtype=self._data_type,
+                        )
+                        .repeat((self._num_waves,))
+                        .reshape((*(1 for _ in points.shape), self._num_waves)),
                         wave_numbers,
                     )
                     * temporal_components
@@ -108,19 +108,17 @@ class CesaroSumDensity(DensityFunction):
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
         if self._num_waves == 0:
-            return torch.full_like(
-                self._time.unsqueeze(-1) + points.squeeze(-1), fill_value=0.0
-            )
+            return torch.full_like(self._time.unsqueeze(-1) + points, fill_value=0.0)
 
         wave_numbers = torch.arange(
             1, self._num_waves + 1, dtype=self._data_type, device=self._device
         )
         wave_numbers = wave_numbers.reshape(
-            *(1 for _ in points.shape[:-1]),
+            *(1 for _ in points.shape),
             wave_numbers.numel(),
         )
 
-        angles = wave_numbers * points
+        angles = wave_numbers * points.unsqueeze(-1)
 
         time = self._time.unsqueeze(-1).unsqueeze(-1)
 
@@ -137,23 +135,23 @@ class CesaroSumDensity(DensityFunction):
                 * torch.binomial(
                     torch.tensor(
                         [
-                            self._num_waves - 2,
-                        ],
-                        dtype=self._data_type,
-                    )
-                    .repeat((self._num_waves,))
-                    .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
-                    wave_numbers,
-                )
-                / torch.binomial(
-                    torch.tensor(
-                        [
                             self._num_waves,
                         ],
                         dtype=self._data_type,
                     )
                     .repeat((self._num_waves,))
-                    .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
+                    .reshape((*(1 for _ in points.shape), self._num_waves)),
+                    wave_numbers,
+                )
+                / torch.binomial(
+                    torch.tensor(
+                        [
+                            self._num_waves + 2,
+                        ],
+                        dtype=self._data_type,
+                    )
+                    .repeat((self._num_waves,))
+                    .reshape((*(1 for _ in points.shape), self._num_waves)),
                     wave_numbers,
                 )
                 * temporal_components
@@ -191,19 +189,17 @@ class CesaroSum(CumulativeDistributionFunction):
 
     def __call__(self, points: torch.Tensor, times: torch.Tensor) -> torch.Tensor:
         if self._num_waves == 0:
-            return (
-                torch.zeros(times.shape).unsqueeze(-1) + points.squeeze(-1) / torch.pi
-            )
+            return torch.zeros(times.shape).unsqueeze(-1) + points / torch.pi
 
         wave_numbers = torch.arange(
             1, self._num_waves + 1, dtype=self._data_type, device=self._device
         )
         wave_numbers = wave_numbers.reshape(
-            *(1 for _ in points.shape[:-1]),
+            *(1 for _ in points.shape),
             wave_numbers.numel(),
         )
 
-        angles = wave_numbers * points
+        angles = wave_numbers * points.unsqueeze(-1)
 
         time = times.unsqueeze(-1).unsqueeze(-1)
 
@@ -215,7 +211,7 @@ class CesaroSum(CumulativeDistributionFunction):
             1.0
             / torch.pi
             * (
-                points.squeeze(-1)
+                points
                 + 2.0
                 * torch.sum(
                     torch.binomial(
@@ -226,7 +222,7 @@ class CesaroSum(CumulativeDistributionFunction):
                             dtype=self._data_type,
                         )
                         .repeat((self._num_waves,))
-                        .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
+                        .reshape((*(1 for _ in points.shape), self._num_waves)),
                         wave_numbers,
                     )
                     / torch.binomial(
@@ -237,7 +233,7 @@ class CesaroSum(CumulativeDistributionFunction):
                             dtype=self._data_type,
                         )
                         .repeat((self._num_waves,))
-                        .reshape((*(1 for _ in points.shape[:-1]), self._num_waves)),
+                        .reshape((*(1 for _ in points.shape), self._num_waves)),
                         wave_numbers,
                     )
                     / wave_numbers

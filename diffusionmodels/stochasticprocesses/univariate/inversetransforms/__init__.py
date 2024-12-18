@@ -80,6 +80,8 @@ class InverseTransform(StochasticProcess):
             size=(*self._time.shape, num_samples), dtype=self._data_type
         )
 
+        print(target_values.shape)
+
         return self._root_finder.solve(
             function=lambda points: self._distribution(points, self._time),
             target_values=target_values,

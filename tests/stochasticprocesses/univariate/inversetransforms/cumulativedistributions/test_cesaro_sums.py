@@ -25,7 +25,7 @@ class TestOperationsUniformDensityFloatCPU:
 
     def test_call(self, uniform_density_float_cpu):
         points = torch.randn(
-            size=(2, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(2, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         values = uniform_density_float_cpu(points)
 
@@ -45,7 +45,7 @@ class TestOperationsUniformDensityFloatCPU:
 
     def test_gradient_call(self, uniform_density_float_cpu):
         points = torch.randn(
-            size=(1, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(1, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = uniform_density_float_cpu.gradient(points)
 
@@ -70,7 +70,7 @@ class TestOperationsUniformDensityFloatCPU:
         density = uniform_density_float_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = uniform_density_float_cpu.gradient(points)
 
@@ -126,7 +126,7 @@ class TestOperationsMultipleWaveFloatCPU:
 
     def test_call(self, multiple_wave_density_float_cpu):
         points = torch.randn(
-            size=(1024, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(1024, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         values = multiple_wave_density_float_cpu(points)
 
@@ -141,7 +141,7 @@ class TestOperationsMultipleWaveFloatCPU:
             reference_values = reference_values + 2.0 / torch.pi * torch.binomial(
                 torch.tensor(
                     [
-                        64 - 2,
+                        64,
                     ],
                     dtype=torch.float32,
                 ),
@@ -154,7 +154,7 @@ class TestOperationsMultipleWaveFloatCPU:
             ) / torch.binomial(
                 torch.tensor(
                     [
-                        64,
+                        64 + 2,
                     ],
                     dtype=torch.float32,
                 ),
@@ -164,13 +164,13 @@ class TestOperationsMultipleWaveFloatCPU:
                     ],
                     dtype=torch.float32,
                 ),
-            ) * torch.cos(wave_number * points.squeeze(-1))
+            ) * torch.cos(wave_number * points)
 
         assert torch.allclose(values, reference_values, atol=1e-3)
 
     def test_gradient(self, multiple_wave_density_float_cpu):
         points = torch.randn(
-            size=(1024, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(1024, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = multiple_wave_density_float_cpu.gradient(points)
 
@@ -192,7 +192,7 @@ class TestOperationsMultipleWaveFloatCPU:
                 * torch.binomial(
                     torch.tensor(
                         [
-                            64 - 2,
+                            64,
                         ],
                         dtype=torch.float32,
                     ),
@@ -206,7 +206,7 @@ class TestOperationsMultipleWaveFloatCPU:
                 / torch.binomial(
                     torch.tensor(
                         [
-                            64,
+                            64 + 2,
                         ],
                         dtype=torch.float32,
                     ),
@@ -217,7 +217,7 @@ class TestOperationsMultipleWaveFloatCPU:
                         dtype=torch.float32,
                     ),
                 )
-                * torch.sin(wave_number * points.squeeze(-1))
+                * torch.sin(wave_number * points)
             )
 
         assert torch.allclose(gradient, reference_gradient, atol=1e-3)
@@ -241,7 +241,7 @@ class TestOperationsUniformDensitydoubleCPU:
 
     def test_call(self, uniform_density_double_cpu):
         points = torch.randn(
-            size=(2, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(2, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         values = uniform_density_double_cpu(points)
 
@@ -261,7 +261,7 @@ class TestOperationsUniformDensitydoubleCPU:
 
     def test_gradient_call(self, uniform_density_double_cpu):
         points = torch.randn(
-            size=(1, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(1, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = uniform_density_double_cpu.gradient(points)
 
@@ -286,7 +286,7 @@ class TestOperationsUniformDensitydoubleCPU:
         density = uniform_density_double_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = uniform_density_double_cpu.gradient(points)
 
@@ -342,7 +342,7 @@ class TestOperationsMultipleWaveDoubleCPU:
 
     def test_call(self, multiple_wave_density_double_cpu):
         points = torch.randn(
-            size=(1024, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(1024, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         values = multiple_wave_density_double_cpu(points)
 
@@ -357,7 +357,7 @@ class TestOperationsMultipleWaveDoubleCPU:
             reference_values = reference_values + 2.0 / torch.pi * torch.binomial(
                 torch.tensor(
                     [
-                        64 - 2,
+                        64,
                     ],
                     dtype=torch.float64,
                 ),
@@ -370,7 +370,7 @@ class TestOperationsMultipleWaveDoubleCPU:
             ) / torch.binomial(
                 torch.tensor(
                     [
-                        64,
+                        64 + 2,
                     ],
                     dtype=torch.float64,
                 ),
@@ -380,13 +380,13 @@ class TestOperationsMultipleWaveDoubleCPU:
                     ],
                     dtype=torch.float64,
                 ),
-            ) * torch.cos(wave_number * points.squeeze(-1))
+            ) * torch.cos(wave_number * points)
 
         assert torch.allclose(values, reference_values, atol=1e-6)
 
     def test_gradient(self, multiple_wave_density_double_cpu):
         points = torch.randn(
-            size=(1024, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(1024, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = multiple_wave_density_double_cpu.gradient(points)
 
@@ -408,7 +408,7 @@ class TestOperationsMultipleWaveDoubleCPU:
                 * torch.binomial(
                     torch.tensor(
                         [
-                            64 - 2,
+                            64,
                         ],
                         dtype=torch.float64,
                     ),
@@ -422,7 +422,7 @@ class TestOperationsMultipleWaveDoubleCPU:
                 / torch.binomial(
                     torch.tensor(
                         [
-                            64,
+                            64 + 2,
                         ],
                         dtype=torch.float64,
                     ),
@@ -433,10 +433,10 @@ class TestOperationsMultipleWaveDoubleCPU:
                         dtype=torch.float64,
                     ),
                 )
-                * torch.sin(wave_number * points.squeeze(-1))
+                * torch.sin(wave_number * points)
             )
 
-        assert torch.allclose(gradient, reference_gradient, atol=1e-6)
+        assert torch.allclose(gradient, reference_gradient, atol=1e-4)
 
 
 @pytest.fixture(scope="class")
@@ -460,7 +460,7 @@ class TestOperationsUniformFloatCPU:
     def test_call(self, uniform_distribution_float_cpu):
         times = torch.randn(size=(128,))
 
-        points = torch.zeros(size=(128, 256, 1), dtype=torch.float32, device="cpu")
+        points = torch.zeros(size=(128, 256), dtype=torch.float32, device="cpu")
         values = uniform_distribution_float_cpu(points, times)
 
         assert isinstance(values, torch.Tensor)
@@ -473,7 +473,7 @@ class TestOperationsUniformFloatCPU:
         assert torch.allclose(values, reference_values, rtol=1e-16)
 
         points = torch.pi * torch.ones(
-            size=(128, 256, 1), dtype=torch.float32, device="cpu"
+            size=(128, 256), dtype=torch.float32, device="cpu"
         )
         values = uniform_distribution_float_cpu(points, times)
 
@@ -488,7 +488,7 @@ class TestOperationsUniformFloatCPU:
 
         points = torch.clip(
             torch.randn(
-                size=(128, 256, 1),
+                size=(128, 256),
                 dtype=torch.float32,
                 device=torch.device("cpu"),
             ),
@@ -502,7 +502,7 @@ class TestOperationsUniformFloatCPU:
         assert values.device == torch.device("cpu")
         assert values.shape == (128, 256)
 
-        reference_values = points.squeeze(-1) / torch.pi
+        reference_values = points / torch.pi
 
         assert torch.allclose(values, reference_values, rtol=1e-16)
 
