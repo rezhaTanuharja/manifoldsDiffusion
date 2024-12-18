@@ -187,9 +187,13 @@ class CesaroSum(CumulativeDistributionFunction):
         self._device = device
         self._time.to(device)
 
-    def __call__(self, points: torch.Tensor, times: torch.Tensor) -> torch.Tensor:
+    def at(self, time: torch.Tensor):
+        self._time = time.to(self._device)
+        return self
+
+    def __call__(self, points: torch.Tensor) -> torch.Tensor:
         if self._num_waves == 0:
-            return torch.zeros(times.shape).unsqueeze(-1) + points / torch.pi
+            return torch.zeros(self._time.shape).unsqueeze(-1) + points / torch.pi
 
         wave_numbers = torch.arange(
             1, self._num_waves + 1, dtype=self._data_type, device=self._device
@@ -201,7 +205,7 @@ class CesaroSum(CumulativeDistributionFunction):
 
         angles = wave_numbers * points.unsqueeze(-1)
 
-        time = times.unsqueeze(-1).unsqueeze(-1)
+        time = self._time.unsqueeze(-1).unsqueeze(-1)
 
         temporal_components = torch.exp(
             -self._mean_squared_displacement(time) * wave_numbers**2

@@ -38,17 +38,25 @@ class ConstantLinear(CumulativeDistributionFunction):
         self._density = ConstantUniformDensity(support=support, data_type=data_type)
         self._support = support
         self._data_type = data_type
+        self._device = torch.device("cpu")
+        self._time = torch.tensor(
+            [
+                0.0,
+            ],
+            dtype=data_type,
+        )
 
     def to(self, device: torch.device) -> None:
         unused_variables(device)
 
+    def at(self, time: torch.Tensor):
+        self._time = time.to(self._device)
+        return self
+
     def __call__(
         self,
         points: torch.Tensor,
-        times: torch.Tensor,
     ) -> torch.Tensor:
-        unused_variables(times)
-
         return torch.clip(
             (points - self.support["lower"])
             / (self.support["upper"] - self.support["lower"]),

@@ -44,7 +44,7 @@ class TestOperationsFloat:
             dtype=torch.float32,
         )
 
-        cumulativedistributions_values = cumulativedistributions_float(points, times)
+        cumulativedistributions_values = cumulativedistributions_float.at(times)(points)
 
         assert cumulativedistributions_values.shape == points.shape
         assert cumulativedistributions_values.dtype == torch.float32
@@ -101,7 +101,9 @@ class TestOperationsdouble:
             dtype=torch.float64,
         )
 
-        cumulativedistributions_values = cumulativedistributions_double(points, times)
+        cumulativedistributions_values = cumulativedistributions_double.at(times)(
+            points
+        )
 
         assert cumulativedistributions_values.shape == points.shape
         assert cumulativedistributions_values.dtype == torch.float64

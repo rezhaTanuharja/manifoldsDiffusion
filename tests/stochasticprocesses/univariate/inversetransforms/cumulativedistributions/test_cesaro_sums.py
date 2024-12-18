@@ -461,7 +461,7 @@ class TestOperationsUniformFloatCPU:
         times = torch.randn(size=(128,))
 
         points = torch.zeros(size=(128, 256), dtype=torch.float32, device="cpu")
-        values = uniform_distribution_float_cpu(points, times)
+        values = uniform_distribution_float_cpu.at(times)(points)
 
         assert isinstance(values, torch.Tensor)
         assert values.dtype == torch.float32
@@ -475,7 +475,7 @@ class TestOperationsUniformFloatCPU:
         points = torch.pi * torch.ones(
             size=(128, 256), dtype=torch.float32, device="cpu"
         )
-        values = uniform_distribution_float_cpu(points, times)
+        values = uniform_distribution_float_cpu(points)
 
         assert isinstance(values, torch.Tensor)
         assert values.dtype == torch.float32
@@ -495,7 +495,7 @@ class TestOperationsUniformFloatCPU:
             min=0.0,
             max=torch.pi,
         )
-        values = uniform_distribution_float_cpu(points, times)
+        values = uniform_distribution_float_cpu(points)
 
         assert isinstance(values, torch.Tensor)
         assert values.dtype == torch.float32

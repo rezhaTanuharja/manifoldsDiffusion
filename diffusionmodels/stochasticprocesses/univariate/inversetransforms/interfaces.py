@@ -57,11 +57,24 @@ class CumulativeDistributionFunction(ABC):
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
-    def __call__(
-        self,
-        points: torch.Tensor,
-        times: torch.Tensor,
-    ) -> torch.Tensor:
+    def at(self, time: torch.Tensor):
+        """
+        Set the internal time of the stochastic process
+
+        Parameters
+        ----------
+        `time: torch.Tensor`
+        Tensor with shape `(..., num_times)`
+
+        Returns
+        -------
+        `CumulativeDistributionFunction`
+        The same distribution function with internal time set to the given tensor
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def __call__(self, points: torch.Tensor) -> torch.Tensor:
         """
         Evaluate the CDF value at the given points and times
 
@@ -69,9 +82,6 @@ class CumulativeDistributionFunction(ABC):
         ----------
         `points: torch.Tensor`
         Tensor with shape `(..., num_times, num_points)`.
-
-        `times: torch.Tensor`
-        Tensor with shape `(..., num_times)`
 
         Returns
         -------

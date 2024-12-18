@@ -60,8 +60,8 @@ class InverseTransform(StochasticProcess):
         self._time.to(self._device)
 
     def at(self, time: torch.Tensor):
-        self._time = time
-        self._time.to(self._device)
+        self._time = time.to(self._device)
+        self._distribution = self._distribution.at(time)
         return self
 
     @property
@@ -83,7 +83,7 @@ class InverseTransform(StochasticProcess):
         print(target_values.shape)
 
         return self._root_finder.solve(
-            function=lambda points: self._distribution(points, self._time),
+            function=lambda points: self._distribution(points),
             target_values=target_values,
             interval=(
                 self._distribution.support["lower"],
