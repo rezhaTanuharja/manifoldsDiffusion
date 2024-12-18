@@ -7,8 +7,9 @@ Classes
 A callable object that applies a sequence of transformations
 """
 
+from typing import Any, Callable, List
+
 from .interfaces import Transform
-from typing import List, Any, Callable
 
 
 class Pipeline(Transform):

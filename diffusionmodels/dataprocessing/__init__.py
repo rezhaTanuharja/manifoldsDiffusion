@@ -11,9 +11,8 @@ Modules
 sequential  : define processes that consist of a sequence of transformations
 """
 
-from .interfaces import Transform
 from . import sequential
-
+from .interfaces import Transform
 
 __all__ = [
     "Transform",

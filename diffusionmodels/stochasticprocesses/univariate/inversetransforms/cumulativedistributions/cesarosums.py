@@ -4,7 +4,7 @@ Implements various CDFs based on Cesaro higher order summation.
 Classes
 -------
 `CesaroSumDensity`
-The Cesaro higher order summation of the Dirichlet kernel
+The Cesaro higher order summation of the `PeriodicHeatKernel`
 
 `CesaroSum`
 The spatial integral of `CesaroSumDensity`
