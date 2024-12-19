@@ -1,3 +1,7 @@
+"""
+Test file for CDF based on the solution to the heat equation in a periodic domain.
+"""
+
 from itertools import product
 
 import pytest
@@ -58,7 +62,7 @@ def periodic_heat_kernel_fixture(request):
     return parameters, density
 
 
-class TestOperationsUniformDensityFloatCPU:
+class TestPeriodicHeatKernel:
     def test_get_dimension(self, periodic_heat_kernel_fixture):
         _, density = periodic_heat_kernel_fixture
 
