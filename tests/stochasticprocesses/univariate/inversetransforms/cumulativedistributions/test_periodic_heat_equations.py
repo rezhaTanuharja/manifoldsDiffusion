@@ -8,7 +8,12 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulative
 
 @pytest.fixture(scope="class")
 def uniform_distribution_float_cpu():
-    return PeriodicHeatKernel(num_waves=0, mean_squared_displacement=lambda time: time)
+    return PeriodicHeatKernel(
+        num_waves=0,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float32,
+    )
 
 
 class TestOperationsUniformFloatCPU:
@@ -24,7 +29,7 @@ class TestOperationsUniformFloatCPU:
 
     def test_call(self, uniform_distribution_float_cpu):
         points = torch.randn(
-            size=(2, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(2, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         values = uniform_distribution_float_cpu(points)
 
@@ -45,7 +50,7 @@ class TestOperationsUniformFloatCPU:
     #
     def test_gradient_call(self, uniform_distribution_float_cpu):
         points = torch.randn(
-            size=(1, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(1, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = uniform_distribution_float_cpu.gradient(points)
 
@@ -70,7 +75,7 @@ class TestOperationsUniformFloatCPU:
         distribution = uniform_distribution_float_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = uniform_distribution_float_cpu.gradient(points)
 
@@ -110,7 +115,12 @@ class TestOperationsUniformFloatCPU:
 
 @pytest.fixture(scope="class")
 def multiple_wave_distribution_float_cpu():
-    return PeriodicHeatKernel(num_waves=64, mean_squared_displacement=lambda time: time)
+    return PeriodicHeatKernel(
+        num_waves=64,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float32,
+    )
 
 
 class TestOperationsMultipleWaveFloatCPU:
@@ -126,7 +136,7 @@ class TestOperationsMultipleWaveFloatCPU:
 
     def test_call(self, multiple_wave_distribution_float_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         values = multiple_wave_distribution_float_cpu(points)
 
@@ -146,7 +156,7 @@ class TestOperationsMultipleWaveFloatCPU:
 
     def test_gradient_call(self, multiple_wave_distribution_float_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         gradient = multiple_wave_distribution_float_cpu.gradient(points)
 
@@ -177,7 +187,7 @@ class TestOperationsMultipleWaveFloatCPU:
         distribution = multiple_wave_distribution_float_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
         )
         values = distribution(points)
 
@@ -234,7 +244,12 @@ class TestOperationsMultipleWaveFloatCPU:
 
 @pytest.fixture(scope="class")
 def uniform_distribution_double_cpu():
-    return PeriodicHeatKernel(num_waves=0, mean_squared_displacement=lambda time: time)
+    return PeriodicHeatKernel(
+        num_waves=0,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float64,
+    )
 
 
 class TestOperationsUniformDoubleCPU:
@@ -250,7 +265,7 @@ class TestOperationsUniformDoubleCPU:
 
     def test_call(self, uniform_distribution_double_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         values = uniform_distribution_double_cpu(points)
 
@@ -271,7 +286,7 @@ class TestOperationsUniformDoubleCPU:
     #
     def test_gradient_call(self, uniform_distribution_double_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = uniform_distribution_double_cpu.gradient(points)
 
@@ -296,7 +311,7 @@ class TestOperationsUniformDoubleCPU:
         distribution = uniform_distribution_double_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = uniform_distribution_double_cpu.gradient(points)
 
@@ -336,7 +351,12 @@ class TestOperationsUniformDoubleCPU:
 
 @pytest.fixture(scope="class")
 def multiple_wave_distribution_double_cpu():
-    return PeriodicHeatKernel(num_waves=64, mean_squared_displacement=lambda time: time)
+    return PeriodicHeatKernel(
+        num_waves=64,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float64,
+    )
 
 
 class TestOperationsMultipleWaveDoubleCPU:
@@ -352,7 +372,7 @@ class TestOperationsMultipleWaveDoubleCPU:
 
     def test_call(self, multiple_wave_distribution_double_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         values = multiple_wave_distribution_double_cpu(points)
 
@@ -372,7 +392,7 @@ class TestOperationsMultipleWaveDoubleCPU:
 
     def test_gradient_call(self, multiple_wave_distribution_double_cpu):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         gradient = multiple_wave_distribution_double_cpu.gradient(points)
 
@@ -403,7 +423,7 @@ class TestOperationsMultipleWaveDoubleCPU:
         distribution = multiple_wave_distribution_double_cpu.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cpu")
+            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
         values = distribution(points)
 
@@ -461,7 +481,10 @@ class TestOperationsMultipleWaveDoubleCPU:
 @pytest.fixture(scope="class")
 def uniform_distribution_float_cuda():
     distribution = PeriodicHeatKernel(
-        num_waves=0, mean_squared_displacement=lambda time: time
+        num_waves=0,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float32,
     )
     distribution.to(torch.device("cuda", 0))
     return distribution
@@ -481,7 +504,7 @@ class TestOperationsUniformFloatCuda:
 
     def test_call(self, uniform_distribution_float_cuda):
         points = torch.randn(
-            size=(2, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(2, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         values = uniform_distribution_float_cuda(points)
 
@@ -502,7 +525,7 @@ class TestOperationsUniformFloatCuda:
     #
     def test_gradient_call(self, uniform_distribution_float_cuda):
         points = torch.randn(
-            size=(1, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(1, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         gradient = uniform_distribution_float_cuda.gradient(points)
 
@@ -529,7 +552,7 @@ class TestOperationsUniformFloatCuda:
         distribution = uniform_distribution_float_cuda.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         gradient = uniform_distribution_float_cuda.gradient(points)
 
@@ -570,7 +593,10 @@ class TestOperationsUniformFloatCuda:
 @pytest.fixture(scope="class")
 def multiple_wave_distribution_float_cuda():
     distribution = PeriodicHeatKernel(
-        num_waves=64, mean_squared_displacement=lambda time: time
+        num_waves=64,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float32,
     )
     distribution.to(torch.device("cuda", 0))
     return distribution
@@ -590,7 +616,7 @@ class TestOperationsMultipleWaveFloatCuda:
 
     def test_call(self, multiple_wave_distribution_float_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         values = multiple_wave_distribution_float_cuda(points)
 
@@ -612,7 +638,7 @@ class TestOperationsMultipleWaveFloatCuda:
 
     def test_gradient_call(self, multiple_wave_distribution_float_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         gradient = multiple_wave_distribution_float_cuda.gradient(points)
 
@@ -643,7 +669,7 @@ class TestOperationsMultipleWaveFloatCuda:
         distribution = multiple_wave_distribution_float_cuda.at(time)
 
         points = torch.randn(
-            size=(16, 256, 1), dtype=torch.float32, device=torch.device("cuda", 0)
+            size=(16, 256), dtype=torch.float32, device=torch.device("cuda", 0)
         )
         values = distribution(points)
 
@@ -701,7 +727,10 @@ class TestOperationsMultipleWaveFloatCuda:
 @pytest.fixture(scope="class")
 def uniform_distribution_double_cuda():
     distribution = PeriodicHeatKernel(
-        num_waves=0, mean_squared_displacement=lambda time: time
+        num_waves=0,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float64,
     )
     distribution.to(torch.device("cuda", 0))
     return distribution
@@ -721,7 +750,7 @@ class TestOperationsUniformDoubleCuda:
 
     def test_call(self, uniform_distribution_double_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         values = uniform_distribution_double_cuda(points)
 
@@ -742,7 +771,7 @@ class TestOperationsUniformDoubleCuda:
     #
     def test_gradient_call(self, uniform_distribution_double_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         gradient = uniform_distribution_double_cuda.gradient(points)
 
@@ -769,7 +798,7 @@ class TestOperationsUniformDoubleCuda:
         distribution = uniform_distribution_double_cuda.at(time)
 
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         gradient = uniform_distribution_double_cuda.gradient(points)
 
@@ -810,7 +839,10 @@ class TestOperationsUniformDoubleCuda:
 @pytest.fixture(scope="class")
 def multiple_wave_distribution_double_cuda():
     distribution = PeriodicHeatKernel(
-        num_waves=64, mean_squared_displacement=lambda time: time
+        num_waves=64,
+        mean_squared_displacement=lambda time: time,
+        alpha=0,
+        data_type=torch.float64,
     )
     distribution.to(torch.device("cuda", 0))
     return distribution
@@ -830,7 +862,7 @@ class TestOperationsMultipleWaveDoubleCuda:
 
     def test_call(self, multiple_wave_distribution_double_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         values = multiple_wave_distribution_double_cuda(points)
 
@@ -852,7 +884,7 @@ class TestOperationsMultipleWaveDoubleCuda:
 
     def test_gradient_call(self, multiple_wave_distribution_double_cuda):
         points = torch.randn(
-            size=(128, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         gradient = multiple_wave_distribution_double_cuda.gradient(points)
 
@@ -883,7 +915,7 @@ class TestOperationsMultipleWaveDoubleCuda:
         distribution = multiple_wave_distribution_double_cuda.at(time)
 
         points = torch.randn(
-            size=(16, 256, 1), dtype=torch.float64, device=torch.device("cuda", 0)
+            size=(16, 256), dtype=torch.float64, device=torch.device("cuda", 0)
         )
         values = distribution(points)
 
