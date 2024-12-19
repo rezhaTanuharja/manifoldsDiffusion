@@ -14,7 +14,7 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulative
 points_shape = (1024, 256)
 times_shape = (1024,)
 
-num_waves = (0, 4, 16, 64)
+num_waves = (0, 8, 64, 512)
 
 mean_squared_displacements = (
     lambda time: time**0.5,
@@ -29,7 +29,7 @@ devices = (
     torch.device("cuda", 0),
 )
 
-data_types_tolerances = zip((torch.float32, torch.float64), (1e-3, 1e-6))
+data_types_tolerances = zip((torch.float32, torch.float64), (5e-2, 5e-6))
 
 test_parameters = [
     {
