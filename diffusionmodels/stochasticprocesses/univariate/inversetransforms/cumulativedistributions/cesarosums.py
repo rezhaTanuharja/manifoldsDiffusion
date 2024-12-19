@@ -189,6 +189,7 @@ class CesaroSum(CumulativeDistributionFunction):
 
     def at(self, time: torch.Tensor):
         self._time = time.to(self._device)
+        self._distribution = self._distribution.at(time)
         return self
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
@@ -221,7 +222,7 @@ class CesaroSum(CumulativeDistributionFunction):
                     torch.binomial(
                         torch.tensor(
                             [
-                                self._num_waves - 2,
+                                self._num_waves,
                             ],
                             dtype=self._data_type,
                         )
@@ -232,7 +233,7 @@ class CesaroSum(CumulativeDistributionFunction):
                     / torch.binomial(
                         torch.tensor(
                             [
-                                self._num_waves,
+                                self._num_waves + 2,
                             ],
                             dtype=self._data_type,
                         )

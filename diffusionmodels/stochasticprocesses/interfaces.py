@@ -94,6 +94,7 @@ class DensityFunction(ABC):
         `points: torch.Tensor`
         Tensor with shape `(..., time_index, num_points, *dimension)`.
         The dimension `time_index` must be broadcastable to `num_times`
+        If `*dimension == 1` then it is omitted from the shape
 
         Returns
         -------
@@ -112,11 +113,13 @@ class DensityFunction(ABC):
         `points: torch.Tensor`
         Tensor with shape `(..., time_index, num_points, *dimension)`.
         The dimension `time_index` must be broadcastable to `num_times`
+        If `*dimension == 1` then it is omitted from the shape
 
         Returns
         -------
         `torch.Tensor`
         Tensor with shape `(..., num_times, num_points, *dimension)`
+        If `*dimension == 1` then it is omitted from the shape
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -215,6 +218,6 @@ class StochasticProcess(ABC):
         Returns
         -------
         `torch.Tensor`
-        Tensor with shape `(..., num_times, num_samples)` or `(..., num_samples)`
+        Tensor with shape `(..., num_times, num_samples)`
         """
         raise NotImplementedError("Subclasses must implement this method")
