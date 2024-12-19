@@ -1,3 +1,5 @@
+from itertools import product
+
 import pytest
 import torch
 
@@ -5,20 +7,62 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulative
     PeriodicHeatKernel,
 )
 
+points_shape = (1024, 256)
+times_shape = (1024,)
 
-@pytest.fixture(scope="class")
-def uniform_distribution_float_cpu():
-    return PeriodicHeatKernel(
-        num_waves=0,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float32,
+num_waves = (0, 4, 16, 64)
+
+mean_squared_displacements = (
+    lambda time: time**0.5,
+    lambda time: time,
+    lambda time: time**2,
+)
+
+alphas = (0, 1, 2, 3)
+
+devices = (
+    torch.device("cpu"),
+    torch.device("cuda", 0),
+)
+
+data_types_tolerances = zip((torch.float32, torch.float64), (1e-3, 1e-6))
+
+test_parameters = [
+    {
+        "num_waves": num_wave,
+        "mean_squared_displacement": mean_squared_displacement,
+        "alpha": alpha,
+        "data_type": data_type_tolerance[0],
+        "tolerance": data_type_tolerance[1],
+        "device": device,
+    }
+    for num_wave, mean_squared_displacement, alpha, data_type_tolerance, device in product(
+        num_waves, mean_squared_displacements, alphas, data_types_tolerances, devices
+    )
+]
+
+
+@pytest.fixture(params=test_parameters, scope="class")
+def periodic_heat_kernel_fixture(request):
+    parameters = request.param
+
+    density = PeriodicHeatKernel(
+        num_waves=parameters["num_waves"],
+        mean_squared_displacement=parameters["mean_squared_displacement"],
+        alpha=parameters["alpha"],
+        data_type=parameters["data_type"],
     )
 
+    density.to(parameters["device"])
 
-class TestOperationsUniformFloatCPU:
-    def test_get_dimension(self, uniform_distribution_float_cpu):
-        dimension = uniform_distribution_float_cpu.dimension
+    return parameters, density
+
+
+class TestOperationsUniformDensityFloatCPU:
+    def test_get_dimension(self, periodic_heat_kernel_fixture):
+        _, density = periodic_heat_kernel_fixture
+
+        dimension = density.dimension
 
         assert isinstance(dimension, tuple)
         assert len(dimension) == 1
@@ -27,944 +71,298 @@ class TestOperationsUniformFloatCPU:
             assert isinstance(entry, int)
             assert entry == 1
 
-    def test_call(self, uniform_distribution_float_cpu):
+    def test_call(self, periodic_heat_kernel_fixture):
+        parameters, density = periodic_heat_kernel_fixture
+
         points = torch.randn(
-            size=(2, 256), dtype=torch.float32, device=torch.device("cpu")
+            size=points_shape,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         )
-        values = uniform_distribution_float_cpu(points)
+        values = density(points)
 
         assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cpu")
-        assert values.shape == (2, 256)
+        assert values.dtype == parameters["data_type"]
+        assert values.device == parameters["device"]
+        assert values.shape == points.shape
 
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float32,
-            device=torch.device("cpu"),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-    #
-    def test_gradient_call(self, uniform_distribution_float_cpu):
-        points = torch.randn(
-            size=(1, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-        gradient = uniform_distribution_float_cpu.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (1, 256)
-
-        reference_values = torch.zeros(
-            size=(1, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-    def test_change_time(self, uniform_distribution_float_cpu):
-        time = torch.randn(size=(128,), dtype=torch.float32, device=torch.device("cpu"))
-
-        distribution = uniform_distribution_float_cpu.at(time)
-
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-        gradient = uniform_distribution_float_cpu.gradient(points)
-
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float32,
-            device=torch.device("cpu"),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-        gradient = uniform_distribution_float_cpu.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-
-@pytest.fixture(scope="class")
-def multiple_wave_distribution_float_cpu():
-    return PeriodicHeatKernel(
-        num_waves=64,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float32,
-    )
-
-
-class TestOperationsMultipleWaveFloatCPU:
-    def test_get_dimension(self, multiple_wave_distribution_float_cpu):
-        dimension = multiple_wave_distribution_float_cpu.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, multiple_wave_distribution_float_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-        values = multiple_wave_distribution_float_cpu(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = 1.0 / torch.pi * torch.ones(size=(128, 256))
-
-        for wave_number in range(1, 65):
-            reference_values = reference_values + 2.0 / torch.pi * torch.cos(
-                wave_number * points.squeeze(-1)
+        if parameters["num_waves"] == 0:
+            reference_values = torch.full_like(
+                values,
+                fill_value=1.0 / torch.pi,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
             )
-
-        assert torch.allclose(values, reference_values, atol=1e-5)
-
-    def test_gradient_call(self, multiple_wave_distribution_float_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
-        gradient = multiple_wave_distribution_float_cpu.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(size=(128, 256))
-
-        for wave_number in range(1, 65):
+        else:
             reference_values = (
-                reference_values
-                - 2.0
+                1.0
                 / torch.pi
-                * wave_number
-                * torch.sin(wave_number * points.squeeze(-1))
+                * torch.ones(
+                    size=points.shape,
+                    dtype=parameters["data_type"],
+                    device=parameters["device"],
+                )
             )
 
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-3,
-        )
+            for wave_number in range(1, parameters["num_waves"] + 1):
+                reference_values = reference_values + 2.0 / torch.pi * torch.binomial(
+                    torch.tensor(
+                        [
+                            parameters["num_waves"],
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                    torch.tensor(
+                        [
+                            wave_number,
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                ) / torch.binomial(
+                    torch.tensor(
+                        [
+                            parameters["num_waves"] + parameters["alpha"],
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                    torch.tensor(
+                        [
+                            wave_number,
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                ) * torch.cos(wave_number * points)
 
-    def test_change_time(self, multiple_wave_distribution_float_cpu):
-        time = torch.arange(128, device=torch.device("cpu"))
-        distribution = multiple_wave_distribution_float_cpu.at(time)
+        assert torch.allclose(values, reference_values, atol=parameters["tolerance"])
+
+    def test_gradient_call(self, periodic_heat_kernel_fixture):
+        parameters, density = periodic_heat_kernel_fixture
 
         points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
+            size=points_shape,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         )
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = (
-            1.0
-            / torch.pi
-            * torch.ones(
-                size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-            )
-        )
-
-        for time_index in range(128):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] + 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * torch.cos(wave_number * points[time_index].squeeze(-1))
-
-        assert torch.allclose(values, reference_values, atol=1e-3)
-
-        gradient = distribution.gradient(points)
+        gradient = density.gradient(points)
 
         assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
+        assert gradient.dtype == parameters["data_type"]
+        assert gradient.device == parameters["device"]
+        assert gradient.shape == points.shape
 
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cpu")
-        )
+        if parameters["num_waves"] == 0:
+            reference_values = torch.zeros(
+                size=points.shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
+        else:
+            reference_values = torch.zeros(
+                size=points.shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
 
-        for time_index in range(128):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] - 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * wave_number * torch.sin(
-                    wave_number * points[time_index].squeeze(-1)
+            for wave_number in range(1, parameters["num_waves"] + 1):
+                reference_values = (
+                    reference_values
+                    - 2.0
+                    / torch.pi
+                    * wave_number
+                    * torch.binomial(
+                        torch.tensor(
+                            [
+                                parameters["num_waves"],
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                        torch.tensor(
+                            [
+                                wave_number,
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                    )
+                    / torch.binomial(
+                        torch.tensor(
+                            [
+                                parameters["num_waves"] + parameters["alpha"],
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                        torch.tensor(
+                            [
+                                wave_number,
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                    )
+                    * torch.sin(wave_number * points)
                 )
 
         assert torch.allclose(
             gradient,
             reference_values,
-            atol=1e-1,
+            atol=parameters["tolerance"],
         )
 
+    def test_change_time(self, periodic_heat_kernel_fixture):
+        parameters, density = periodic_heat_kernel_fixture
 
-@pytest.fixture(scope="class")
-def uniform_distribution_double_cpu():
-    return PeriodicHeatKernel(
-        num_waves=0,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float64,
-    )
-
-
-class TestOperationsUniformDoubleCPU:
-    def test_get_dimension(self, uniform_distribution_double_cpu):
-        dimension = uniform_distribution_double_cpu.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, uniform_distribution_double_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-        values = uniform_distribution_double_cpu(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float64,
-            device=torch.device("cpu"),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-    #
-    def test_gradient_call(self, uniform_distribution_double_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-        gradient = uniform_distribution_double_cpu.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-    def test_change_time(self, uniform_distribution_double_cpu):
-        time = torch.randn(size=(128,), dtype=torch.float64, device=torch.device("cpu"))
-
-        distribution = uniform_distribution_double_cpu.at(time)
-
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-        gradient = uniform_distribution_double_cpu.gradient(points)
-
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float64,
-            device=torch.device("cpu"),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-        gradient = uniform_distribution_double_cpu.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-
-@pytest.fixture(scope="class")
-def multiple_wave_distribution_double_cpu():
-    return PeriodicHeatKernel(
-        num_waves=64,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float64,
-    )
-
-
-class TestOperationsMultipleWaveDoubleCPU:
-    def test_get_dimension(self, multiple_wave_distribution_double_cpu):
-        dimension = multiple_wave_distribution_double_cpu.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, multiple_wave_distribution_double_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-        values = multiple_wave_distribution_double_cpu(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = 1.0 / torch.pi * torch.ones(size=(128, 256))
-
-        for wave_number in range(1, 65):
-            reference_values = reference_values + 2.0 / torch.pi * torch.cos(
-                wave_number * points.squeeze(-1)
+        time = torch.abs(
+            torch.randn(
+                size=times_shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
             )
-
-        assert torch.allclose(values, reference_values, atol=1e-3)
-
-    def test_gradient_call(self, multiple_wave_distribution_double_cpu):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
         )
-        gradient = multiple_wave_distribution_double_cpu.gradient(points)
 
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
+        density = density.at(time)
 
-        reference_values = torch.zeros(size=(128, 256))
+        points = torch.randn(
+            size=points_shape,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
+        )
 
-        for wave_number in range(1, 65):
+        values = density(points)
+
+        assert isinstance(values, torch.Tensor)
+        assert values.dtype == parameters["data_type"]
+        assert values.device == parameters["device"]
+        assert values.shape == points.shape
+
+        if parameters["num_waves"] == 0:
+            reference_values = torch.full_like(
+                values,
+                fill_value=1.0 / torch.pi,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
+        else:
             reference_values = (
-                reference_values
-                - 2.0
+                1.0
                 / torch.pi
-                * wave_number
-                * torch.sin(wave_number * points.squeeze(-1))
+                * torch.ones(
+                    size=points.shape,
+                    dtype=parameters["data_type"],
+                    device=parameters["device"],
+                )
             )
 
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-3,
-        )
+            for wave_number in range(1, parameters["num_waves"] + 1):
+                reference_values = reference_values + 2.0 / torch.pi * torch.binomial(
+                    torch.tensor(
+                        [
+                            parameters["num_waves"],
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                    torch.tensor(
+                        [
+                            wave_number,
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                ) / torch.binomial(
+                    torch.tensor(
+                        [
+                            parameters["num_waves"] + parameters["alpha"],
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                    torch.tensor(
+                        [
+                            wave_number,
+                        ],
+                        dtype=parameters["data_type"],
+                        device=parameters["device"],
+                    ),
+                ) * torch.cos(wave_number * points) * torch.exp(
+                    -parameters["mean_squared_displacement"](time.unsqueeze(-1))
+                    * wave_number**2
+                )
 
-    def test_change_time(self, multiple_wave_distribution_double_cpu):
-        time = torch.arange(128)
-        distribution = multiple_wave_distribution_double_cpu.at(time)
+        assert torch.allclose(values, reference_values, atol=parameters["tolerance"])
 
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cpu")
-        assert values.shape == (128, 256)
-
-        reference_values = (
-            1.0
-            / torch.pi
-            * torch.ones(
-                size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-            )
-        )
-
-        for time_index in range(128):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] + 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * torch.cos(wave_number * points[time_index].squeeze(-1))
-
-        assert torch.allclose(values, reference_values, atol=5e-3)
-
-        gradient = distribution.gradient(points)
+        gradient = density.gradient(points)
 
         assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cpu")
-        assert gradient.shape == (128, 256)
+        assert gradient.dtype == parameters["data_type"]
+        assert gradient.device == parameters["device"]
+        assert gradient.shape == points.shape
 
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cpu")
-        )
+        if parameters["num_waves"] == 0:
+            reference_gradient = torch.zeros(
+                size=points.shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
+        else:
+            reference_gradient = torch.zeros(
+                size=points.shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
 
-        for time_index in range(128):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] - 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * wave_number * torch.sin(
-                    wave_number * points[time_index].squeeze(-1)
+            for wave_number in range(1, parameters["num_waves"] + 1):
+                reference_gradient = (
+                    reference_gradient
+                    - 2.0
+                    / torch.pi
+                    * wave_number
+                    * torch.binomial(
+                        torch.tensor(
+                            [
+                                parameters["num_waves"],
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                        torch.tensor(
+                            [
+                                wave_number,
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                    )
+                    / torch.binomial(
+                        torch.tensor(
+                            [
+                                parameters["num_waves"] + parameters["alpha"],
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                        torch.tensor(
+                            [
+                                wave_number,
+                            ],
+                            dtype=parameters["data_type"],
+                            device=parameters["device"],
+                        ),
+                    )
+                    * torch.sin(wave_number * points)
+                    * torch.exp(
+                        -parameters["mean_squared_displacement"](time.unsqueeze(-1))
+                        * wave_number**2
+                    )
                 )
 
         assert torch.allclose(
             gradient,
-            reference_values,
-            atol=1e-3,
-        )
-
-
-@pytest.fixture(scope="class")
-def uniform_distribution_float_cuda():
-    distribution = PeriodicHeatKernel(
-        num_waves=0,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float32,
-    )
-    distribution.to(torch.device("cuda", 0))
-    return distribution
-
-
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
-class TestOperationsUniformFloatCuda:
-    def test_get_dimension(self, uniform_distribution_float_cuda):
-        dimension = uniform_distribution_float_cuda.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, uniform_distribution_float_cuda):
-        points = torch.randn(
-            size=(2, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        values = uniform_distribution_float_cuda(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (2, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float32,
-            device=torch.device("cuda", 0),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-    #
-    def test_gradient_call(self, uniform_distribution_float_cuda):
-        points = torch.randn(
-            size=(1, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        gradient = uniform_distribution_float_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (1, 256)
-
-        reference_values = torch.zeros(
-            size=(1, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-    def test_change_time(self, uniform_distribution_float_cuda):
-        time = torch.randn(
-            size=(128,), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-
-        distribution = uniform_distribution_float_cuda.at(time)
-
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        gradient = uniform_distribution_float_cuda.gradient(points)
-
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float32,
-            device=torch.device("cuda", 0),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-        gradient = uniform_distribution_float_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-
-@pytest.fixture(scope="class")
-def multiple_wave_distribution_float_cuda():
-    distribution = PeriodicHeatKernel(
-        num_waves=64,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float32,
-    )
-    distribution.to(torch.device("cuda", 0))
-    return distribution
-
-
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
-class TestOperationsMultipleWaveFloatCuda:
-    def test_get_dimension(self, multiple_wave_distribution_float_cuda):
-        dimension = multiple_wave_distribution_float_cuda.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, multiple_wave_distribution_float_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        values = multiple_wave_distribution_float_cuda(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (128, 256)
-
-        reference_values = (
-            1.0 / torch.pi * torch.ones(size=(128, 256), device=torch.device("cuda", 0))
-        )
-
-        for wave_number in range(1, 65):
-            reference_values = reference_values + 2.0 / torch.pi * torch.cos(
-                wave_number * points.squeeze(-1)
-            )
-
-        assert torch.allclose(values, reference_values, atol=1e-3)
-
-    def test_gradient_call(self, multiple_wave_distribution_float_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        gradient = multiple_wave_distribution_float_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(size=(128, 256), device=torch.device("cuda", 0))
-
-        for wave_number in range(1, 65):
-            reference_values = (
-                reference_values
-                - 2.0
-                / torch.pi
-                * wave_number
-                * torch.sin(wave_number * points.squeeze(-1))
-            )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-3,
-        )
-
-    def test_change_time(self, multiple_wave_distribution_float_cuda):
-        time = torch.arange(16, device=torch.device("cuda", 0))
-        distribution = multiple_wave_distribution_float_cuda.at(time)
-
-        points = torch.randn(
-            size=(16, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float32
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (16, 256)
-
-        reference_values = (
-            1.0
-            / torch.pi
-            * torch.ones(
-                size=(16, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-            )
-        )
-
-        for time_index in range(16):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] + 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * torch.cos(wave_number * points[time_index].squeeze(-1))
-
-        assert torch.allclose(values, reference_values, atol=1e-3)
-
-        gradient = distribution.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float32
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (16, 256)
-
-        reference_values = torch.zeros(
-            size=(16, 256), dtype=torch.float32, device=torch.device("cuda", 0)
-        )
-
-        for time_index in range(16):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] - 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * wave_number * torch.sin(
-                    wave_number * points[time_index].squeeze(-1)
-                )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-3,
-        )
-
-
-@pytest.fixture(scope="class")
-def uniform_distribution_double_cuda():
-    distribution = PeriodicHeatKernel(
-        num_waves=0,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float64,
-    )
-    distribution.to(torch.device("cuda", 0))
-    return distribution
-
-
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
-class TestOperationsUniformDoubleCuda:
-    def test_get_dimension(self, uniform_distribution_double_cuda):
-        dimension = uniform_distribution_double_cuda.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, uniform_distribution_double_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        values = uniform_distribution_double_cuda(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float64,
-            device=torch.device("cuda", 0),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-    #
-    def test_gradient_call(self, uniform_distribution_double_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        gradient = uniform_distribution_double_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-    def test_change_time(self, uniform_distribution_double_cuda):
-        time = torch.randn(
-            size=(128,), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-
-        distribution = uniform_distribution_double_cuda.at(time)
-
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        gradient = uniform_distribution_double_cuda.gradient(points)
-
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (128, 256)
-
-        reference_values = torch.full_like(
-            values,
-            fill_value=1.0 / torch.pi,
-            dtype=torch.float64,
-            device=torch.device("cuda", 0),
-        )
-
-        assert torch.allclose(values, reference_values, atol=1e-16)
-
-        gradient = uniform_distribution_double_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-16,
-        )
-
-
-@pytest.fixture(scope="class")
-def multiple_wave_distribution_double_cuda():
-    distribution = PeriodicHeatKernel(
-        num_waves=64,
-        mean_squared_displacement=lambda time: time,
-        alpha=0,
-        data_type=torch.float64,
-    )
-    distribution.to(torch.device("cuda", 0))
-    return distribution
-
-
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="cuda is not available")
-class TestOperationsMultipleWaveDoubleCuda:
-    def test_get_dimension(self, multiple_wave_distribution_double_cuda):
-        dimension = multiple_wave_distribution_double_cuda.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_call(self, multiple_wave_distribution_double_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        values = multiple_wave_distribution_double_cuda(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (128, 256)
-
-        reference_values = (
-            1.0 / torch.pi * torch.ones(size=(128, 256), device=torch.device("cuda", 0))
-        )
-
-        for wave_number in range(1, 65):
-            reference_values = reference_values + 2.0 / torch.pi * torch.cos(
-                wave_number * points.squeeze(-1)
-            )
-
-        assert torch.allclose(values, reference_values, atol=1e-6)
-
-    def test_gradient_call(self, multiple_wave_distribution_double_cuda):
-        points = torch.randn(
-            size=(128, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        gradient = multiple_wave_distribution_double_cuda.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (128, 256)
-
-        reference_values = torch.zeros(size=(128, 256), device=torch.device("cuda", 0))
-
-        for wave_number in range(1, 65):
-            reference_values = (
-                reference_values
-                - 2.0
-                / torch.pi
-                * wave_number
-                * torch.sin(wave_number * points.squeeze(-1))
-            )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-6,
-        )
-
-    def test_change_time(self, multiple_wave_distribution_double_cuda):
-        time = torch.arange(16)
-        distribution = multiple_wave_distribution_double_cuda.at(time)
-
-        points = torch.randn(
-            size=(16, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-        values = distribution(points)
-
-        assert isinstance(values, torch.Tensor)
-        assert values.dtype == torch.float64
-        assert values.device == torch.device("cuda", 0)
-        assert values.shape == (16, 256)
-
-        reference_values = (
-            1.0
-            / torch.pi
-            * torch.ones(
-                size=(16, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-            )
-        )
-
-        for time_index in range(16):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] + 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * torch.cos(wave_number * points[time_index].squeeze(-1))
-
-        assert torch.allclose(values, reference_values, atol=1e-6)
-
-        gradient = distribution.gradient(points)
-
-        assert isinstance(gradient, torch.Tensor)
-        assert gradient.dtype == torch.float64
-        assert gradient.device == torch.device("cuda", 0)
-        assert gradient.shape == (16, 256)
-
-        reference_values = torch.zeros(
-            size=(16, 256), dtype=torch.float64, device=torch.device("cuda", 0)
-        )
-
-        for time_index in range(16):
-            for wave_number in range(1, 65):
-                reference_values[time_index] = reference_values[
-                    time_index
-                ] - 2.0 / torch.pi * torch.exp(
-                    -time[time_index] * wave_number**2
-                ) * wave_number * torch.sin(
-                    wave_number * points[time_index].squeeze(-1)
-                )
-
-        assert torch.allclose(
-            gradient,
-            reference_values,
-            atol=1e-5,
+            reference_gradient,
+            atol=parameters["tolerance"],
         )

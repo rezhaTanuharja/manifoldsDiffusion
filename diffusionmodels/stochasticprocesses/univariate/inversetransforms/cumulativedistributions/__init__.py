@@ -8,10 +8,9 @@ heatequations       : implements various CDFs from the solution of heat equation
 polynomials         : implements various CDFs in the form of polynomials
 """
 
-from . import cesarosums, heatequations, polynomials
+from . import heatequations, polynomials
 
 __all__ = [
-    "cesarosums",
     "heatequations",
     "polynomials",
 ]
