@@ -1,6 +1,14 @@
 """
 Implements univariate process defined by their cumulativedistributionss.
 
+Interfaces
+----------
+`CumulativeDistributionFunction`
+The interface for all CDF in this project
+
+`RootFinder`
+The interface for all root finders of CDF
+
 Classes
 -------
 `InverseTransform`
@@ -23,7 +31,7 @@ from .interfaces import CumulativeDistributionFunction, RootFinder
 
 class InverseTransform(StochasticProcess):
     """
-    A process defined by its cumulativedistributions and sampled using the inverse transform method
+    A process defined by its CDF and sampled using the inverse transform method
     """
 
     def __init__(
@@ -33,7 +41,7 @@ class InverseTransform(StochasticProcess):
         data_type: torch.dtype = torch.float32,
     ) -> None:
         """
-        Construct an instance of InverseTransform
+        Construct an instance of `InverseTransform`
 
         Parameters
         ----------
@@ -42,6 +50,9 @@ class InverseTransform(StochasticProcess):
 
         `root_finder: RootFinder`
         A numerical solver to perform inverse transform sampling
+
+        `data_type: torch.dtype = torch.float32`
+        The data type of all tensor class attributes
         """
         self._distribution = distribution
         self._root_finder = root_finder
@@ -80,10 +91,8 @@ class InverseTransform(StochasticProcess):
             size=(*self._time.shape, num_samples), dtype=self._data_type
         )
 
-        print(target_values.shape)
-
         return self._root_finder.solve(
-            function=lambda points: self._distribution(points),
+            function=self._distribution,
             target_values=target_values,
             interval=(
                 self._distribution.support["lower"],
