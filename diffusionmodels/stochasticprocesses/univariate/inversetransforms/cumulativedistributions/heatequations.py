@@ -220,9 +220,27 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
         self,
         num_waves: int,
         mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor],
+        alpha: int = 2,
         data_type: torch.dtype = torch.float32,
-        alpha: int = 0,
     ):
+        """
+        Construct a periodic cumulative energy CDF
+
+        Parameters
+        ----------
+        `num_waves: int`
+        The number of wave functions excluding the constant function
+
+        `mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor]`
+        A function representing the integration of the diffusion constant
+
+        `alpha: int = 2`
+        The parameter `alpha` in `(C, alpha)` summation
+
+        `data_type`
+        The data type of all tensor class attributes
+        """
+
         self._num_waves = num_waves
         self._mean_squared_displacement = mean_squared_displacement
         self._distribution = PeriodicHeatKernel(
@@ -272,7 +290,6 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
         )
 
         angles = wave_numbers * points.unsqueeze(-1)
-
         time = self._time.unsqueeze(-1).unsqueeze(-1)
 
         temporal_components = torch.exp(
