@@ -101,7 +101,6 @@ class TestPeriodicCumulativeEnergy:
         """
 
         parameters, distribution = periodic_cumulative_energy_fixture
-        distribution.to(parameters["device"])
 
         points = torch.clip(
             torch.randn(
@@ -181,7 +180,6 @@ class TestPeriodicCumulativeEnergy:
         """
 
         parameters, distribution = periodic_cumulative_energy_fixture
-        distribution.to(parameters["device"])
 
         gradient = distribution.gradient
 
@@ -267,7 +265,6 @@ class TestPeriodicCumulativeEnergy:
         """
 
         parameters, distribution = periodic_cumulative_energy_fixture
-        distribution.to(parameters["device"])
 
         hessian = distribution.gradient.gradient
 
