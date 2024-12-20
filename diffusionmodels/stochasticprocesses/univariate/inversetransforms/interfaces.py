@@ -27,6 +27,9 @@ class CumulativeDistributionFunction(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
+    `at(time)`
+    Set the time to access the CDF
+
     `__call__(points, times)`
     Evaluate the CDF value at the given points and times
 
@@ -94,12 +97,12 @@ class CumulativeDistributionFunction(ABC):
     @abstractmethod
     def gradient(self) -> DensityFunction:
         """
-        Evaluate the PDF value at the given points and times
+        Provides access to the underlying probability density function
 
         Returns
         -------
         `DensityFunction`
-        Provides access to the underlying density function
+        A callable object that maps a `torch.Tensor` to another `torch.Tensor`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -107,12 +110,12 @@ class CumulativeDistributionFunction(ABC):
     @abstractmethod
     def support(self) -> Dict[str, float]:
         """
-        Provides the range in which CDF may have non-zero value
+        Provides the interval in which CDF may have non-zero value
 
         Returns
         -------
         `Dict[str, float]`
-        A dictionary with the keys `lower_bound` and `upper_bound`
+        A dictionary with the keys `lower` and `upper`
         """
         raise NotImplementedError("Subclasses must implement this method")
 

@@ -106,14 +106,15 @@ class PeriodicHeatKernel(DensityFunction):
         self._num_waves = num_waves
         self._mean_squared_displacement = mean_squared_displacement
         self._data_type = data_type
+
         self._time = torch.tensor(
             [
                 0.0,
             ],
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
 
+        self._device = torch.device("cpu")
         self._alpha = alpha
 
         self._infinite_sum_weights = (
@@ -150,7 +151,6 @@ class PeriodicHeatKernel(DensityFunction):
         )
 
         angles = wave_numbers * points.unsqueeze(-1)
-
         time = self._time.unsqueeze(-1).unsqueeze(-1)
 
         temporal_components = torch.exp(
@@ -190,7 +190,6 @@ class PeriodicHeatKernel(DensityFunction):
         )
 
         angles = wave_numbers * points.unsqueeze(-1)
-
         time = self._time.unsqueeze(-1).unsqueeze(-1)
 
         temporal_components = torch.exp(
@@ -243,11 +242,14 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
 
         self._num_waves = num_waves
         self._mean_squared_displacement = mean_squared_displacement
+
         self._distribution = PeriodicHeatKernel(
             num_waves, mean_squared_displacement, alpha, data_type
         )
+
         self._data_type = data_type
         self._device = torch.device("cpu")
+
         self._time = torch.tensor(
             [
                 0.0,

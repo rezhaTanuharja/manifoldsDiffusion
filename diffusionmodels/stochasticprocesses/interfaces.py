@@ -201,7 +201,7 @@ class StochasticProcess(ABC):
         Returns
         -------
         `DensityFunction`
-        A callable object that maps `torch.Tensor` to another `torch.Tensor` with the same shape
+        A callable object that maps `torch.Tensor` to another `torch.Tensor`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -218,6 +218,6 @@ class StochasticProcess(ABC):
         Returns
         -------
         `torch.Tensor`
-        Tensor with shape `(..., num_times, num_samples)`
+        Tensor with shape `(..., num_times, num_samples, *dimension)`
         """
         raise NotImplementedError("Subclasses must implement this method")

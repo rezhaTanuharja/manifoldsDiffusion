@@ -88,7 +88,9 @@ class InverseTransform(StochasticProcess):
         num_samples: int,
     ) -> torch.Tensor:
         target_values = torch.rand(
-            size=(*self._time.shape, num_samples), dtype=self._data_type
+            size=(*self._time.shape, num_samples),
+            dtype=self._data_type,
+            device=self._device,
         )
 
         return self._root_finder.solve(

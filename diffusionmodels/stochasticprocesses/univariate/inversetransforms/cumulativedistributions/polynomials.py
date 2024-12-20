@@ -11,7 +11,6 @@ from typing import Dict
 
 import torch
 
-from .....utilities.warningsuppressors import unused_variables
 from ...uniform import ConstantUniformDensity
 from ..interfaces import CumulativeDistributionFunction, DensityFunction
 
@@ -47,10 +46,13 @@ class ConstantLinear(CumulativeDistributionFunction):
         )
 
     def to(self, device: torch.device) -> None:
-        unused_variables(device)
+        self._device = device
+        self._time = self._time.to(device)
+        self._density.to(device)
 
     def at(self, time: torch.Tensor):
         self._time = time.to(self._device)
+        self._density = self._density.at(self._time)
         return self
 
     def __call__(

@@ -34,12 +34,12 @@ class ConstantUniform(StochasticProcess):
 
     def to(self, device: torch.device) -> None:
         self._device = device
+        self._time = self._time.to(device)
         self._density.to(device)
 
     def at(self, time: torch.Tensor):
-        self._time = time
-        self._time.to(self._device)
-        self._density.at(time)
+        self._time = time.to(self._device)
+        self._density = self._density.at(self._time)
         return self
 
     @property
@@ -57,6 +57,7 @@ class ConstantUniform(StochasticProcess):
         return lower_bound + (upper_bound - lower_bound) * torch.rand(
             size=(*self._time.shape, num_samples, *self.dimension),
             dtype=self._data_type,
+            device=self._device,
         )
 
 
@@ -121,7 +122,9 @@ class ConstantUniformDensity(DensityFunction):
         return result
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
-        result = torch.zeros_like(input=points, dtype=self._data_type)
+        result = torch.zeros_like(
+            input=points, dtype=self._data_type, device=self._device
+        )
 
         result = result.unsqueeze(0)
         result = result.repeat((*self._time.shape, *(1 for _ in result.shape[1:])))
