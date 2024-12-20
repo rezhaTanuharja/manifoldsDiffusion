@@ -246,7 +246,8 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
 
     def to(self, device: torch.device) -> None:
         self._device = device
-        self._time.to(device)
+        self._time = self._time.to(device)
+        self._distribution.to(device)
 
     def at(self, time: torch.Tensor):
         self._time = time.to(self._device)
@@ -255,7 +256,12 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
 
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
         if self._num_waves == 0:
-            return torch.zeros(self._time.shape).unsqueeze(-1) + points / torch.pi
+            return (
+                torch.zeros(
+                    self._time.shape, dtype=self._data_type, device=self._device
+                ).unsqueeze(-1)
+                + points / torch.pi
+            )
 
         wave_numbers = torch.arange(
             1, self._num_waves + 1, dtype=self._data_type, device=self._device
