@@ -93,11 +93,10 @@ class ConstantUniformDensity(DensityFunction):
 
     def to(self, device: torch.device) -> None:
         self._device = device
-        self._time.to(device)
+        self._time = self._time.to(device)
 
     def at(self, time: torch.Tensor):
-        self._time = time
-        self._time.to(self._device)
+        self._time = time.to(self._device)
         return self
 
     @property
@@ -125,7 +124,6 @@ class ConstantUniformDensity(DensityFunction):
             input=points, dtype=self._data_type, device=self._device
         )
 
-        result = result.unsqueeze(0)
         result = result.repeat((*self._time.shape, *(1 for _ in result.shape[1:])))
 
         return result
