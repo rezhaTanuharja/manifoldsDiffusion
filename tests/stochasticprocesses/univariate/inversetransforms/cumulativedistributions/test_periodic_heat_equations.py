@@ -29,10 +29,13 @@ mean_squared_displacements = (
 
 alphas = (0, 1, 2, 3)
 
-devices = (
-    torch.device("cpu"),
-    torch.device("cuda", 0),
-)
+if torch.cuda.is_available():
+    devices = (
+        torch.device("cpu"),
+        torch.device("cuda", 0),
+    )
+else:
+    devices = (torch.device("cpu"),)
 
 data_types_tolerances = zip((torch.float32, torch.float64), (3e-2, 5e-6))
 

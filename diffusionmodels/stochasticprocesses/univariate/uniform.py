@@ -55,7 +55,7 @@ class ConstantUniform(StochasticProcess):
         upper_bound = self._support["upper"]
 
         return lower_bound + (upper_bound - lower_bound) * torch.rand(
-            size=(*self._time.shape, num_samples, *self.dimension),
+            size=(*self._time.shape, num_samples),
             dtype=self._data_type,
             device=self._device,
         )
@@ -116,7 +116,6 @@ class ConstantUniformDensity(DensityFunction):
             other=values,
         )
 
-        result = result.unsqueeze(0)
         result = result.repeat((*self._time.shape, *(1 for _ in result.shape[1:])))
 
         return result
