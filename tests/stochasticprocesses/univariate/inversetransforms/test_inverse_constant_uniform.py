@@ -1,6 +1,10 @@
+from itertools import product
+from typing import Any, Dict, Optional, Tuple
+
 import pytest
 import torch
 
+from diffusionmodels.stochasticprocesses.interfaces import StochasticProcess
 from diffusionmodels.stochasticprocesses.univariate.inversetransforms import (
     InverseTransform,
 )
@@ -14,20 +18,65 @@ from diffusionmodels.stochasticprocesses.univariate.uniform import (
     ConstantUniformDensity,
 )
 
+nums_samples = (1, 5, 25, 125)
+nums_iterations = (5, 10)
 
-@pytest.fixture(scope="class")
-def process_float():
-    return InverseTransform(
-        distribution=ConstantLinear(
-            support={"lower": 0.0, "upper": 1.0}, data_type=torch.float32
-        ),
-        root_finder=Bisection(num_iterations=5),
+if torch.cuda.is_available():
+    devices = (
+        torch.device("cpu"),
+        torch.device("cuda", 0),
     )
+else:
+    devices = (torch.device("cpu"),)
+
+data_types_tolerances = zip((torch.float32, torch.float64), (1e-6, 1e-12))
+
+supports = (
+    {"lower": 2.3, "upper": 4.7},
+    {"lower": -5.5, "upper": -1.8},
+    {"lower": -1.2, "upper": 3.7},
+)
+
+test_parameters = [
+    {
+        "data_type": data_type_tolerance[0],
+        "tolerance": data_type_tolerance[1],
+        "support": support,
+        "num_samples": num_samples,
+        "device": device,
+        "num_iterations": num_iterations,
+    }
+    for data_type_tolerance, support, num_samples, device, num_iterations in product(
+        data_types_tolerances, supports, nums_samples, devices, nums_iterations
+    )
+]
+
+
+@pytest.fixture(params=test_parameters, scope="class")
+def process_fixture(request):
+    parameters = request.param
+
+    process = InverseTransform(
+        distribution=ConstantLinear(
+            support=parameters["support"], data_type=parameters["data_type"]
+        ),
+        root_finder=Bisection(num_iterations=parameters["num_iterations"]),
+        data_type=parameters["data_type"],
+    )
+
+    process.to(parameters["device"])
+
+    return parameters, process
 
 
 class TestOperationsFloat:
-    def test_get_dimension(self, process_float):
-        dimension = process_float.dimension
+    def test_get_dimension(
+        self,
+        process_fixture: Tuple[Dict[str, Any], StochasticProcess],
+    ):
+        _, process = process_fixture
+
+        dimension = process.dimension
 
         assert isinstance(dimension, tuple)
         assert len(dimension) == 1
@@ -36,107 +85,52 @@ class TestOperationsFloat:
             assert isinstance(entry, int)
             assert entry == 1
 
-    def test_sample(self, process_float):
-        samples = process_float.sample(num_samples=5)
+    def test_sample(
+        self,
+        process_fixture: Tuple[Dict[str, Any], StochasticProcess],
+        time: Optional[torch.Tensor] = None,
+    ):
+        parameters, process = process_fixture
+
+        samples = process.sample(num_samples=parameters["num_samples"])
 
         assert isinstance(samples, torch.Tensor)
-        assert samples.shape == (1, 5)
-        assert samples.dtype == torch.float32
 
-        assert torch.all((samples >= 0.0) & (samples <= 1.0))
+        time = (
+            time
+            if time is not None
+            else torch.zeros(
+                size=(1,),
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
+        )
 
-        assert torch.std(samples) > 0
+        assert samples.shape == (*time.shape, parameters["num_samples"])
+        assert samples.dtype == parameters["data_type"]
 
-    def test_density(self, process_float):
-        density = process_float.density
+        lower = parameters["support"]["lower"]
+        upper = parameters["support"]["upper"]
+
+        assert torch.all((samples >= lower) & (samples <= upper))
+
+        if parameters["num_samples"] > 1:
+            assert torch.std(samples) > 0
+
+    def test_density(self, process_fixture):
+        _, process = process_fixture
+
+        density = process.density
 
         assert isinstance(density, ConstantUniformDensity)
 
-    def test_change_time(self, process_float):
-        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float32)
+    def test_change_time(self, process_fixture):
+        parameters, process = process_fixture
 
-        dimension = process_float.at(time).dimension
+        time = torch.tensor(
+            [0.0, 1.0, 2.0], dtype=parameters["data_type"], device=parameters["device"]
+        )
 
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
+        process = process.at(time)
 
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-        samples = process_float.sample(num_samples=5)
-
-        assert isinstance(samples, torch.Tensor)
-        assert samples.shape == (3, 5)
-        assert samples.dtype == torch.float32
-
-        assert torch.all((samples >= 0.0) & (samples <= 1.0))
-        assert torch.std(samples) > 0
-
-        density = process_float.density
-
-        assert isinstance(density, ConstantUniformDensity)
-
-
-@pytest.fixture(scope="class")
-def process_double():
-    return InverseTransform(
-        distribution=ConstantLinear(
-            support={"lower": 0.0, "upper": 1.0}, data_type=torch.float64
-        ),
-        root_finder=Bisection(num_iterations=5),
-        data_type=torch.float64,
-    )
-
-
-class TestOperationsDouble:
-    def test_get_dimension(self, process_double):
-        dimension = process_double.dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-    def test_sample(self, process_double):
-        samples = process_double.sample(num_samples=5)
-
-        assert isinstance(samples, torch.Tensor)
-        assert samples.shape == (1, 5)
-        assert samples.dtype == torch.float64
-
-        assert torch.all((samples >= 0.0) & (samples <= 1.0))
-
-        assert torch.std(samples) > 0
-
-    def test_density(self, process_double):
-        density = process_double.density
-
-        assert isinstance(density, ConstantUniformDensity)
-
-    def test_change_time(self, process_double):
-        time = torch.tensor([0.0, 1.0, 2.0], dtype=torch.float64)
-
-        dimension = process_double.at(time).dimension
-
-        assert isinstance(dimension, tuple)
-        assert len(dimension) == 1
-
-        for entry in dimension:
-            assert isinstance(entry, int)
-            assert entry == 1
-
-        samples = process_double.sample(num_samples=5)
-
-        assert isinstance(samples, torch.Tensor)
-        assert samples.shape == (3, 5)
-        assert samples.dtype == torch.float64
-
-        assert torch.all((samples >= 0.0) & (samples <= 1.0))
-        assert torch.std(samples) > 0
-
-        density = process_double.density
-
-        assert isinstance(density, ConstantUniformDensity)
+        self.test_sample((parameters, process), time)

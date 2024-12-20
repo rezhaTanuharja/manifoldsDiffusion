@@ -68,7 +68,7 @@ class InverseTransform(StochasticProcess):
     def to(self, device: torch.device) -> None:
         self._device = device
         self._distribution.to(self._device)
-        self._time.to(self._device)
+        self._time = self._time.to(self._device)
 
     def at(self, time: torch.Tensor):
         self._time = time.to(self._device)

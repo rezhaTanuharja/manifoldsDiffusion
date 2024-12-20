@@ -16,10 +16,13 @@ from diffusionmodels.stochasticprocesses.univariate.uniform import (
 
 points_shape = (1, 256)
 
-devices = (
-    torch.device("cpu"),
-    torch.device("cuda", 0),
-)
+if torch.cuda.is_available():
+    devices = (
+        torch.device("cpu"),
+        torch.device("cuda", 0),
+    )
+else:
+    devices = (torch.device("cpu"),)
 
 data_types_tolerances = zip((torch.float32, torch.float64), (1e-6, 1e-12))
 
@@ -49,13 +52,13 @@ test_parameters = [
 def uniform_process_float(request):
     parameters = request.param
 
-    distribution = ConstantUniform(
+    process = ConstantUniform(
         support=parameters["support"], data_type=parameters["data_type"]
     )
 
-    distribution.to(parameters["device"])
+    process.to(parameters["device"])
 
-    return parameters, distribution
+    return parameters, process
 
 
 class TestOperationsFloat:
@@ -70,9 +73,9 @@ class TestOperationsFloat:
         """
         Checks that dimension can be accessed and produces the correct values
         """
-        _, distribution = uniform_process_float
+        _, process = uniform_process_float
 
-        dimension = distribution.dimension
+        dimension = process.dimension
 
         assert isinstance(dimension, tuple)
 
@@ -90,9 +93,9 @@ class TestOperationsFloat:
         """
         Checks that samples can be generated and produces the correct values
         """
-        parameters, distribution = uniform_process_float
+        parameters, process = uniform_process_float
 
-        samples = distribution.sample(num_samples=parameters["num_samples"])
+        samples = process.sample(num_samples=parameters["num_samples"])
 
         assert isinstance(samples, torch.Tensor)
         assert samples.dtype == parameters["data_type"]
@@ -125,9 +128,9 @@ class TestOperationsFloat:
         uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, distribution = uniform_process_float
+        parameters, process = uniform_process_float
 
-        density = distribution.density
+        density = process.density
 
         assert isinstance(density, ConstantUniformDensity)
 
@@ -181,9 +184,9 @@ class TestOperationsFloat:
         uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, distribution = uniform_process_float
+        parameters, process = uniform_process_float
 
-        hessian = distribution.density.gradient
+        hessian = process.density.gradient
 
         lower = parameters["support"]["lower"]
         upper = parameters["support"]["upper"]
@@ -225,13 +228,13 @@ class TestOperationsFloat:
         )
 
     def test_change_time(self, uniform_process_float):
-        parameters, distribution = uniform_process_float
+        parameters, process = uniform_process_float
 
         time = torch.rand(
             size=(256,), dtype=parameters["data_type"], device=parameters["device"]
         )
 
-        distribution = distribution.at(time)
+        process = process.at(time)
 
-        self.test_sample((parameters, distribution), time)
-        self.test_gradient((parameters, distribution), time)
+        self.test_sample((parameters, process), time)
+        self.test_gradient((parameters, process), time)
