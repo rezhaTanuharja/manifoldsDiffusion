@@ -9,10 +9,13 @@ import torch
 
 from diffusionmodels.manifolds.rotationalgroups import SpecialOrthogonal3
 
-devices = (
-    torch.device("cpu"),
-    torch.device("cuda", 0),
-)
+if torch.cuda.is_available():
+    devices = (
+        torch.device("cpu"),
+        torch.device("cuda", 0),
+    )
+else:
+    devices = (torch.device("cpu"),)
 
 data_types_tolerances = zip((torch.float32, torch.float64), (1e-6, 1e-12))
 

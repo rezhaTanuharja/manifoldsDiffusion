@@ -15,7 +15,7 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.rootfinder
     Bisection,
 )
 from diffusionmodels.stochasticprocesses.univariate.uniform import (
-    ConstantUniformDensity,
+    UniformDensity,
 )
 
 nums_samples = (1, 5, 25, 125)
@@ -122,7 +122,7 @@ class TestOperationsFloat:
 
         density = process.density
 
-        assert isinstance(density, ConstantUniformDensity)
+        assert isinstance(density, UniformDensity)
 
     def test_change_time(self, process_fixture):
         parameters, process = process_fixture

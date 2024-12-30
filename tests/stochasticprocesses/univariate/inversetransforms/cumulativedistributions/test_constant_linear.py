@@ -9,7 +9,7 @@ from diffusionmodels.stochasticprocesses.univariate.inversetransforms.cumulative
     ConstantLinear,
 )
 from diffusionmodels.stochasticprocesses.univariate.uniform import (
-    ConstantUniformDensity,
+    UniformDensity,
 )
 
 
@@ -67,7 +67,7 @@ class TestOperationsFloat:
         """
         density_function = cumulativedistributions_float.gradient
 
-        assert isinstance(density_function, ConstantUniformDensity)
+        assert isinstance(density_function, UniformDensity)
 
 
 @pytest.fixture(scope="class")
@@ -126,4 +126,4 @@ class TestOperationsdouble:
         """
         density_function = cumulativedistributions_double.gradient
 
-        assert isinstance(density_function, ConstantUniformDensity)
+        assert isinstance(density_function, UniformDensity)

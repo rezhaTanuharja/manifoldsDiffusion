@@ -17,13 +17,13 @@ import torch
 from ..interfaces import DensityFunction, StochasticProcess
 
 
-class ConstantUniform(StochasticProcess):
+class Uniform(StochasticProcess):
     def __init__(
         self, support: Dict[str, float], data_type: torch.dtype = torch.float32
     ) -> None:
         self._support = support
         self._data_type = data_type
-        self._density = ConstantUniformDensity(support, data_type)
+        self._density = UniformDensity(support, data_type)
         self._time = torch.tensor(
             [
                 0.0,
@@ -61,7 +61,7 @@ class ConstantUniform(StochasticProcess):
         )
 
 
-class ConstantUniformDensity(DensityFunction):
+class UniformDensity(DensityFunction):
     """
     A uniform probability density function defined on an interval
     """

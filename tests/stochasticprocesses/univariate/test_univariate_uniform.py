@@ -10,8 +10,8 @@ import torch
 
 from diffusionmodels.stochasticprocesses.interfaces import StochasticProcess
 from diffusionmodels.stochasticprocesses.univariate.uniform import (
-    ConstantUniform,
-    ConstantUniformDensity,
+    Uniform,
+    UniformDensity,
 )
 
 points_shape = (1, 256)
@@ -52,9 +52,7 @@ test_parameters = [
 def uniform_process_float(request):
     parameters = request.param
 
-    process = ConstantUniform(
-        support=parameters["support"], data_type=parameters["data_type"]
-    )
+    process = Uniform(support=parameters["support"], data_type=parameters["data_type"])
 
     process.to(parameters["device"])
 
@@ -132,7 +130,7 @@ class TestOperationsFloat:
 
         density = process.density
 
-        assert isinstance(density, ConstantUniformDensity)
+        assert isinstance(density, UniformDensity)
 
         lower = parameters["support"]["lower"]
         upper = parameters["support"]["upper"]

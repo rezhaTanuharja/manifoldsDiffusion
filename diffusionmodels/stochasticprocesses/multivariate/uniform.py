@@ -42,7 +42,7 @@ class UniformSphereDensity(DensityFunction):
         ) / (
             2.0
             * torch.pi ** (0.5 * (self._dimension + 1))
-            * torch.lgamma(torch.tensor(0.5 * (self._dimension + 1))).exp()
+            / torch.lgamma(torch.tensor(0.5 * (self._dimension + 1))).exp()
         )
 
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
@@ -71,8 +71,14 @@ class UniformSphere(StochasticProcess):
         self._device = torch.device("cpu")
         self._data_type = data_type
 
+    def at(self, time: torch.Tensor):
+        self._time = time.to(self._device)
+        self._density = self._density.at(time)
+        return self
+
     def to(self, device: torch.device) -> None:
         self._time = self._time.to(device)
+        self._density.to(device)
         self._device = device
 
     @property
