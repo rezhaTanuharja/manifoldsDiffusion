@@ -95,6 +95,6 @@ class UniformSphere(StochasticProcess):
             dtype=self._data_type,
             device=self._device,
         )
-        samples = samples / torch.norm(samples, keepdim=True)
+        samples = samples / torch.norm(samples, dim=-1, keepdim=True)
 
         return samples

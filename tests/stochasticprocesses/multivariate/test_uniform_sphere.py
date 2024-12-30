@@ -25,24 +25,29 @@ data_types_tolerances = zip((torch.float32, torch.float64), (1e-6, 1e-12))
 
 nums_samples = (1, 5, 25, 125)
 
+dimensions = (1, 2, 4, 8)
+
 test_parameters = [
     {
         "data_type": data_type_tolerance[0],
         "tolerance": data_type_tolerance[1],
         "num_samples": num_samples,
         "device": device,
+        "dimension": dimension,
     }
-    for data_type_tolerance, num_samples, device in product(
-        data_types_tolerances, nums_samples, devices
+    for data_type_tolerance, num_samples, device, dimension in product(
+        data_types_tolerances, nums_samples, devices, dimensions
     )
 ]
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def uniform_sphere_process_float(request):
+def uniform_sphere_process(request):
     parameters = request.param
 
-    process = UniformSphere(dimension=2, data_type=parameters["data_type"])
+    process = UniformSphere(
+        dimension=parameters["dimension"], data_type=parameters["data_type"]
+    )
 
     process.to(parameters["device"])
 
@@ -56,36 +61,82 @@ class TestOperations:
 
     def test_get_dimension(
         self,
-        uniform_sphere_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
     ) -> None:
         """
         Checks that dimension can be accessed and produces the correct values
         """
-        _, process = uniform_sphere_process_float
+        parameters, process = uniform_sphere_process
 
         dimension = process.dimension
 
         assert isinstance(dimension, tuple)
-
         assert len(dimension) == 1
 
         for entry in dimension:
             assert isinstance(entry, int)
-            assert entry == 2, f"Entry value should be 1, got {entry} instead"
+            assert (
+                entry == parameters["dimension"]
+            ), f"Entry value should be {parameters['dimension']}, got {entry} instead"
+
+    def test_sample(
+        self,
+        uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
+        time: Optional[torch.Tensor] = None,
+    ) -> None:
+        """
+        Checks that samples can be generated and produces the correct values
+        """
+        parameters, process = uniform_sphere_process
+
+        samples = process.sample(num_samples=parameters["num_samples"])
+
+        assert isinstance(samples, torch.Tensor)
+        assert samples.dtype == parameters["data_type"]
+
+        time = (
+            time
+            if time is not None
+            else torch.zeros(
+                size=(1,),
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            )
+        )
+
+        assert samples.shape == (
+            *time.shape,
+            parameters["num_samples"],
+            parameters["dimension"],
+        )
+
+        norm = torch.norm(samples, dim=-1)
+
+        assert torch.allclose(
+            norm,
+            torch.ones(
+                size=norm.shape,
+                dtype=parameters["data_type"],
+                device=parameters["device"],
+            ),
+            atol=parameters["tolerance"],
+        )
 
     def test_density(
         self,
-        uniform_sphere_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, process = uniform_sphere_process_float
+        parameters, process = uniform_sphere_process
 
         density = process.density
 
         assert isinstance(density, UniformSphereDensity)
 
         points = torch.randn(
-            size=(32, 2), dtype=parameters["data_type"], device=parameters["device"]
+            size=(parameters["num_samples"], parameters["dimension"]),
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         )
 
         points = points / torch.norm(points, keepdim=True)
@@ -110,8 +161,8 @@ class TestOperations:
         reference_values = torch.full_like(
             density_values,
             fill_value=1.0
-            / (2.0 * torch.pi ** (0.5 * (2 + 1)))
-            * torch.lgamma(torch.tensor(0.5 * (2 + 1))).exp(),
+            / (2.0 * torch.pi ** (0.5 * (parameters["dimension"] + 1)))
+            * torch.lgamma(torch.tensor(0.5 * (parameters["dimension"] + 1))).exp(),
             dtype=parameters["data_type"],
             device=parameters["device"],
         )
@@ -124,15 +175,17 @@ class TestOperations:
 
     def test_density_gradient(
         self,
-        uniform_sphere_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, process = uniform_sphere_process_float
+        parameters, process = uniform_sphere_process
 
         density = process.density
 
         points = torch.randn(
-            size=(32, 2), dtype=parameters["data_type"], device=parameters["device"]
+            size=(parameters["num_samples"], parameters["dimension"]),
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         )
 
         points = points / torch.norm(points, keepdim=True)
@@ -165,3 +218,16 @@ class TestOperations:
             reference_values,
             atol=parameters["tolerance"],
         )
+
+    def test_change_time(self, uniform_sphere_process):
+        parameters, process = uniform_sphere_process
+
+        time = torch.rand(
+            size=(256,), dtype=parameters["data_type"], device=parameters["device"]
+        )
+
+        process = process.at(time)
+
+        self.test_sample((parameters, process), time)
+        self.test_density((parameters, process), time)
+        self.test_density_gradient((parameters, process), time)
