@@ -49,7 +49,7 @@ test_parameters = [
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def uniform_process_float(request):
+def uniform_process(request):
     parameters = request.param
 
     process = Uniform(support=parameters["support"], data_type=parameters["data_type"])
@@ -59,19 +59,19 @@ def uniform_process_float(request):
     return parameters, process
 
 
-class TestOperationsFloat:
+class TestOperations:
     """
     Checks correctness of math operations with float number
     """
 
     def test_get_dimension(
         self,
-        uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_process: Tuple[Dict[str, Any], StochasticProcess],
     ) -> None:
         """
         Checks that dimension can be accessed and produces the correct values
         """
-        _, process = uniform_process_float
+        _, process = uniform_process
 
         dimension = process.dimension
 
@@ -85,13 +85,13 @@ class TestOperationsFloat:
 
     def test_sample(
         self,
-        uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
         """
         Checks that samples can be generated and produces the correct values
         """
-        parameters, process = uniform_process_float
+        parameters, process = uniform_process
 
         samples = process.sample(num_samples=parameters["num_samples"])
 
@@ -123,10 +123,10 @@ class TestOperationsFloat:
 
     def test_gradient(
         self,
-        uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, process = uniform_process_float
+        parameters, process = uniform_process
 
         density = process.density
 
@@ -179,10 +179,10 @@ class TestOperationsFloat:
 
     def test_hessian(
         self,
-        uniform_process_float: Tuple[Dict[str, Any], StochasticProcess],
+        uniform_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
-        parameters, process = uniform_process_float
+        parameters, process = uniform_process
 
         hessian = process.density.gradient
 
@@ -225,8 +225,8 @@ class TestOperationsFloat:
             atol=parameters["tolerance"],
         )
 
-    def test_change_time(self, uniform_process_float):
-        parameters, process = uniform_process_float
+    def test_change_time(self, uniform_process):
+        parameters, process = uniform_process
 
         time = torch.rand(
             size=(256,), dtype=parameters["data_type"], device=parameters["device"]
