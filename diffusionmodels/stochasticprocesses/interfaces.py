@@ -92,9 +92,8 @@ class DensityFunction(ABC):
         Parameters
         ----------
         `points: torch.Tensor`
-        Tensor with shape `(..., time_index, num_points, *dimension)`.
+        Tensor with shape `(..., time_index, num_points)`.
         The dimension `time_index` must be broadcastable to `num_times`
-        If `*dimension == 1` then it is omitted from the shape
 
         Returns
         -------
