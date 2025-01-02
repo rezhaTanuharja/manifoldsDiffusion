@@ -55,7 +55,7 @@ class CumulativeDistributionFunction(ABC):
         Parameters
         ----------
         `device: torch.device`
-        A device object from Jax representing the target hardware
+        A device object from torch representing the target hardware
         """
         raise NotImplementedError("Subclasses must implement this method")
 

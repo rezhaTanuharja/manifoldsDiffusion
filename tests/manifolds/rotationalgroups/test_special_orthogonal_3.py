@@ -1,5 +1,5 @@
 """
-Checks mathematic operations of the SpecialOrthogonal3 class.
+Checks mathematic operations of the `SpecialOrthogonal3` class.
 """
 
 from itertools import product

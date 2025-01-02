@@ -1,3 +1,15 @@
+"""
+Provides various multivariate uniform processes
+
+Classes
+-------
+`UniformSphere`
+The uniform process on an n-dimensional sphere
+
+`UniformSphereDensity`
+The PDF of `UniformSphere`
+"""
+
 from typing import Tuple
 
 import torch
