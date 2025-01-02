@@ -18,6 +18,10 @@ from ..interfaces import DensityFunction, StochasticProcess
 
 
 class Uniform(StochasticProcess):
+    """
+    A uniform stochastic process defined on an interval
+    """
+
     def __init__(
         self, support: Dict[str, float], data_type: torch.dtype = torch.float32
     ) -> None:

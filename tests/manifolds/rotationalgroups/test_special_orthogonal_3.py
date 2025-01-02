@@ -3,10 +3,12 @@ Checks mathematic operations of the SpecialOrthogonal3 class.
 """
 
 from itertools import product
+from typing import Any, Dict, Tuple
 
 import pytest
 import torch
 
+from diffusionmodels.manifolds.interfaces import Manifold
 from diffusionmodels.manifolds.rotationalgroups import SpecialOrthogonal3
 
 if torch.cuda.is_available():
@@ -44,7 +46,14 @@ class TestSpecialOrthogonal3:
     A group of `SpecialOrthogonal3` tests to be performed on CPU
     """
 
-    def test_get_dimension(self, manifold_fixture) -> None:
+    def test_instance(self, manifold_fixture: Tuple[Dict[str, Any], Manifold]) -> None:
+        _, manifold = manifold_fixture
+
+        assert isinstance(manifold, Manifold)
+
+    def test_get_dimension(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `dimension` can be accessed and the value is a tuple `(3, 3)`
         """
@@ -59,7 +68,9 @@ class TestSpecialOrthogonal3:
             assert isinstance(entry, int)
             assert entry == 3
 
-    def test_get_tangent_dimension(self, manifold_fixture) -> None:
+    def test_get_tangent_dimension(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `tangent_dimension` can be invoked and return the tuple `(3,)`
         """
@@ -74,7 +85,9 @@ class TestSpecialOrthogonal3:
             assert isinstance(entry, int)
             assert entry == 3
 
-    def test_exp_compatibility(self, manifold_fixture) -> None:
+    def test_exp_compatibility(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `exp` can handle broadcast-able `points` and `vectors`
         """
@@ -103,7 +116,9 @@ class TestSpecialOrthogonal3:
         assert new_points.shape == (5, 1, 4, 3, 3)
         assert torch.allclose(points, new_points, atol=parameters["tolerance"])
 
-    def test_exp_correctness(self, manifold_fixture) -> None:
+    def test_exp_correctness(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `exp` produce the correct results
         """
@@ -180,7 +195,9 @@ class TestSpecialOrthogonal3:
                     atol=parameters["tolerance"],
                 )
 
-    def test_log_compatibility(self, manifold_fixture) -> None:
+    def test_log_compatibility(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `log` can handle broadcast-able `starts` and `ends`
         """
@@ -212,7 +229,9 @@ class TestSpecialOrthogonal3:
 
         assert torch.allclose(vectors, reference_vectors, atol=parameters["tolerance"])
 
-    def test_log_correctness(self, manifold_fixture) -> None:
+    def test_log_correctness(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `log` produces correct results for small angles
         """
@@ -273,7 +292,9 @@ class TestSpecialOrthogonal3:
                     atol=parameters["tolerance"],
                 )
 
-    def test_exp_log_connection(self, manifold_fixture) -> None:
+    def test_exp_log_connection(
+        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+    ) -> None:
         """
         Checks that `log(points, exp(points, vectors)) = vectors`
         """
