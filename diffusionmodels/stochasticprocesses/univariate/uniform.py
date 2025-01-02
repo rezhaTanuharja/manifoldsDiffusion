@@ -1,12 +1,12 @@
 """
-Implements the univariate uniform probability density function.
+Implements the univariate uniform process and PDF.
 
 Classes
 -------
-`ConstantUniform`
+`Uniform`
 A uniformly distributed stochastic process with a fixed interval
 
-`ConstantUniformDensity`
+`UniformDensity`
 A uniform probability density function with a fixed interval
 """
 

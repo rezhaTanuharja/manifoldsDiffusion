@@ -255,7 +255,6 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
                 0.0,
             ],
             dtype=data_type,
-            device=torch.device("cpu"),
         )
 
         self._alpha = alpha

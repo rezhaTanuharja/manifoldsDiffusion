@@ -23,13 +23,24 @@ class UniformSphereDensity(DensityFunction):
     """
 
     def __init__(self, dimension: int, data_type: torch.dtype = torch.float32):
+        """
+        Construct the PDF to a uniform process on an n-dimensional sphere
+
+        Parameters
+        ----------
+        `dimension: int`
+        The dimension of the sphere
+
+        `data_type: torch.dtype = torch.float32`
+        The numerical precision, e.g., `torch.float32`, `torch.float64`
+        """
+
         self._dimension = dimension
         self._time = torch.tensor(
             [
                 0.0,
             ],
             dtype=data_type,
-            device=torch.device("cpu"),
         )
         self._device = torch.device("cpu")
         self._data_type = data_type
@@ -71,6 +82,17 @@ class UniformSphere(StochasticProcess):
     """
 
     def __init__(self, dimension: int, data_type: torch.dtype = torch.float32):
+        """
+        Construct a uniform process on an n-dimensional sphere
+
+        Parameters
+        ----------
+        `dimension: int`
+        The dimension of the sphere
+
+        `data_type: torch.dtype = torch.float32`
+        The numerical precision, e.g., `torch.float32`, `torch.float64`
+        """
         self._dimension = dimension
         self._density = UniformSphereDensity(dimension, data_type)
         self._time = torch.tensor(
@@ -78,7 +100,6 @@ class UniformSphere(StochasticProcess):
                 0.0,
             ],
             dtype=data_type,
-            device=torch.device("cpu"),
         )
         self._device = torch.device("cpu")
         self._data_type = data_type

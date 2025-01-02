@@ -1,6 +1,7 @@
 # Ignore cache directories
 **/*cache*/
 
+# Ignore install artifacts
 **/*.egg-info/
 
 # Ignore virtual environment directories

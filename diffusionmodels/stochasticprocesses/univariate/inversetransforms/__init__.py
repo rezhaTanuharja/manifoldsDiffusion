@@ -1,5 +1,5 @@
 """
-Implements univariate process defined by their cumulativedistributionss.
+Implements univariate processes defined by their cumulativedistributions.
 
 Interfaces
 ----------

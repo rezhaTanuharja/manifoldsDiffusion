@@ -21,6 +21,7 @@ if torch.cuda.is_available():
     )
 else:
     devices = (torch.device("cpu"),)
+
 data_types_tolerances = zip((torch.float32, torch.float64), (1e-6, 1e-12))
 
 nums_samples = (1, 5, 25, 125)
@@ -58,6 +59,17 @@ class TestOperations:
     """
     Checks correctness of math operations
     """
+
+    def test_instance(
+        self,
+        uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
+    ) -> None:
+        """
+        Checks that `UniformSphere` is an instance of `StochasticProcess`
+        """
+        _, process = uniform_sphere_process
+
+        assert isinstance(process, StochasticProcess)
 
     def test_get_dimension(
         self,
@@ -127,6 +139,9 @@ class TestOperations:
         uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
+        """
+        Checks that density can be accessed and produces the correct result
+        """
         parameters, process = uniform_sphere_process
 
         density = process.density
@@ -178,6 +193,9 @@ class TestOperations:
         uniform_sphere_process: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ) -> None:
+        """
+        Checks that density gradient can be accessed and produces the correct result
+        """
         parameters, process = uniform_sphere_process
 
         density = process.density
@@ -220,10 +238,15 @@ class TestOperations:
         )
 
     def test_change_time(self, uniform_sphere_process):
+        """
+        Checks that everything still works after changing the internal time
+        """
         parameters, process = uniform_sphere_process
 
-        time = torch.rand(
-            size=(256,), dtype=parameters["data_type"], device=parameters["device"]
+        time = torch.abs(
+            torch.rand(
+                size=(256,), dtype=parameters["data_type"], device=parameters["device"]
+            )
         )
 
         process = process.at(time)
