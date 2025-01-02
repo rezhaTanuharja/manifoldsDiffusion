@@ -25,6 +25,20 @@ class Uniform(StochasticProcess):
     def __init__(
         self, support: Dict[str, float], data_type: torch.dtype = torch.float32
     ) -> None:
+        """
+        Construct a univariate uniform process
+
+        Parameters
+        ----------
+        `support: Dict[str, float]`
+        A dictionary containing keys `lower` and `upper` defining the interval where values may be non-zero
+
+        `data_type: torch.dtype = torch.float32`
+        The type of floating point
+        """
+        assert "lower" in support.keys(), "Missing lower bound of the support interval"
+        assert "upper" in support.keys(), "Missing upper bound of the support interval"
+
         self._support = support
         self._data_type = data_type
         self._density = UniformDensity(support, data_type)

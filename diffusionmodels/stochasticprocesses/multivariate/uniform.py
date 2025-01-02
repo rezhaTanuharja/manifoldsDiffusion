@@ -32,7 +32,7 @@ class UniformSphereDensity(DensityFunction):
         The dimension of the sphere
 
         `data_type: torch.dtype = torch.float32`
-        The numerical precision, e.g., `torch.float32`, `torch.float64`
+        The type of floating point
         """
 
         self._dimension = dimension
@@ -91,7 +91,7 @@ class UniformSphere(StochasticProcess):
         The dimension of the sphere
 
         `data_type: torch.dtype = torch.float32`
-        The numerical precision, e.g., `torch.float32`, `torch.float64`
+        The the type of floating point
         """
         self._dimension = dimension
         self._density = UniformSphereDensity(dimension, data_type)

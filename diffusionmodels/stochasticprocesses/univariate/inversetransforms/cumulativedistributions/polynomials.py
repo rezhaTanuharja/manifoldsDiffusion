@@ -34,6 +34,10 @@ class ConstantLinear(CumulativeDistributionFunction):
         `data_type: torch.dtype = torch.float32`
         The data type of floating points
         """
+
+        assert "lower" in support.keys(), "Missing lower bound of the support interval"
+        assert "upper" in support.keys(), "Missing upper bound of the support interval"
+
         self._density = UniformDensity(support=support, data_type=data_type)
         self._support = support
         self._data_type = data_type

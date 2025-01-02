@@ -32,7 +32,7 @@ test_parameters = [
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def manifold_fixture(request):
+def manifold_fixture(request) -> Tuple[Dict[str, Any], Manifold]:
     parameters = request.param
 
     manifold = SpecialOrthogonal3(data_type=parameters["data_type"])

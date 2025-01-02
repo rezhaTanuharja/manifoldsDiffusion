@@ -53,7 +53,7 @@ test_parameters = [
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def process_fixture(request):
+def process_fixture(request) -> Tuple[Dict[str, Any], StochasticProcess]:
     parameters = request.param
 
     process = InverseTransform(
@@ -74,6 +74,9 @@ class TestOperationsFloat:
         self,
         process_fixture: Tuple[Dict[str, Any], StochasticProcess],
     ):
+        """
+        Checks that the dimension can be accessed and the values are correct
+        """
         _, process = process_fixture
 
         dimension = process.dimension
@@ -90,6 +93,9 @@ class TestOperationsFloat:
         process_fixture: Tuple[Dict[str, Any], StochasticProcess],
         time: Optional[torch.Tensor] = None,
     ):
+        """
+        Checks that samples can be generated and the values are correct
+        """
         parameters, process = process_fixture
 
         samples = process.sample(num_samples=parameters["num_samples"])
@@ -117,14 +123,22 @@ class TestOperationsFloat:
         if parameters["num_samples"] > 1:
             assert torch.std(samples) > 0
 
-    def test_density(self, process_fixture):
+    def test_density(self, process_fixture: Tuple[Dict[str, Any], StochasticProcess]):
+        """
+        Checks that density can be accessed and provides the correct values
+        """
         _, process = process_fixture
 
         density = process.density
 
         assert isinstance(density, UniformDensity)
 
-    def test_change_time(self, process_fixture):
+    def test_change_time(
+        self, process_fixture: Tuple[Dict[str, Any], StochasticProcess]
+    ):
+        """
+        Checks that everything is still correct after changing time
+        """
         parameters, process = process_fixture
 
         time = torch.tensor(

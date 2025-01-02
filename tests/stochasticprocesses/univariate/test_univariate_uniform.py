@@ -49,7 +49,7 @@ test_parameters = [
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def uniform_process(request):
+def uniform_process(request) -> Tuple[Dict[str, Any], StochasticProcess]:
     parameters = request.param
 
     process = Uniform(support=parameters["support"], data_type=parameters["data_type"])
@@ -225,7 +225,12 @@ class TestOperations:
             atol=parameters["tolerance"],
         )
 
-    def test_change_time(self, uniform_process):
+    def test_change_time(
+        self, uniform_process: Tuple[Dict[str, Any], StochasticProcess]
+    ):
+        """
+        Checks that everything is still correct after changing time
+        """
         parameters, process = uniform_process
 
         time = torch.rand(

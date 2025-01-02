@@ -25,8 +25,8 @@ class SpecialOrthogonal3(Manifold):
 
         Parameters
         ----------
-        `data_type: torch.dtype`
-        The level of precision, e.g., torch.float32, torch.float64
+        `data_type: torch.dtype = torch.float32`
+        The type of floating point
         """
 
         # canonical basis of tangent space at the identity element
