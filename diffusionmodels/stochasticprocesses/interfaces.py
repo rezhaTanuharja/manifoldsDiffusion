@@ -87,7 +87,7 @@ class DensityFunction(ABC):
     @abstractmethod
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
         """
-        Evaluate the density value at the given points and times
+        Evaluate the density value at the given points
 
         Parameters
         ----------
@@ -105,7 +105,7 @@ class DensityFunction(ABC):
     @abstractmethod
     def gradient(self, points: torch.Tensor) -> torch.Tensor:
         """
-        Evaluate the gradient of density at the given points and times
+        Evaluate the gradient of density at the given points
 
         Parameters
         ----------
