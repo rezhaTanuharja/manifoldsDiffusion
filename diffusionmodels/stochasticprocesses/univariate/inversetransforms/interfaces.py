@@ -30,8 +30,8 @@ class CumulativeDistributionFunction(ABC):
     `at(time)`
     Set the time to access the CDF
 
-    `__call__(points, times)`
-    Evaluate the CDF value at the given points and times
+    `__call__(points)`
+    Evaluate the CDF value at the given points
 
     Properties
     ----------
@@ -79,7 +79,7 @@ class CumulativeDistributionFunction(ABC):
     @abstractmethod
     def __call__(self, points: torch.Tensor) -> torch.Tensor:
         """
-        Evaluate the CDF value at the given points and times
+        Evaluate the CDF value at the given points
 
         Parameters
         ----------
