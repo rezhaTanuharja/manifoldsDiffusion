@@ -10,5 +10,6 @@
 # Ignore program output log
 log
 
-# Ignore locally stored data
+# Ignore local-only directories
 downloads/
+build/
