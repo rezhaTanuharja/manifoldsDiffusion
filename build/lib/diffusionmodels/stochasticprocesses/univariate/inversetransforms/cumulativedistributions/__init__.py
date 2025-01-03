@@ -7,10 +7,9 @@ heatequations       : implements various CDFs from the solution of heat equation
 polynomials         : implements various CDFs in the form of polynomials
 """
 
-from . import heatequations, polynomials, uniformso3
+from . import heatequations, polynomials
 
 __all__ = [
     "heatequations",
     "polynomials",
-    "uniformso3",
 ]
