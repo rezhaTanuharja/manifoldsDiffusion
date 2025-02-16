@@ -1,5 +1,5 @@
 """
-Provides functionalities to define data structures.
+Provides functionalities to define a manifold.
 
 interfaces
 ----------

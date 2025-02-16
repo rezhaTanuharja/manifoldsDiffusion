@@ -54,7 +54,6 @@ class SpecialOrthogonal3(Manifold):
         return torch.matmul(
             points,
             torch.linalg.matrix_exp(
-                # the skew matrices associated with the vectors
                 torch.einsum("...j, jkl -> ...kl", vectors, self._bases)
             ),
         )

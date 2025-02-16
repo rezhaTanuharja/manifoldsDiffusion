@@ -43,10 +43,13 @@ def manifold_fixture(request) -> Tuple[Dict[str, Any], Manifold]:
 
 class TestSpecialOrthogonal3:
     """
-    A group of `SpecialOrthogonal3` tests to be performed on CPU
+    A group of `SpecialOrthogonal3` tests
     """
 
     def test_instance(self, manifold_fixture: Tuple[Dict[str, Any], Manifold]) -> None:
+        """
+        Checks that `SpecialOrthogonal3` is an instance of `Manifold`
+        """
         _, manifold = manifold_fixture
 
         assert isinstance(manifold, Manifold)
