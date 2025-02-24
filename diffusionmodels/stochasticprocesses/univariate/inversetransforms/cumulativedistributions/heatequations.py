@@ -1,5 +1,5 @@
 """
-Implements various CDFs based on the solutions of heat equations.
+Implements CDFs that are solutions to heat equations.
 
 Classes
 -------
@@ -76,7 +76,7 @@ def cesaro_sum_weights(alpha: int, indices: torch.Tensor) -> torch.Tensor:
 
 class PeriodicHeatKernel(DensityFunction):
     """
-    The fundamental solution of heat diffusion in a periodic domain
+    The fundamental solution of heat diffusion in a periodic domain `[0, pi]`
     """
 
     def __init__(
@@ -84,6 +84,7 @@ class PeriodicHeatKernel(DensityFunction):
         num_waves: int,
         mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor],
         alpha: int = 2,
+        device: torch.device = torch.device("cpu"),
         data_type: torch.dtype = torch.float32,
     ) -> None:
         """
@@ -95,12 +96,15 @@ class PeriodicHeatKernel(DensityFunction):
         The number of wave functions excluding the constant function
 
         `mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor]`
-        A function representing the integration of the diffusion constant
+        A function representing the time integral of the diffusion coefficient
 
         `alpha: int = 2`
         The parameter `alpha` in `(C, alpha)` summation
 
-        `data_type`
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
+        `data_type: torch.dtype = torch.float32`
         The data type of all tensor class attributes
         """
         self._num_waves = num_waves
@@ -111,10 +115,11 @@ class PeriodicHeatKernel(DensityFunction):
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
 
-        self._device = torch.device("cpu")
+        self._device = device
         self._alpha = alpha
 
         self._infinite_sum_weights = (
@@ -220,6 +225,7 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
         num_waves: int,
         mean_squared_displacement: Callable[[torch.Tensor], torch.Tensor],
         alpha: int = 2,
+        device: torch.device = torch.device("cpu"),
         data_type: torch.dtype = torch.float32,
     ):
         """
@@ -236,7 +242,10 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
         `alpha: int = 2`
         The parameter `alpha` in `(C, alpha)` summation
 
-        `data_type`
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
+        `data_type: torch.dtype = torch.float32`
         The data type of all tensor class attributes
         """
 
@@ -244,16 +253,17 @@ class PeriodicCumulativeEnergy(CumulativeDistributionFunction):
         self._mean_squared_displacement = mean_squared_displacement
 
         self._distribution = PeriodicHeatKernel(
-            num_waves, mean_squared_displacement, alpha, data_type
+            num_waves, mean_squared_displacement, alpha, device, data_type
         )
 
         self._data_type = data_type
-        self._device = torch.device("cpu")
+        self._device = device
 
         self._time = torch.tensor(
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
 

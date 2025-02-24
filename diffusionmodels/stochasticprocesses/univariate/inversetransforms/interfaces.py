@@ -56,6 +56,10 @@ class CumulativeDistributionFunction(ABC):
         ----------
         `device: torch.device`
         A device object from torch representing the target hardware
+
+        Usage Example
+        -------------
+        `cdf.to(torch.device("cpu"))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -73,6 +77,10 @@ class CumulativeDistributionFunction(ABC):
         -------
         `CumulativeDistributionFunction`
         The same distribution function with internal time set to the given tensor
+
+        Usage Example
+        -------------
+        `cdf = cdf.at(time=torch.tensor([0.0, 1.0]))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -90,6 +98,10 @@ class CumulativeDistributionFunction(ABC):
         -------
         `torch.Tensor`
         Tensor with shape `(..., num_times, num_points)`
+
+        Usage Example
+        -------------
+        `cdf_values = cdf(points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -103,6 +115,11 @@ class CumulativeDistributionFunction(ABC):
         -------
         `DensityFunction`
         A callable object that maps a `torch.Tensor` to another `torch.Tensor`
+
+        Usage Example
+        -------------
+        `gradient_values = cdf.gradient(points)`
+        `gradient_values = cdf.at(time).gradient(points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -116,6 +133,10 @@ class CumulativeDistributionFunction(ABC):
         -------
         `Dict[str, float]`
         A dictionary with the keys `lower` and `upper`
+
+        Usage Example
+        -------------
+        `support_length = cdf.support["upper"] - cdf.support["lower"]`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -142,7 +163,7 @@ class RootFinder(ABC):
         interval: Tuple[float, float],
     ) -> torch.Tensor:
         """
-        Find the solution of `function(points) = target_values` inside the `interval`
+        Find the points s.t. `function(points) = target_values` inside the `interval`
 
         Parameters
         ----------

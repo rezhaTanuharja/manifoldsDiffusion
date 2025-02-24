@@ -19,11 +19,14 @@ from ..interfaces import DensityFunction, StochasticProcess
 
 class Uniform(StochasticProcess):
     """
-    A uniform stochastic process defined on an interval
+    A uniform stochastic process defined on a fixed interval
     """
 
     def __init__(
-        self, support: Dict[str, float], data_type: torch.dtype = torch.float32
+        self,
+        support: Dict[str, float],
+        device: torch.device = torch.device("cpu"),
+        data_type: torch.dtype = torch.float32,
     ) -> None:
         """
         Construct a univariate uniform process
@@ -33,6 +36,9 @@ class Uniform(StochasticProcess):
         `support: Dict[str, float]`
         A dictionary containing keys `lower` and `upper` defining the interval where values may be non-zero
 
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
         `data_type: torch.dtype = torch.float32`
         The type of floating point
         """
@@ -41,14 +47,15 @@ class Uniform(StochasticProcess):
 
         self._support = support
         self._data_type = data_type
-        self._density = UniformDensity(support, data_type)
+        self._density = UniformDensity(support, device, data_type)
         self._time = torch.tensor(
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
+        self._device = device
 
     def to(self, device: torch.device) -> None:
         self._device = device
@@ -85,7 +92,10 @@ class UniformDensity(DensityFunction):
     """
 
     def __init__(
-        self, support: Dict[str, float], data_type: torch.dtype = torch.float32
+        self,
+        support: Dict[str, float],
+        device: torch.device = torch.device("cpu"),
+        data_type: torch.dtype = torch.float32,
     ) -> None:
         """
         Construct a density object for a univariate uniform distribution
@@ -94,6 +104,9 @@ class UniformDensity(DensityFunction):
         ----------
         `support: Dict[str, float]`
         A dictionary with keys 'lower' and 'upper', defines the interval
+
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
 
         `data_type: torch.dtype = torch.float32`
         The data type of floating points
@@ -105,9 +118,10 @@ class UniformDensity(DensityFunction):
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
+        self._device = device
 
     def to(self, device: torch.device) -> None:
         self._device = device

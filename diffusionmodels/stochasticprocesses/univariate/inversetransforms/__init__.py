@@ -1,5 +1,5 @@
 """
-Implements univariate processes defined by their cumulativedistributions.
+Implements univariate processes defined by their CDFs.
 
 Interfaces
 ----------
@@ -16,7 +16,7 @@ A stochastic process defined by a cumulativedistributions and sampled using inve
 
 Modules
 -------
-cumulativedistributions     : implements various simple cumulativedistributionss
+cumulativedistributions     : implements various simple `CumulativeDistributionFunction`
 rootfinders                 : implements various simple `RootFinder`
 """
 
@@ -38,6 +38,7 @@ class InverseTransform(StochasticProcess):
         self,
         distribution: CumulativeDistributionFunction,
         root_finder: RootFinder,
+        device: torch.device = torch.device("cpu"),
         data_type: torch.dtype = torch.float32,
     ) -> None:
         """
@@ -51,6 +52,9 @@ class InverseTransform(StochasticProcess):
         `root_finder: RootFinder`
         A numerical solver to perform inverse transform sampling
 
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
         `data_type: torch.dtype = torch.float32`
         The data type of all tensor class attributes
         """
@@ -61,9 +65,10 @@ class InverseTransform(StochasticProcess):
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
+        self._device = device
 
     def to(self, device: torch.device) -> None:
         self._device = device
