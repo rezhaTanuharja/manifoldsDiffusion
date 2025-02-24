@@ -19,12 +19,19 @@ class SpecialOrthogonal3(Manifold):
     The 3-dimensional rotation matrix group
     """
 
-    def __init__(self, data_type: torch.dtype = torch.float32) -> None:
+    def __init__(
+        self,
+        device: torch.device = torch.device("cpu"),
+        data_type: torch.dtype = torch.float32,
+    ) -> None:
         """
         Construct an SO3 manifold with a given data type
 
         Parameters
         ----------
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
         `data_type: torch.dtype = torch.float32`
         The type of floating point
         """
@@ -36,6 +43,7 @@ class SpecialOrthogonal3(Manifold):
                 [[0, 0, 1], [0, 0, 0], [-1, 0, 0]],
                 [[0, -1, 0], [1, 0, 0], [0, 0, 0]],
             ],
+            device=device,
             dtype=data_type,
         )
 

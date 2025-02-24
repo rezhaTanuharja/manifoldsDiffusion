@@ -50,6 +50,10 @@ class Manifold(ABC):
         ----------
         `device: torch.device`
         A device object representing the target hardware
+
+        Usage Example
+        -------------
+        `manifold.to(torch.device("cuda", 0))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -57,10 +61,16 @@ class Manifold(ABC):
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
         """
+        Access the dimension of points on the manifold
+
         Returns
         -------
         `Tuple[int, ...]`
         The tensor shape of points on the manifold, is always a tuple
+
+        Usage Example
+        -------------
+        `assert manifold.dimension == (3, 3)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -68,10 +78,16 @@ class Manifold(ABC):
     @abstractmethod
     def tangent_dimension(self) -> Tuple[int, ...]:
         """
+        Access the dimension of vectors on the tangent space
+
         Returns
         -------
         `Tuple[int, ...]`
         The tensor shape of vectors on the tangent space, is always a tuple
+
+        Usage Example
+        -------------
+        `assert manifold.tangent_dimension == (3,)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -92,6 +108,10 @@ class Manifold(ABC):
         -------
         `torch.Tensor`
         Points on the manifold with shape `(..., *dimension)`
+
+        Usage Example
+        -------------
+        `end_points = manifold.exp(start_poins, tangent_vectors)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -112,5 +132,9 @@ class Manifold(ABC):
         -------
         `torch.Tensor`
         Vectors on the tangent space with shape `(..., *tangent_dimension)`
+
+        Usage Example
+        -------------
+        `tangent_vectors = manifold.log(start_points, end_points)`
         """
         raise NotImplementedError("Subclasses must implement this method")

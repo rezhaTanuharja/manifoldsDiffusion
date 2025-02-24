@@ -4,8 +4,8 @@ Provides functionalities to define diffusion models in various manifolds.
 Modules
 -------
 dataprocessing      : Provides functionalities to define data preprocessing steps
-eulerian            : For diffusion models that deals with the evolution of data concentration
-manifolds           : Provides manifold structures
+manifolds           : Provides functionalities to define manifolds
+stochasticprocesses : Provides functionalities to define stochastic processes
 utilities           : Provides various useful functions
 
 Author
