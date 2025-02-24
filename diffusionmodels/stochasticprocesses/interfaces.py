@@ -53,6 +53,10 @@ class DensityFunction(ABC):
         ----------
         `device: torch.device`
         A device object representing the target hardware
+
+        Usage Example
+        -------------
+        `density.to(torch.device("cpu"))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -70,6 +74,10 @@ class DensityFunction(ABC):
         -------
         `DensityFunction`
         The same density function with internal time set to the given tensor
+
+        Usage Example
+        -------------
+        `density = density.at(time=torch.tensor([0.0, 1.0]))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -77,10 +85,16 @@ class DensityFunction(ABC):
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
         """
+        Access the dimension of the points
+
         Returns
         -------
         `Tuple[int, ...]`
         The shape of each realization point, always a tuple
+
+        Usage Example
+        -------------
+        `assert density.dimension == (1,)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -99,6 +113,10 @@ class DensityFunction(ABC):
         -------
         `torch.Tensor`
         Tensor with shape `(..., num_times, num_points)`
+
+        Usage Example
+        -------------
+        `density_values = density(points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -119,6 +137,11 @@ class DensityFunction(ABC):
         `torch.Tensor`
         Tensor with shape `(..., num_times, num_points, *dimension)`
         If `*dimension == 1` then it is omitted from the shape
+
+        Usage Example
+        -------------
+        `gradient_values = density.gradient(points)`
+        `gradient_values = density.at(time).gradient(points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -160,6 +183,10 @@ class StochasticProcess(ABC):
         ----------
         `device: torch.device`
         A device object from torch representing the target hardware
+
+        Usage Example
+        -------------
+        `process.to(torch.device("cpu"))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -177,6 +204,10 @@ class StochasticProcess(ABC):
         -------
         `DensityFunction`
         The same stochastic process with internal time set to the given tensor
+
+        Usage Example
+        -------------
+        `process = process.at(time=torch.tensor([0.0, 1.0]))`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -184,10 +215,16 @@ class StochasticProcess(ABC):
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
         """
+        Access the dimension of points
+
         Returns
         -------
         `Tuple[int, ...]`
         The shape of each realization point of the process, always a tuple
+
+        Usage Example
+        -------------
+        `assert process.dimension == (2,)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -201,6 +238,10 @@ class StochasticProcess(ABC):
         -------
         `DensityFunction`
         A callable object that maps `torch.Tensor` to another `torch.Tensor`
+
+        Usage Example
+        -------------
+        `density = process.density` or `density_values = process.density(points)`
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -218,5 +259,10 @@ class StochasticProcess(ABC):
         -------
         `torch.Tensor`
         Tensor with shape `(..., num_times, num_samples, *dimension)`
+
+        Usage Example
+        -------------
+        `samples = process.sample(500)`
+        `samples = process.at(time).sample(500)`
         """
         raise NotImplementedError("Subclasses must implement this method")
