@@ -22,7 +22,12 @@ class UniformSphereDensity(DensityFunction):
     The uniform density on an n-dimensional sphere
     """
 
-    def __init__(self, dimension: int, data_type: torch.dtype = torch.float32):
+    def __init__(
+        self,
+        dimension: int,
+        device: torch.device = torch.device("cpu"),
+        data_type: torch.dtype = torch.float32,
+    ):
         """
         Construct the PDF to a uniform process on an n-dimensional sphere
 
@@ -30,6 +35,9 @@ class UniformSphereDensity(DensityFunction):
         ----------
         `dimension: int`
         The dimension of the sphere
+
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
 
         `data_type: torch.dtype = torch.float32`
         The type of floating point
@@ -40,9 +48,10 @@ class UniformSphereDensity(DensityFunction):
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
+        self._device = device
         self._data_type = data_type
 
     def to(self, device: torch.device) -> None:
@@ -81,7 +90,12 @@ class UniformSphere(StochasticProcess):
     The uniform stochastic process on an n-dimensional sphere
     """
 
-    def __init__(self, dimension: int, data_type: torch.dtype = torch.float32):
+    def __init__(
+        self,
+        dimension: int,
+        device: torch.device = torch.device("cpu"),
+        data_type: torch.dtype = torch.float32,
+    ):
         """
         Construct a uniform process on an n-dimensional sphere
 
@@ -90,18 +104,22 @@ class UniformSphere(StochasticProcess):
         `dimension: int`
         The dimension of the sphere
 
+        `device: torch.device = torch.device("cpu")`
+        The hardware where tensor attributes reside
+
         `data_type: torch.dtype = torch.float32`
         The the type of floating point
         """
         self._dimension = dimension
-        self._density = UniformSphereDensity(dimension, data_type)
+        self._density = UniformSphereDensity(dimension, device, data_type)
         self._time = torch.tensor(
             [
                 0.0,
             ],
+            device=device,
             dtype=data_type,
         )
-        self._device = torch.device("cpu")
+        self._device = device
         self._data_type = data_type
 
     def at(self, time: torch.Tensor):
