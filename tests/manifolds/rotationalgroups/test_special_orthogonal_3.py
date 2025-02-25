@@ -35,8 +35,9 @@ test_parameters = [
 def manifold_fixture(request) -> Tuple[Dict[str, Any], Manifold]:
     parameters = request.param
 
-    manifold = SpecialOrthogonal3(data_type=parameters["data_type"])
-    manifold.to(parameters["device"])
+    manifold = SpecialOrthogonal3(
+        device=parameters["device"], data_type=parameters["data_type"]
+    )
 
     return parameters, manifold
 

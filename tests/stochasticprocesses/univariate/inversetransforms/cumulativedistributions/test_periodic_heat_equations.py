@@ -62,10 +62,9 @@ def periodic_cumulative_energy_fixture(request):
         num_waves=parameters["num_waves"],
         mean_squared_displacement=parameters["mean_squared_displacement"],
         alpha=parameters["alpha"],
+        device=parameters["device"],
         data_type=parameters["data_type"],
     )
-
-    distribution.to(parameters["device"])
 
     return parameters, distribution
 

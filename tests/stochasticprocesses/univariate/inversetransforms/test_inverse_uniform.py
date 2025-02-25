@@ -65,10 +65,9 @@ def process_fixture(request) -> Tuple[Dict[str, Any], StochasticProcess]:
             support=parameters["support"], data_type=parameters["data_type"]
         ),
         root_finder=Bisection(num_iterations=parameters["num_iterations"]),
+        device=parameters["device"],
         data_type=parameters["data_type"],
     )
-
-    process.to(parameters["device"])
 
     return parameters, process
 

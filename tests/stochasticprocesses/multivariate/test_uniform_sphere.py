@@ -47,10 +47,10 @@ def uniform_sphere_process(request) -> Tuple[Dict[str, Any], StochasticProcess]:
     parameters = request.param
 
     process = UniformSphere(
-        dimension=parameters["dimension"], data_type=parameters["data_type"]
+        dimension=parameters["dimension"],
+        device=parameters["device"],
+        data_type=parameters["data_type"],
     )
-
-    process.to(parameters["device"])
 
     return parameters, process
 
