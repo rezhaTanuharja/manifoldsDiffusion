@@ -1,5 +1,4 @@
-"""
-Provides the interface for all manifolds in this project.
+"""Provides the interface for all manifolds in this project.
 
 Classes
 -------
@@ -8,14 +7,13 @@ A purely abstract class that serves as an interface of all manifolds
 """
 
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Any, Tuple
 
 import torch
 
 
 class Manifold(ABC):
-    """
-    An abstract class that serves as an interface for all manifolds
+    """An abstract class that serves as an interface for all manifolds.
 
     Methods
     -------
@@ -26,7 +24,7 @@ class Manifold(ABC):
     Returns the results of incrementing the points by the vectors
 
     `log(starts, ends)`
-    Returns the vectors such that `exp(starts, vectors) = ends`
+    Returns vectors such that `exp(starts, vectors) = ends`
 
     Properties
     ----------
@@ -38,13 +36,12 @@ class Manifold(ABC):
     """
 
     @abstractmethod
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def to(self, device: torch.device) -> None:
-        """
-        Moves all tensor attributes to the given device
+        """Moves all tensor attributes to the given device.
 
         Parameters
         ----------
@@ -53,15 +50,16 @@ class Manifold(ABC):
 
         Usage Example
         -------------
-        `manifold.to(torch.device("cuda", 0))`
+        ```python
+        manifold.to(torch.device("cuda", 0))
+        ```
         """
         raise NotImplementedError("Subclasses must implement this method")
 
     @property
     @abstractmethod
     def dimension(self) -> Tuple[int, ...]:
-        """
-        Access the dimension of points on the manifold
+        """Access the dimension of points on the manifold.
 
         Returns
         -------
@@ -70,15 +68,16 @@ class Manifold(ABC):
 
         Usage Example
         -------------
-        `assert manifold.dimension == (3, 3)`
+        ```python
+        assert manifold.dimension == (3, 3)
+        ```
         """
         raise NotImplementedError("Subclasses must implement this method")
 
     @property
     @abstractmethod
     def tangent_dimension(self) -> Tuple[int, ...]:
-        """
-        Access the dimension of vectors on the tangent space
+        """Access the dimension of vectors on the tangent space.
 
         Returns
         -------
@@ -87,31 +86,34 @@ class Manifold(ABC):
 
         Usage Example
         -------------
-        `assert manifold.tangent_dimension == (3,)`
+        ```python
+        assert manifold.tangent_dimension == (3,)
+        ```
         """
         raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
-        """
-        Returns the results of incrementing the points by the vectors
+        """Returns the results of incrementing the points by the vectors.
 
         Parameters
         ----------
         `points: torch.Tensor`
-        Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
 
         `vectors: torch.Tensor`
-        Vectors on the tangent space with shape `(..., *tangent_dimension)`
+        Vectors on the tangent space: a tensor with shape `(..., *tangent_dimension)`
 
         Returns
         -------
         `torch.Tensor`
-        Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
 
         Usage Example
         -------------
-        `end_points = manifold.exp(start_poins, tangent_vectors)`
+        ```python
+        end_points = manifold.exp(start_poins, tangent_vectors)
+        ```
         """
         raise NotImplementedError("Subclasses must implement this method")
 
@@ -123,18 +125,20 @@ class Manifold(ABC):
         Parameters
         ----------
         `starts: torch.Tensor`
-        Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
 
         `ends: torch.Tensor`
-        Points on the manifold with shape `(..., *dimension)`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
 
         Returns
         -------
         `torch.Tensor`
-        Vectors on the tangent space with shape `(..., *tangent_dimension)`
+        Vectors on the tangent space: a tensor with shape `(..., *tangent_dimension)`
 
         Usage Example
         -------------
-        `tangent_vectors = manifold.log(start_points, end_points)`
+        ```python
+        vectors = manifold.log(starts, ends)
+        ```
         """
         raise NotImplementedError("Subclasses must implement this method")

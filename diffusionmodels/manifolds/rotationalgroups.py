@@ -1,5 +1,4 @@
-"""
-Provides group structures of orthogonal matrices with determinant 1.
+"""Provides group structures of orthogonal matrices with determinant 1.
 
 Classes
 -------
@@ -7,7 +6,7 @@ Classes
 The 3-dimensional rotation matrix group
 """
 
-from typing import Tuple
+from typing import Optional, Tuple
 
 import torch
 
@@ -15,26 +14,41 @@ from .interfaces import Manifold
 
 
 class SpecialOrthogonal3(Manifold):
-    """
-    The 3-dimensional rotation matrix group
-    """
+    """The 3-dimensional rotation matrix group."""
 
     def __init__(
         self,
-        device: torch.device = torch.device("cpu"),
-        data_type: torch.dtype = torch.float32,
+        device: Optional[torch.device] = None,
+        dtype: torch.dtype = torch.float32,
     ) -> None:
-        """
-        Construct an SO3 manifold with a given data type
+        """Construct an SO3 manifold with a given data type.
 
         Parameters
         ----------
-        `device: torch.device = torch.device("cpu")`
+        `device: Optional[torch.device] = None`
         The hardware where tensor attributes reside
 
-        `data_type: torch.dtype = torch.float32`
+        `dtype: torch.dtype = torch.float32`
         The type of floating point
+
+        Usage Example
+        -------------
+        ```python
+        # create a single precision manifold on cpu
+        manifold = SpecialOrthogonal3()
+
+        # create a single precision manifold on CUDA GPU
+        device = torch.device("cuda")
+        manifold = SpecialOrthogonal3(device=device)
+
+        # create a double precision manifold on CUDA GPU
+        dtype = torch.float64
+        device = torch.device("cuda")
+        manifold = SpecialOrthogonal3(device=device, dtype=dtype)
+        ```
         """
+        if device is None:
+            device = torch.device("cpu")
 
         # canonical basis of tangent space at the identity element
         self._bases = torch.tensor(
@@ -44,7 +58,7 @@ class SpecialOrthogonal3(Manifold):
                 [[0, -1, 0], [1, 0, 0], [0, 0, 0]],
             ],
             device=device,
-            dtype=data_type,
+            dtype=dtype,
         )
 
     def to(self, device: torch.device) -> None:
@@ -62,7 +76,7 @@ class SpecialOrthogonal3(Manifold):
         return torch.matmul(
             points,
             torch.linalg.matrix_exp(
-                torch.einsum("...j, jkl -> ...kl", vectors, self._bases)
+                torch.einsum("...j, jkl -> ...kl", vectors, self._bases),
             ),
         )
 
@@ -76,11 +90,13 @@ class SpecialOrthogonal3(Manifold):
                 0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
                 min=-1.0,
                 max=1.0,
-            )
+            ),
         )
 
         rotation_axis = torch.einsum(
-            "...ijk, ...jk -> ...i", self._bases, relative_rotation
+            "...ijk, ...jk -> ...i",
+            self._bases,
+            relative_rotation,
         )
 
         rotation_axis = rotation_axis / (

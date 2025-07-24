@@ -1,5 +1,4 @@
-"""
-Provides functionalities to define a manifold.
+"""Provides functionalities to define a manifold.
 
 interfaces
 ----------
