@@ -106,12 +106,10 @@ class SpecialOrthogonal3(RiemannianManifold):
     def metric(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
         relative_rotation = torch.einsum("...ji, ...jk -> ...ik", starts, ends)
 
-        return torch.abs(
-            torch.arccos(
-                torch.clip(
-                    0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
-                    min=-1.0,
-                    max=1.0,
-                ),
+        return torch.arccos(
+            torch.clip(
+                0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
+                min=-1.0,
+                max=1.0,
             ),
         )

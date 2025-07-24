@@ -1,6 +1,4 @@
-"""
-Checks mathematic operations of the `SpecialOrthogonal3` class.
-"""
+"""Checks mathematic operations of the `SpecialOrthogonal3` class."""
 
 from itertools import product
 from typing import Any, Dict, Tuple
@@ -8,8 +6,11 @@ from typing import Any, Dict, Tuple
 import pytest
 import torch
 
-from diffusionmodels.manifolds.interfaces import Manifold
+from diffusionmodels.manifolds.interfaces import RiemannianManifold
 from diffusionmodels.manifolds.rotationalgroups import SpecialOrthogonal3
+
+manifold_dimension = (3, 3)
+manifold_tangent_dimension = (3,)
 
 if torch.cuda.is_available():
     devices = (
@@ -32,52 +33,50 @@ test_parameters = [
 
 
 @pytest.fixture(params=test_parameters, scope="class")
-def manifold_fixture(request) -> Tuple[Dict[str, Any], Manifold]:
+def manifold_fixture(request) -> Tuple[Dict[str, Any], RiemannianManifold]:
     parameters = request.param
 
     manifold = SpecialOrthogonal3(
-        device=parameters["device"], data_type=parameters["data_type"]
+        device=parameters["device"],
+        dtype=parameters["data_type"],
     )
 
     return parameters, manifold
 
 
 class TestSpecialOrthogonal3:
-    """
-    A group of `SpecialOrthogonal3` tests
-    """
+    """A group of `SpecialOrthogonal3` tests."""
 
-    def test_instance(self, manifold_fixture: Tuple[Dict[str, Any], Manifold]) -> None:
-        """
-        Checks that `SpecialOrthogonal3` is an instance of `Manifold`
-        """
+    def test_instance(
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
+    ) -> None:
+        """Checks that `SpecialOrthogonal3` is an instance of `Manifold`."""
         _, manifold = manifold_fixture
 
-        assert isinstance(manifold, Manifold)
+        assert isinstance(manifold, RiemannianManifold)
 
     def test_get_dimension(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `dimension` can be accessed and the value is a tuple `(3, 3)`
-        """
+        """Checks that `dimension` can be accessed and the value is a tuple `(3, 3)`."""
         _, manifold = manifold_fixture
 
         dimension = manifold.dimension
 
         assert isinstance(dimension, tuple)
-        assert len(dimension) == 2
+        assert len(dimension) == len(manifold_dimension)
 
-        for entry in dimension:
+        for idx, entry in enumerate(dimension):
             assert isinstance(entry, int)
-            assert entry == 3
+            assert entry == manifold_dimension[idx]
 
     def test_get_tangent_dimension(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `tangent_dimension` can be invoked and return the tuple `(3,)`
-        """
+        """Checks that `tangent_dimension` can be invoked and return the tuple `(3,)`."""
         _, manifold = manifold_fixture
 
         tangent_dimension = manifold.tangent_dimension
@@ -85,20 +84,21 @@ class TestSpecialOrthogonal3:
         assert isinstance(tangent_dimension, tuple)
         assert len(tangent_dimension) == 1
 
-        for entry in tangent_dimension:
+        for idx, entry in enumerate(tangent_dimension):
             assert isinstance(entry, int)
-            assert entry == 3
+            assert entry == manifold_tangent_dimension[idx]
 
     def test_exp_compatibility(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `exp` can handle broadcast-able `points` and `vectors`
-        """
+        """Checks that `exp` can handle broadcast-able `points` and `vectors`."""
         parameters, manifold = manifold_fixture
 
         points = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 1, 1, 3, 3)
         points = points.repeat(5, 1, 1, 1, 1)
 
@@ -121,15 +121,16 @@ class TestSpecialOrthogonal3:
         assert torch.allclose(points, new_points, atol=parameters["tolerance"])
 
     def test_exp_correctness(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `exp` produce the correct results
-        """
+        """Checks that `exp` produce the correct results."""
         parameters, manifold = manifold_fixture
 
         points = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 1, 3, 3)
         points = points.repeat(2, 1, 1, 1)
 
@@ -200,20 +201,23 @@ class TestSpecialOrthogonal3:
                 )
 
     def test_log_compatibility(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `log` can handle broadcast-able `starts` and `ends`
-        """
+        """Checks that `log` can handle broadcast-able `starts` and `ends`."""
         parameters, manifold = manifold_fixture
 
         starts = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 1, 1, 3, 3)
         starts = starts.repeat(5, 2, 1, 1, 1)
 
         ends = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 3, 3)
         ends = ends.repeat(4, 1, 1)
 
@@ -234,15 +238,16 @@ class TestSpecialOrthogonal3:
         assert torch.allclose(vectors, reference_vectors, atol=parameters["tolerance"])
 
     def test_log_correctness(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `log` produces correct results for small angles
-        """
+        """Checks that `log` produces correct results for small angles."""
         parameters, manifold = manifold_fixture
 
         starts = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 1, 3, 3)
         starts = starts.repeat(2, 1, 1, 1)
 
@@ -297,15 +302,16 @@ class TestSpecialOrthogonal3:
                 )
 
     def test_exp_log_connection(
-        self, manifold_fixture: Tuple[Dict[str, Any], Manifold]
+        self,
+        manifold_fixture: Tuple[Dict[str, Any], RiemannianManifold],
     ) -> None:
-        """
-        Checks that `log(points, exp(points, vectors)) = vectors`
-        """
+        """Checks that `log(points, exp(points, vectors)) = vectors`."""
         parameters, manifold = manifold_fixture
 
         points = torch.eye(
-            3, dtype=parameters["data_type"], device=parameters["device"]
+            3,
+            dtype=parameters["data_type"],
+            device=parameters["device"],
         ).view(1, 1, 3, 3)
         points = points.repeat(2, 1, 1, 1)
 
