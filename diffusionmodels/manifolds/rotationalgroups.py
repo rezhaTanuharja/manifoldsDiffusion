@@ -10,10 +10,10 @@ from typing import Optional, Tuple
 
 import torch
 
-from .interfaces import Manifold
+from .interfaces import RiemannianManifold
 
 
-class SpecialOrthogonal3(Manifold):
+class SpecialOrthogonal3(RiemannianManifold):
     """The 3-dimensional rotation matrix group."""
 
     def __init__(
@@ -80,8 +80,6 @@ class SpecialOrthogonal3(Manifold):
             ),
         )
 
-    # WARN: log mapping should only be used for points near each other
-
     def log(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
         relative_rotation = torch.einsum("...ji, ...jk -> ...ik", starts, ends)
 
@@ -104,3 +102,16 @@ class SpecialOrthogonal3(Manifold):
         )
 
         return torch.einsum("..., ...i -> ...i", angle, rotation_axis)
+
+    def metric(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
+        relative_rotation = torch.einsum("...ji, ...jk -> ...ik", starts, ends)
+
+        return torch.abs(
+            torch.arccos(
+                torch.clip(
+                    0.5 * (torch.einsum("...ii -> ...", relative_rotation) - 1.0),
+                    min=-1.0,
+                    max=1.0,
+                ),
+            ),
+        )

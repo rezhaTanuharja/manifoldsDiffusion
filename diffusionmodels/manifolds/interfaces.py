@@ -20,12 +20,6 @@ class Manifold(ABC):
     `to(device)`
     Moves all tensor attributes to the given device
 
-    `exp(points, vectors)`
-    Returns the results of incrementing the points by the vectors
-
-    `log(starts, ends)`
-    Returns vectors such that `exp(starts, vectors) = ends`
-
     Properties
     ----------
     `dimension`
@@ -92,6 +86,19 @@ class Manifold(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
+
+class RiemannianManifold(Manifold):
+    """An abstract class that serves as an interface for all Riemannian manifolds.
+
+    Methods (extends `Manifold`'s methods and properties)
+    ---------------------------------------------------
+    `exp(points, vectors)`
+    Returns the results of incrementing the points by the vectors
+
+    `log(starts, ends)`
+    Returns vectors such that `exp(starts, vectors) = ends`
+    """
+
     @abstractmethod
     def exp(self, points: torch.Tensor, vectors: torch.Tensor) -> torch.Tensor:
         """Returns the results of incrementing the points by the vectors.
@@ -119,8 +126,7 @@ class Manifold(ABC):
 
     @abstractmethod
     def log(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
-        """
-        Returns the vectors such that `exp(starts, vectors) = ends`
+        """Returns the vectors such that `exp(starts, vectors) = ends`.
 
         Parameters
         ----------
@@ -139,6 +145,32 @@ class Manifold(ABC):
         -------------
         ```python
         vectors = manifold.log(starts, ends)
+        ```
+        """
+        raise NotImplementedError("Subclasses must implement this method")
+
+    @abstractmethod
+    def metric(self, starts: torch.Tensor, ends: torch.Tensor) -> torch.Tensor:
+        """Returns the distance between `starts` and `ends`.
+        The argument names starts and ends have no meanings, just don't know what to use.
+
+        Parameters
+        ----------
+        `starts: torch.Tensor`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
+
+        `ends: torch.Tensor`
+        Points on the manifold: a tensor with shape `(..., *dimension)`
+
+        Returns
+        -------
+        `torch.Tensor`
+        A tensor with shape `(...)`
+
+        Usage Example
+        -------------
+        ```python
+        distance = manifold.metric(starts, ends)
         ```
         """
         raise NotImplementedError("Subclasses must implement this method")
