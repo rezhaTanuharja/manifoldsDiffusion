@@ -1,5 +1,4 @@
-"""
-Provides miscellaneous functionalities for diffusionmodels.
+"""Provides miscellaneous functionalities for diffusionmodels.
 
 Modules
 -------
